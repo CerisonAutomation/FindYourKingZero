@@ -60,7 +60,7 @@ serve(async (req) => {
                             user_id: userId,
                             type: 'system',
                             title: 'Subscription Activated!',
-                            body: `Welcome to MACHOBB ${planId.charAt(0).toUpperCase() + planId.slice(1)}! Enjoy your premium features.`,
+                            body: `Welcome to FIND YOUR KING ${planId.charAt(0).toUpperCase() + planId.slice(1)}! Enjoy your premium features.`,
                         });
                 }
                 break;

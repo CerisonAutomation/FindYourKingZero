@@ -2,7 +2,7 @@ import {useMemo, useState} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
 import {MessageCircle, Search, Sparkles} from 'lucide-react';
 import {Conversation, useConversations} from '@/hooks/useMessages';
-import {RealChatWindow} from '@/components/RealChatWindow';
+import {UnifiedChatWindow} from '@/components/chat/UnifiedChatWindow';
 import {ConversationListSkeleton} from '@/components/ui/ProfileSkeleton';
 import {EmptyState} from '@/components/ui/EmptyState';
 import {Input} from '@/components/ui/input';
@@ -49,7 +49,7 @@ export function MessagesTab({onViewProfile}: MessagesTabProps) {
         <div className="min-h-screen pb-24">
             <AnimatePresence mode="wait">
                 {selectedConversation ? (
-                    <RealChatWindow
+                    <UnifiedChatWindow
                         key="chat"
                         conversation={selectedConversation}
                         onBack={() => setSelectedConversation(null)}

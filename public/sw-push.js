@@ -12,7 +12,7 @@ self.addEventListener('push', (event) => {
     }
 
     const {
-        title = 'MACHOBB',
+        title = 'FIND YOUR KING',
         body = '',
         icon = '/icons/icon-192.png',
         badge = '/icons/icon-72.png',

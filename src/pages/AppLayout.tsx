@@ -86,7 +86,7 @@ function DesktopSidebar({onAIOpen}: { onAIOpen: () => void }) {
                         M
                     </div>
                     <div>
-                        <p className="font-black text-[13px] tracking-[-0.02em] leading-none">MACHOBB</p>
+                        <p className="font-black text-[13px] tracking-[-0.02em] leading-none">FIND YOUR KING</p>
                         <p className="text-[9px] font-semibold text-muted-foreground tracking-[0.06em] mt-0.5">CONNECT ·
                             EXPLORE</p>
                     </div>

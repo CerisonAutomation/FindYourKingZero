@@ -67,7 +67,7 @@ serve(async (req) => {
                 'success_url': successUrl || `${req.headers.get('origin')}/app?payment=success`,
                 'cancel_url': cancelUrl || `${req.headers.get('origin')}/app?payment=cancelled`,
                 'line_items[0][price_data][currency]': 'usd',
-                'line_items[0][price_data][product_data][name]': `MACHOBB ${plan.name}`,
+                'line_items[0][price_data][product_data][name]': `FIND YOUR KING ${plan.name}`,
                 'line_items[0][price_data][product_data][description]': plan.features.join(', '),
                 'line_items[0][price_data][recurring][interval]': 'month',
                 'line_items[0][price_data][unit_amount]': plan.price.toString(),

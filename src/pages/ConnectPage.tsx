@@ -47,24 +47,15 @@ const ConnectPage = () => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            // Mock authentication for development
-            if (import.meta.env.VITE_MOCK_API === 'true') {
-                toast({
-                    title: "Magic Link Sent",
-                    description: "Check your email for the magic link (mock mode)",
-                });
-                setMagicLinkSent(true);
-                return;
-            }
-
             const {error} = await supabase.auth.signInWithOtp({
                 email,
                 options: {emailRedirectTo: `${window.location.origin}/app`},
             });
             if (error) throw error;
             setMagicLinkSent(true);
-        } catch (error: any) {
-            toast({title: 'Error', description: error.message, variant: 'destructive'});
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+            toast({title: 'Error', description: errorMessage, variant: 'destructive'});
         } finally {
             setIsLoading(false);
         }
@@ -81,13 +72,6 @@ const ConnectPage = () => {
                     return;
                 }
 
-                // Mock authentication for development
-                if (import.meta.env.VITE_MOCK_API === 'true') {
-                    toast({title: 'Welcome to the kingdom!', description: 'Account created successfully (mock mode)'});
-                    window.location.href = '/app';
-                    return;
-                }
-
                 const {error} = await supabase.auth.signUp({
                     email,
                     password,
@@ -97,20 +81,14 @@ const ConnectPage = () => {
                 toast({title: 'Welcome to the kingdom!', description: 'Check your email to verify your account.'});
             } else {
 
-                // Mock authentication for development
-                if (import.meta.env.VITE_MOCK_API === 'true') {
-                    toast({title: 'Welcome back, King!', description: 'Signed in successfully (mock mode)'});
-                    window.location.href = '/app';
-                    return;
-                }
-
                 const {error} = await supabase.auth.signInWithPassword({email, password});
                 if (error) throw error;
                 toast({title: 'Welcome back, King!'});
                 window.location.href = '/app';
             }
-        } catch (error: any) {
-            toast({title: 'Error', description: error.message, variant: 'destructive'});
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+            toast({title: 'Error', description: errorMessage, variant: 'destructive'});
         } finally {
             setIsLoading(false);
         }
@@ -201,7 +179,7 @@ const ConnectPage = () => {
                             <Crown className="w-4 h-4 text-white"/>
                         </div>
                         <div>
-                            <p className="text-[14px] font-black tracking-[-0.02em] leading-none">MACHOBB</p>
+                            <p className="text-[14px] font-black tracking-[-0.02em] leading-none">FIND YOUR KING</p>
                             <p className="text-[8px] font-black tracking-[0.1em] uppercase text-muted-foreground mt-0.5">CONNECT
                                 · EXPLORE</p>
                         </div>
@@ -282,7 +260,7 @@ const ConnectPage = () => {
                         >
                             <Crown className="w-3.5 h-3.5 text-white"/>
                         </div>
-                        <span className="text-[13px] font-black tracking-tight">MACHOBB</span>
+                        <span className="text-[13px] font-black tracking-tight">FIND YOUR KING</span>
                     </Link>
                 </div>
 

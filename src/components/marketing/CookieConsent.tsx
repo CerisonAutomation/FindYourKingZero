@@ -6,7 +6,7 @@ export const CookieConsent = () => {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        const consent = localStorage.getItem('machobb_cookie_consent');
+        const consent = localStorage.getItem('FIND YOUR KING_cookie_consent');
         if (!consent) {
             // Show after a short delay for better UX
             const timer = setTimeout(() => setIsVisible(true), 1000);
@@ -15,12 +15,12 @@ export const CookieConsent = () => {
     }, []);
 
     const handleAccept = () => {
-        localStorage.setItem('machobb_cookie_consent', 'accepted');
+        localStorage.setItem('FIND YOUR KING_cookie_consent', 'accepted');
         setIsVisible(false);
     };
 
     const handleDeny = () => {
-        localStorage.setItem('machobb_cookie_consent', 'denied');
+        localStorage.setItem('FIND YOUR KING_cookie_consent', 'denied');
         setIsVisible(false);
     };
 
@@ -40,7 +40,7 @@ export const CookieConsent = () => {
                             <p className="text-[#B9BDC7] text-sm text-center sm:text-left">
                                 We use cookies to maintain user session & generate statistics. Read our{' '}
                                 <a
-                                    href="https://Machobb.com/legalfoot.php"
+                                    href="https://FIND YOUR KING.com/legalfoot.php"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-[#E53945] hover:text-[#FF6B6B] underline transition-colors"

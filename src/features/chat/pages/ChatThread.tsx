@@ -2,7 +2,7 @@ import {useNavigate, useParams} from 'react-router-dom';
 import {useQuery} from '@tanstack/react-query';
 import {supabase} from '@/integrations/supabase/client';
 import {useAuth} from '@/hooks/useAuth';
-import {RealChatWindow} from '@/components/RealChatWindow';
+import {UnifiedChatWindow} from '@/components/chat/UnifiedChatWindow';
 
 export default function ChatThread() {
     const {conversationId} = useParams<{ conversationId: string }>();
@@ -58,10 +58,10 @@ export default function ChatThread() {
     }
 
     return (
-        <RealChatWindow
+        <UnifiedChatWindow
             conversation={conversation as any}
             onBack={() => navigate('/app/messages')}
-            onViewProfile={(id) => navigate(`/app/profile/${id}`)}
+            onViewProfile={(id: string) => navigate(`/app/profile/${id}`)}
         />
     );
 }

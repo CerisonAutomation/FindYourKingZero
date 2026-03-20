@@ -81,14 +81,6 @@ export const usePayments = () => {
 
             if (error) throw error;
 
-            if (data.mock) {
-                toast({
-                    title: 'Coming Soon',
-                    description: data.message,
-                });
-                return null;
-            }
-
             if (data.url) {
                 window.location.href = data.url;
             }
@@ -115,14 +107,6 @@ export const usePayments = () => {
             });
 
             if (error) throw error;
-
-            if (data.mock) {
-                toast({
-                    title: 'Booking Confirmed',
-                    description: data.message,
-                });
-                return {mock: true};
-            }
 
             return data;
         } catch (error) {

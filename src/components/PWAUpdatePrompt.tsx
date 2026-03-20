@@ -27,7 +27,7 @@ export function PWAUpdatePrompt() {
         if (needRefresh) {
             toast({
                 title: 'Update available',
-                description: 'A new version of MACHOBB is ready.',
+                description: 'A new version of FIND YOUR KING is ready.',
                 duration: 10000,
                 action: (
                     <button

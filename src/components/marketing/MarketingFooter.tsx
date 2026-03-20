@@ -121,7 +121,7 @@ export const MarketingFooter = () => {
                                     style={{color: 'hsl(var(--muted-foreground))'}}
                                 >Part of the OmoLink network</p>
                                 <img
-                                    src="https://storage1.machobb.com/mbb/c/5/f/6888e723d4f5c/black-omolink-mbb.png"
+                                    src="https://storage1.FIND YOUR KING.com/mbb/c/5/f/6888e723d4f5c/black-omolink-mbb.png"
                                     alt="OmoLink Network"
                                     className="h-7 opacity-70 hover:opacity-100 transition-opacity"
                                 />
@@ -150,7 +150,7 @@ export const MarketingFooter = () => {
                         className="text-[11px] font-medium"
                         style={{color: 'hsl(var(--muted-foreground))'}}
                     >
-                        © {new Date().getFullYear()} MACHOBB. All rights reserved.
+                        © {new Date().getFullYear()} FIND YOUR KING. All rights reserved.
                     </p>
                     <div className="flex items-center gap-4">
                         <LanguageSelector variant="compact"/>

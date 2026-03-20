@@ -1,6 +1,6 @@
 /**
  * Framer Motion Animation Presets
- * Luxury, regal animations for MACHOBB
+ * Luxury, regal animations for FIND YOUR KING
  * All pre-configured variants for cinematic effects
  */
 

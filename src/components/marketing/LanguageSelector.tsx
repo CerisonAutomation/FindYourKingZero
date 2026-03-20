@@ -7,12 +7,12 @@ interface Language {
 }
 
 const languages: Language[] = [
-    {code: 'en', name: 'English', flag: 'https://Machobb.com/img/lang_en.png'},
-    {code: 'fr', name: 'Français', flag: 'https://Machobb.com/img/lang_fr.png'},
-    {code: 'es', name: 'Español', flag: 'https://Machobb.com/img/lang_es.png'},
-    {code: 'de', name: 'Deutsch', flag: 'https://Machobb.com/img/lang_de.png'},
-    {code: 'pt', name: 'Português', flag: 'https://Machobb.com/img/lang_pt.png'},
-    {code: 'it', name: 'Italiano', flag: 'https://Machobb.com/img/lang_it.png'},
+    {code: 'en', name: 'English', flag: 'https://FIND YOUR KING.com/img/lang_en.png'},
+    {code: 'fr', name: 'Français', flag: 'https://FIND YOUR KING.com/img/lang_fr.png'},
+    {code: 'es', name: 'Español', flag: 'https://FIND YOUR KING.com/img/lang_es.png'},
+    {code: 'de', name: 'Deutsch', flag: 'https://FIND YOUR KING.com/img/lang_de.png'},
+    {code: 'pt', name: 'Português', flag: 'https://FIND YOUR KING.com/img/lang_pt.png'},
+    {code: 'it', name: 'Italiano', flag: 'https://FIND YOUR KING.com/img/lang_it.png'},
 ];
 
 interface LanguageSelectorProps {

@@ -25,7 +25,7 @@ import {Slider} from '@/components/ui/slider';
 import {Switch} from '@/components/ui/switch';
 import {Sheet, SheetContent} from '@/components/ui/sheet';
 import {Button} from '@/components/ui/button';
-import {useProfiles} from '@/hooks/useProfiles';
+import {useProfilesGrid} from '@/hooks/useProfile';
 import {useFavorites} from '@/hooks/useFavorites';
 import {useCreateConversation} from '@/hooks/useConversations';
 import {cn} from '@/lib/utils';
@@ -437,7 +437,6 @@ function FiltersSheet({open, onClose, filters, onApply}: {
 /* ── Main ── */
 export default function GridPage() {
     const navigate = useNavigate();
-    const {data: profiles = [], isLoading, refetch, isFetching} = useProfiles();
     const {isFavorite, toggleFavorite} = useFavorites();
     const createConversation = useCreateConversation();
 
@@ -445,6 +444,8 @@ export default function GridPage() {
     const [filtersOpen, setFiltersOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
     const [cols, setCols] = useState<2 | 3>(2);
+
+    const {data: profiles = [], isLoading, refetch, isFetching} = useProfilesGrid(filters);
 
     const activeFilterCount = useMemo(() => [
         filters.onlineOnly, filters.verifiedOnly, filters.hasPhotos,

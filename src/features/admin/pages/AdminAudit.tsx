@@ -2,50 +2,7 @@ import {useNavigate} from 'react-router-dom';
 import {AlertTriangle, ChevronLeft, ScrollText, Settings, ShieldCheck, UserX} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {formatDistanceToNow} from 'date-fns';
-
-// Mock audit log — replace with real table once audit_log migration runs
-const MOCK_LOGS = [
-    {
-        id: '1',
-        action: 'user_suspended',
-        actor: 'admin@fyk.app',
-        target_type: 'user',
-        target_id: 'usr_001',
-        created_at: new Date(Date.now() - 1000 * 60 * 5).toISOString()
-    },
-    {
-        id: '2',
-        action: 'report_resolved',
-        actor: 'admin@fyk.app',
-        target_type: 'report',
-        target_id: 'rpt_042',
-        created_at: new Date(Date.now() - 1000 * 60 * 30).toISOString()
-    },
-    {
-        id: '3',
-        action: 'profile_approved',
-        actor: 'mod@fyk.app',
-        target_type: 'profile',
-        target_id: 'usr_009',
-        created_at: new Date(Date.now() - 1000 * 60 * 90).toISOString()
-    },
-    {
-        id: '4',
-        action: 'content_removed',
-        actor: 'mod@fyk.app',
-        target_type: 'photo',
-        target_id: 'ph_223',
-        created_at: new Date(Date.now() - 1000 * 60 * 120).toISOString()
-    },
-    {
-        id: '5',
-        action: 'user_warned',
-        actor: 'admin@fyk.app',
-        target_type: 'user',
-        target_id: 'usr_017',
-        created_at: new Date(Date.now() - 1000 * 60 * 200).toISOString()
-    },
-];
+import {useState, useEffect} from 'react';
 
 const actionIcon: Record<string, React.ReactNode> = {
     user_suspended: <UserX className="w-4 h-4 text-destructive"/>,
@@ -57,7 +14,32 @@ const actionIcon: Record<string, React.ReactNode> = {
 
 export default function AdminAudit() {
     const navigate = useNavigate();
-    const logs = MOCK_LOGS;
+    const [logs, setLogs] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchAuditLogs = async () => {
+            try {
+                // TODO: Implement proper audit logs query when table structure is finalized
+                // For now, return empty array
+                setLogs([]);
+            } catch (error) {
+                console.error('Error fetching audit logs:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchAuditLogs();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen pb-28 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-background pb-28">
@@ -74,7 +56,13 @@ export default function AdminAudit() {
             </header>
 
             <div className="px-4 py-4 space-y-2 max-w-lg mx-auto">
-                {logs.map((log) => (
+                {logs.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                        <ScrollText className="w-12 h-12 mx-auto mb-4 opacity-50"/>
+                        <p>No audit logs found</p>
+                    </div>
+                ) : (
+                    logs.map((log: any) => (
                     <div key={log.id}
                          className="p-3.5 rounded-2xl bg-card border border-border/30 flex items-center gap-3">
                         <div className="w-8 h-8 rounded-xl bg-secondary flex items-center justify-center shrink-0">
@@ -85,10 +73,11 @@ export default function AdminAudit() {
                             <p className="text-xs text-muted-foreground">{log.actor} · {log.target_type}</p>
                         </div>
                         <span className="text-[11px] text-muted-foreground shrink-0">
-              {formatDistanceToNow(new Date(log.created_at), {addSuffix: true})}
-            </span>
+                            {formatDistanceToNow(new Date(log.created_at), {addSuffix: true})}
+                        </span>
                     </div>
-                ))}
+                ))
+                )}
             </div>
         </div>
     );

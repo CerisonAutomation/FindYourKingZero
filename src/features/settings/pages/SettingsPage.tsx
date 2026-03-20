@@ -191,7 +191,7 @@ export default function SettingsPage() {
 
                     {/* ── Version ── */}
                     <p className="text-center text-[9px] text-muted-foreground/30 font-bold pt-4 pb-6 uppercase tracking-widest">
-                        MACHOBB v1.0.0
+                        FIND YOUR KING v1.0.0
                     </p>
                 </motion.div>
             </div>

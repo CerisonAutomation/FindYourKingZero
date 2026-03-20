@@ -141,7 +141,7 @@ export default function OnboardingWelcome() {
 
                                 <motion.div initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0}}
                                             transition={{delay: 0.18}}>
-                                    <p className="eyebrow mb-2" style={{color: 'hsl(var(--primary))'}}>MACHOBB</p>
+                                    <p className="eyebrow mb-2" style={{color: 'hsl(var(--primary))'}}>FIND YOUR KING</p>
                                     <h1 className="text-[36px] font-black tracking-tight leading-none mb-3">
                                         Find Your<br/>
                                         <span style={{color: 'hsl(var(--gold))'}}>King.</span>

@@ -1,8 +1,8 @@
-# MACHOBB – Gay Dating & Chat App
+# FIND YOUR KING – Gay Dating & Chat App
 
 ## Overview
 
-MACHOBB is a premium gay social/dating platform built with React + Vite + TypeScript. It uses Supabase for
+FIND YOUR KING is a premium gay social/dating platform built with React + Vite + TypeScript. It uses Supabase for
 authentication, database (PostgreSQL via Supabase), realtime subscriptions, and edge functions. The frontend is a pure
 client-side SPA served by Vite.
 

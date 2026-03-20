@@ -1,232 +1,379 @@
 import {Toaster} from "@/components/ui/toaster";
 import {Toaster as Sonner} from "@/components/ui/sonner";
-import {TooltipProvider} from "@/components/ui/tooltip";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import {AuthProvider, useAuth} from "./hooks/useAuth";
 import {ErrorBoundary} from "./components/ui/ErrorBoundary";
 import {lazy, Suspense} from "react";
+import {log} from '@/lib/enterprise/Logger';
+import {VoiceAssistantButton} from "@/components/voice/VoiceAssistantButton";
 
-// Eager
+// Constants for route configuration
+const ROUTES = {
+  PUBLIC: {
+    HOME: "/",
+    INSTALL: "/install",
+    CONNECT: "/connect",
+    AUTH: {
+      SIGN_IN: "/auth/sign-in",
+      SIGN_UP: "/auth/sign-up",
+      MAGIC_LINK: "/auth/magic-link",
+      RESET_PASSWORD: "/auth/reset-password",
+      CALLBACK: "/auth/callback"
+    },
+    LEGAL: {
+      PRIVACY: "/legal/privacy",
+      TERMS: "/legal/terms",
+      COOKIES: "/legal/cookies",
+      COMMUNITY_GUIDELINES: "/legal/community-guidelines"
+    },
+    SAFETY: {
+      QUICK_TIPS: "/safety/quick-tips"
+    }
+  },
+  ONBOARDING: "/onboarding",
+  APP: "/app"
+} as const;
+
+// Eager loaded critical components
 import HomePage from "./pages/HomePage";
 import ConnectPage from "./pages/ConnectPage";
 import AppLayout from "./pages/AppLayout";
 import NotFound from "./pages/NotFound";
 import InstallPage from "./pages/InstallPage";
 
-// Legal
-const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
-const TermsOfService = lazy(() => import("./pages/TermsOfService"));
-const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
-const CommunityGuidelines = lazy(() => import("./pages/CommunityGuidelines"));
-const SafetyTips = lazy(() => import("./pages/SafetyTips"));
+// Lazy loaded components for performance
+const LazyComponents = {
+  // Legal pages
+  PrivacyPolicy: lazy(() => import("./pages/PrivacyPolicy")),
+  TermsOfService: lazy(() => import("./pages/TermsOfService")),
+  CookiePolicy: lazy(() => import("./pages/CookiePolicy")),
+  CommunityGuidelines: lazy(() => import("./pages/CommunityGuidelines")),
+  SafetyTips: lazy(() => import("./pages/SafetyTips")),
 
-// Auth pages
-const SignIn = lazy(() => import("./pages/auth/SignIn"));
-const SignUp = lazy(() => import("./pages/auth/SignUp"));
-const MagicLink = lazy(() => import("./pages/auth/MagicLink"));
-const ResetPassword = lazy(() => import("./pages/auth/ResetPassword"));
-const Callback = lazy(() => import("./pages/auth/Callback"));
+  // Authentication pages
+  SignIn: lazy(() => import("./pages/auth/SignIn")),
+  SignUp: lazy(() => import("./pages/auth/SignUp")),
+  MagicLink: lazy(() => import("./pages/auth/MagicLink")),
+  ResetPassword: lazy(() => import("./pages/auth/ResetPassword")),
+  Callback: lazy(() => import("./pages/auth/Callback")),
 
-// Onboarding
-const OnboardingWelcome = lazy(() => import("@/features/onboarding/pages/OnboardingWelcome"));
-const OnboardingBasics = lazy(() => import("@/features/onboarding/pages/OnboardingBasics"));
-const OnboardingPhotos = lazy(() => import("@/features/onboarding/pages/OnboardingPhotos"));
-const OnboardingTribes = lazy(() => import("@/features/onboarding/pages/OnboardingTribes"));
-const OnboardingPreferences = lazy(() => import("@/features/onboarding/pages/OnboardingPreferences"));
-const OnboardingLocation = lazy(() => import("@/features/onboarding/pages/OnboardingLocation"));
-const OnboardingPrivacy = lazy(() => import("@/features/onboarding/pages/OnboardingPrivacy"));
-const OnboardingNotifications = lazy(() => import("@/features/onboarding/pages/OnboardingNotifications"));
-const OnboardingConsent = lazy(() => import("@/features/onboarding/pages/OnboardingConsent"));
-const OnboardingFinish = lazy(() => import("@/features/onboarding/pages/OnboardingFinish"));
+  // Onboarding flow
+  OnboardingWelcome: lazy(() => import("@/features/onboarding/pages/OnboardingWelcome")),
+  OnboardingBasics: lazy(() => import("@/features/onboarding/pages/OnboardingBasics")),
+  OnboardingPhotos: lazy(() => import("@/features/onboarding/pages/OnboardingPhotos")),
+  OnboardingTribes: lazy(() => import("@/features/onboarding/pages/OnboardingTribes")),
+  OnboardingPreferences: lazy(() => import("@/features/onboarding/pages/OnboardingPreferences")),
+  OnboardingLocation: lazy(() => import("@/features/onboarding/pages/OnboardingLocation")),
+  OnboardingPrivacy: lazy(() => import("@/features/onboarding/pages/OnboardingPrivacy")),
+  OnboardingNotifications: lazy(() => import("@/features/onboarding/pages/OnboardingNotifications")),
+  OnboardingConsent: lazy(() => import("@/features/onboarding/pages/OnboardingConsent")),
+  OnboardingFinish: lazy(() => import("@/features/onboarding/pages/OnboardingFinish")),
 
-// App features
-const GridPage = lazy(() => import("@/features/grid/pages/GridPage"));
-const RightNowFeed = lazy(() => import("@/features/rightNow/pages/RightNowFeed"));
-const RightNowMap = lazy(() => import("@/features/rightNow/pages/RightNowMap"));
-const MessagesPage = lazy(() => import("@/features/chat/pages/MessagesPage"));
-const ChatThread = lazy(() => import("@/features/chat/pages/ChatThread"));
-const RoomChatPage = lazy(() => import("@/features/chat/pages/RoomChatPage"));
-const EventChatPage = lazy(() => import("@/features/chat/pages/EventChatPage"));
-const EventsHub = lazy(() => import("@/features/events/pages/EventsHub"));
-const EventDetail = lazy(() => import("@/features/events/pages/EventDetail"));
-const CreateEvent = lazy(() => import("@/features/events/pages/CreateEvent"));
-const MePage = lazy(() => import("@/features/profile/pages/MePage"));
-const EditProfile = lazy(() => import("@/features/profile/pages/EditProfile"));
-const ProfilePhotosPage = lazy(() => import("@/features/profile/pages/ProfilePhotosPage"));
-const ViewProfile = lazy(() => import("@/features/profile/pages/ViewProfile"));
-const NotificationsPage = lazy(() => import("@/features/notifications/pages/NotificationsPage"));
-const SafetyPage = lazy(() => import("@/features/safety/pages/SafetyPage"));
-const BlockedPage = lazy(() => import("@/features/safety/pages/BlockedPage"));
-const ReportsPage = lazy(() => import("@/features/safety/pages/ReportsPage"));
-const SettingsPage = lazy(() => import("@/features/settings/pages/SettingsPage"));
-const SettingsAccount = lazy(() => import("@/features/settings/pages/SettingsAccount"));
-const SettingsSecurity = lazy(() => import("@/features/settings/pages/SettingsSecurity"));
-const SettingsPrivacy = lazy(() => import("@/features/settings/pages/SettingsPrivacy"));
-const SettingsNotifications = lazy(() => import("@/features/settings/pages/SettingsNotifications"));
-const SettingsContent = lazy(() => import("@/features/settings/pages/SettingsContent"));
-const SettingsSubscription = lazy(() => import("@/features/settings/pages/SubscriptionPage"));
+  // Core app features
+  GridPage: lazy(() => import("@/features/grid/pages/GridPage")),
+  RightNowFeed: lazy(() => import("@/features/rightNow/pages/RightNowFeed")),
+  RightNowMap: lazy(() => import("@/features/rightNow/pages/RightNowMap")),
+  MessagesPage: lazy(() => import("@/features/chat/pages/MessagesPage")),
+  ChatThread: lazy(() => import("@/features/chat/pages/ChatThread")),
+  RoomChatPage: lazy(() => import("@/features/chat/pages/RoomChatPage")),
+  EventChatPage: lazy(() => import("@/features/chat/pages/EventChatPage")),
+  EventsHub: lazy(() => import("@/features/events/pages/EventsHub")),
+  EventDetail: lazy(() => import("@/features/events/pages/EventDetail")),
+  CreateEvent: lazy(() => import("@/features/events/pages/CreateEvent")),
 
-// Admin
-const AdminHome = lazy(() => import("@/features/admin/pages/AdminHome"));
-const AdminReports = lazy(() => import("@/features/admin/pages/AdminReports"));
-const AdminModeration = lazy(() => import("@/features/admin/pages/AdminModeration"));
-const AdminAudit = lazy(() => import("@/features/admin/pages/AdminAudit"));
-const AdminMetrics = lazy(() => import("@/features/admin/pages/AdminMetrics"));
+  // Profile management
+  MePage: lazy(() => import("@/features/profile/pages/MePage")),
+  EditProfile: lazy(() => import("@/features/profile/pages/EditProfile")),
+  ProfilePhotosPage: lazy(() => import("@/features/profile/pages/ProfilePhotosPage")),
+  ViewProfile: lazy(() => import("@/features/profile/pages/ViewProfile")),
 
+  // User management
+  NotificationsPage: lazy(() => import("@/features/notifications/pages/NotificationsPage")),
+  SafetyPage: lazy(() => import("@/features/safety/pages/SafetyPage")),
+  BlockedPage: lazy(() => import("@/features/safety/pages/BlockedPage")),
+  ReportsPage: lazy(() => import("@/features/safety/pages/ReportsPage")),
+
+  // Settings
+  SettingsPage: lazy(() => import("@/features/settings/pages/SettingsPage")),
+  SettingsAccount: lazy(() => import("@/features/settings/pages/SettingsAccount")),
+  SettingsSecurity: lazy(() => import("@/features/settings/pages/SettingsSecurity")),
+  SettingsPrivacy: lazy(() => import("@/features/settings/pages/SettingsPrivacy")),
+  SettingsNotifications: lazy(() => import("@/features/settings/pages/SettingsNotifications")),
+  SettingsContent: lazy(() => import("@/features/settings/pages/SettingsContent")),
+  SubscriptionPage: lazy(() => import("@/features/settings/pages/SubscriptionPage")),
+
+  // Admin dashboard
+  AdminHome: lazy(() => import("@/features/admin/pages/AdminHome")),
+  AdminReports: lazy(() => import("@/features/admin/pages/AdminReports")),
+  AdminModeration: lazy(() => import("@/features/admin/pages/AdminModeration")),
+  AdminAudit: lazy(() => import("@/features/admin/pages/AdminAudit")),
+  AdminMetrics: lazy(() => import("@/features/admin/pages/AdminMetrics"))
+};
+
+// Enterprise Query Client Configuration
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
-            staleTime: 1000 * 60 * 5,
-            gcTime: 1000 * 60 * 30,
-            retry: 2,
+            staleTime: 1000 * 60 * 5, // 5 minutes
+            gcTime: 1000 * 60 * 30, // 30 minutes
+            retry: (failureCount, error) => {
+                // Don't retry on 4xx errors
+                if (error && 'status' in error && typeof error.status === 'number') {
+                    if (error.status >= 400 && error.status < 500) {
+                        return false;
+                    }
+                }
+                return failureCount < 2;
+            },
             refetchOnWindowFocus: false,
+            refetchOnReconnect: true,
+        },
+        mutations: {
+            retry: 1,
         },
     },
 });
 
-const LoadingSpinner = () => (
+// Enterprise Loading Component
+const LoadingSpinner = ({message = "Loading"}: {message?: string}) => (
     <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
             <div className="relative w-14 h-14">
                 <div
-                    className="absolute inset-0 rounded-full border-2 border-primary/20 border-t-primary animate-spin"/>
+                    className="absolute inset-0 rounded-full border-2 border-primary/20 border-t-primary animate-spin"
+                />
                 <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-5 h-5 rounded-full bg-primary/20 animate-pulse"/>
                 </div>
             </div>
-            <p className="text-xs text-muted-foreground tracking-widest uppercase animate-pulse">Loading</p>
+            <p className="text-xs text-muted-foreground tracking-widest uppercase animate-pulse">
+                {message}
+            </p>
         </div>
     </div>
 );
 
-const ProtectedRoute = ({children}: { children: React.ReactNode }) => {
+// Enterprise Route Guards
+const ProtectedRoute = ({children, requiredRole = "user"}: {
+    children: React.ReactNode;
+    requiredRole?: "user" | "admin";
+}) => {
     const {user, isLoading} = useAuth();
-    if (isLoading) return <LoadingSpinner/>;
-    if (!user) return <Navigate to="/connect" replace/>;
+
+    log.debug('ROUTE', 'Protected route check', {
+        hasUser: !!user,
+        isLoading,
+        requiredRole
+    });
+
+    if (isLoading) return <LoadingSpinner message="Authenticating"/>;
+    if (!user) {
+        log.info('ROUTE', 'Redirecting unauthenticated user to connect');
+        return <Navigate to={ROUTES.PUBLIC.CONNECT} replace/>;
+    }
+
+    // Future: Add role-based access control here
+    if (requiredRole === "admin" && user.user_metadata?.role !== "admin") {
+        log.warn('ROUTE', 'Access denied: insufficient permissions', {
+            userId: user.id,
+            requiredRole,
+            userRole: user.user_metadata?.role
+        });
+        return <Navigate to={ROUTES.APP} replace/>;
+    }
+
     return <>{children}</>;
 };
 
-const AdminRoute = ({children}: { children: React.ReactNode }) => {
-    const {user, isLoading} = useAuth();
-    if (isLoading) return <LoadingSpinner/>;
-    if (!user) return <Navigate to="/connect" replace/>;
-    return <>{children}</>;
-};
+// PublicRoute component (currently unused but available for future use)
+// const PublicRoute = ({children}: {children: React.ReactNode}) => {
+//     const {user, isLoading} = useAuth();
+//
+//     if (isLoading) return <LoadingSpinner message="Loading"/>;
+//     if (user) {
+//         log.info('ROUTE', 'Redirecting authenticated user to app');
+//         return <Navigate to={ROUTES.APP + "/grid"} replace/>;
+//     }
+//
+//     return <>{children}</>;
+// };
 
+// Route configuration helper (currently unused but available for future use)
+// const createRoute = (path: string, Component: React.ComponentType, options?: {
+//     protected?: boolean;
+//     adminOnly?: boolean;
+//     lazy?: boolean;
+// }) => {
+//     const WrappedComponent = options?.lazy ? (
+//         <Suspense fallback={<LoadingSpinner/>}>
+//             <Component/>
+//         </Suspense>
+//     ) : <Component/>;
+//
+//     const element = options?.protected ? (
+//         <ProtectedRoute requiredRole={options.adminOnly ? "admin" : "user"}>
+//             {WrappedComponent}
+//         </ProtectedRoute>
+//     ) : options?.protected === false ? (
+//         <PublicRoute>{WrappedComponent}</PublicRoute>
+//     ) : WrappedComponent;
+//
+//     return {path, element};
+// };
+
+// Main App Routes Component
 const AppRoutes = () => {
     const {user, isLoading} = useAuth();
-    if (isLoading) return <LoadingSpinner/>;
+
+    if (isLoading) {
+        return <LoadingSpinner message="Initializing"/>;
+    }
+
+    log.info('ROUTE', 'App routes initialized', { hasUser: !!user });
 
     return (
         <Suspense fallback={<LoadingSpinner/>}>
             <Routes>
-                {/* ── Public ── */}
-                <Route path="/" element={user ? <Navigate to="/app/grid" replace/> : <HomePage/>}/>
-                <Route path="/install" element={<InstallPage/>}/>
-                <Route path="/connect" element={user ? <Navigate to="/app/grid" replace/> : <ConnectPage/>}/>
-                <Route path="/auth/sign-in" element={user ? <Navigate to="/app/grid" replace/> : <SignIn/>}/>
-                <Route path="/auth/sign-up" element={user ? <Navigate to="/app/grid" replace/> : <SignUp/>}/>
-                <Route path="/auth/magic-link" element={<MagicLink/>}/>
-                <Route path="/auth/reset-password" element={<ResetPassword/>}/>
-                <Route path="/auth/callback" element={<Callback/>}/>
+                {/* Public Routes */}
+                <Route
+                    path={ROUTES.PUBLIC.HOME}
+                    element={user ? <Navigate to={ROUTES.APP + "/grid"} replace/> : <HomePage/>}
+                />
+                <Route path={ROUTES.PUBLIC.INSTALL} element={<InstallPage/>}/>
+                <Route
+                    path={ROUTES.PUBLIC.CONNECT}
+                    element={user ? <Navigate to={ROUTES.APP + "/grid"} replace/> : <ConnectPage/>}
+                />
 
-                {/* Legal */}
-                <Route path="/legal/privacy" element={<PrivacyPolicy/>}/>
-                <Route path="/legal/terms" element={<TermsOfService/>}/>
-                <Route path="/legal/cookies" element={<CookiePolicy/>}/>
-                <Route path="/legal/community-guidelines" element={<CommunityGuidelines/>}/>
-                <Route path="/safety/quick-tips" element={<SafetyTips/>}/>
-                <Route path="/privacy" element={<PrivacyPolicy/>}/>
-                <Route path="/terms" element={<TermsOfService/>}/>
-                <Route path="/cookies" element={<CookiePolicy/>}/>
+                {/* Authentication Routes */}
+                <Route
+                    path={ROUTES.PUBLIC.AUTH.SIGN_IN}
+                    element={user ? <Navigate to={ROUTES.APP + "/grid"} replace/> : <LazyComponents.SignIn/>}
+                />
+                <Route
+                    path={ROUTES.PUBLIC.AUTH.SIGN_UP}
+                    element={user ? <Navigate to={ROUTES.APP + "/grid"} replace/> : <LazyComponents.SignUp/>}
+                />
+                <Route path={ROUTES.PUBLIC.AUTH.MAGIC_LINK} element={<LazyComponents.MagicLink/>}/>
+                <Route path={ROUTES.PUBLIC.AUTH.RESET_PASSWORD} element={<LazyComponents.ResetPassword/>}/>
+                <Route path={ROUTES.PUBLIC.AUTH.CALLBACK} element={<LazyComponents.Callback/>}/>
 
-                {/* ── Onboarding ── */}
-                <Route path="/onboarding" element={<ProtectedRoute><OnboardingWelcome/></ProtectedRoute>}/>
-                <Route path="/onboarding/welcome" element={<ProtectedRoute><OnboardingWelcome/></ProtectedRoute>}/>
-                <Route path="/onboarding/basics" element={<ProtectedRoute><OnboardingBasics/></ProtectedRoute>}/>
-                <Route path="/onboarding/photos" element={<ProtectedRoute><OnboardingPhotos/></ProtectedRoute>}/>
-                <Route path="/onboarding/profile-fields"
-                       element={<ProtectedRoute><OnboardingTribes/></ProtectedRoute>}/>
-                <Route path="/onboarding/tribes-interests"
-                       element={<ProtectedRoute><OnboardingTribes/></ProtectedRoute>}/>
-                <Route path="/onboarding/preferences"
-                       element={<ProtectedRoute><OnboardingPreferences/></ProtectedRoute>}/>
-                <Route path="/onboarding/location" element={<ProtectedRoute><OnboardingLocation/></ProtectedRoute>}/>
-                <Route path="/onboarding/privacy" element={<ProtectedRoute><OnboardingPrivacy/></ProtectedRoute>}/>
-                <Route path="/onboarding/notifications"
-                       element={<ProtectedRoute><OnboardingNotifications/></ProtectedRoute>}/>
-                <Route path="/onboarding/consent" element={<ProtectedRoute><OnboardingConsent/></ProtectedRoute>}/>
-                <Route path="/onboarding/finish" element={<ProtectedRoute><OnboardingFinish/></ProtectedRoute>}/>
+                {/* Legal Routes */}
+                <Route path={ROUTES.PUBLIC.LEGAL.PRIVACY} element={<LazyComponents.PrivacyPolicy/>}/>
+                <Route path={ROUTES.PUBLIC.LEGAL.TERMS} element={<LazyComponents.TermsOfService/>}/>
+                <Route path={ROUTES.PUBLIC.LEGAL.COOKIES} element={<LazyComponents.CookiePolicy/>}/>
+                <Route path={ROUTES.PUBLIC.LEGAL.COMMUNITY_GUIDELINES} element={<LazyComponents.CommunityGuidelines/>}/>
+                <Route path={ROUTES.PUBLIC.SAFETY.QUICK_TIPS} element={<LazyComponents.SafetyTips/>}/>
 
-                {/* ── Protected App ── */}
-                <Route path="/app" element={<ProtectedRoute><AppLayout/></ProtectedRoute>}>
+                {/* Legacy redirect routes */}
+                <Route path="/privacy" element={<Navigate to={ROUTES.PUBLIC.LEGAL.PRIVACY} replace/>}/>
+                <Route path="/terms" element={<Navigate to={ROUTES.PUBLIC.LEGAL.TERMS} replace/>}/>
+                <Route path="/cookies" element={<Navigate to={ROUTES.PUBLIC.LEGAL.COOKIES} replace/>}/>
+
+                {/* Onboarding Routes */}
+                <Route path={ROUTES.ONBOARDING} element={<ProtectedRoute><LazyComponents.OnboardingWelcome/></ProtectedRoute>}/>
+                <Route path={ROUTES.ONBOARDING + "/welcome"} element={<ProtectedRoute><LazyComponents.OnboardingWelcome/></ProtectedRoute>}/>
+                <Route path={ROUTES.ONBOARDING + "/basics"} element={<ProtectedRoute><LazyComponents.OnboardingBasics/></ProtectedRoute>}/>
+                <Route path={ROUTES.ONBOARDING + "/photos"} element={<ProtectedRoute><LazyComponents.OnboardingPhotos/></ProtectedRoute>}/>
+                <Route path={ROUTES.ONBOARDING + "/tribes-interests"} element={<ProtectedRoute><LazyComponents.OnboardingTribes/></ProtectedRoute>}/>
+                <Route path={ROUTES.ONBOARDING + "/preferences"} element={<ProtectedRoute><LazyComponents.OnboardingPreferences/></ProtectedRoute>}/>
+                <Route path={ROUTES.ONBOARDING + "/location"} element={<ProtectedRoute><LazyComponents.OnboardingLocation/></ProtectedRoute>}/>
+                <Route path={ROUTES.ONBOARDING + "/privacy"} element={<ProtectedRoute><LazyComponents.OnboardingPrivacy/></ProtectedRoute>}/>
+                <Route path={ROUTES.ONBOARDING + "/notifications"} element={<ProtectedRoute><LazyComponents.OnboardingNotifications/></ProtectedRoute>}/>
+                <Route path={ROUTES.ONBOARDING + "/consent"} element={<ProtectedRoute><LazyComponents.OnboardingConsent/></ProtectedRoute>}/>
+                <Route path={ROUTES.ONBOARDING + "/finish"} element={<ProtectedRoute><LazyComponents.OnboardingFinish/></ProtectedRoute>}/>
+
+                {/* Protected App Routes */}
+                <Route path={ROUTES.APP} element={<ProtectedRoute><AppLayout/></ProtectedRoute>}>
                     <Route index element={<Navigate to="grid" replace/>}/>
-                    <Route path="grid" element={<GridPage/>}/>
-                    <Route path="right-now" element={<RightNowFeed/>}/>
-                    <Route path="right-now/map" element={<RightNowMap/>}/>
-                    <Route path="map" element={<RightNowMap/>}/>
-                    <Route path="messages" element={<MessagesPage/>}/>
-                    <Route path="chat/:conversationId" element={<ChatThread/>}/>
-                    <Route path="room/:roomId" element={<RoomChatPage/>}/>
-                    <Route path="events/:id/chat" element={<EventChatPage/>}/>
-                    <Route path="events" element={<EventsHub/>}/>
-                    <Route path="events/create" element={<CreateEvent/>}/>
-                    <Route path="events/:id" element={<EventDetail/>}/>
-                    <Route path="chills" element={<EventsHub/>}/>
-                    <Route path="chills/create" element={<CreateEvent/>}/>
-                    <Route path="chills/:id" element={<EventDetail/>}/>
-                    <Route path="house-parties" element={<EventsHub/>}/>
-                    <Route path="house-parties/create" element={<CreateEvent/>}/>
-                    <Route path="house-parties/:id" element={<EventDetail/>}/>
-                    <Route path="profile/me" element={<MePage/>}/>
-                    <Route path="profile/me/edit" element={<EditProfile/>}/>
-                    <Route path="profile/me/photos" element={<ProfilePhotosPage/>}/>
-                    <Route path="profile/:userId" element={<ViewProfile/>}/>
-                    <Route path="notifications" element={<NotificationsPage/>}/>
-                    <Route path="safety" element={<SafetyPage/>}/>
-                    <Route path="blocked" element={<BlockedPage/>}/>
-                    <Route path="reports" element={<ReportsPage/>}/>
-                    <Route path="settings" element={<SettingsPage/>}/>
-                    <Route path="settings/account" element={<SettingsAccount/>}/>
-                    <Route path="settings/security" element={<SettingsSecurity/>}/>
-                    <Route path="settings/privacy" element={<SettingsPrivacy/>}/>
-                    <Route path="settings/notifications" element={<SettingsNotifications/>}/>
-                    <Route path="settings/content" element={<SettingsContent/>}/>
-                    <Route path="settings/subscription" element={<SettingsSubscription/>}/>
-                    {/* Admin */}
-                    <Route path="admin" element={<AdminRoute><AdminHome/></AdminRoute>}/>
-                    <Route path="admin/reports" element={<AdminRoute><AdminReports/></AdminRoute>}/>
-                    <Route path="admin/moderation" element={<AdminRoute><AdminModeration/></AdminRoute>}/>
-                    <Route path="admin/audit" element={<AdminRoute><AdminAudit/></AdminRoute>}/>
-                    <Route path="admin/metrics" element={<AdminRoute><AdminMetrics/></AdminRoute>}/>
+                    <Route path="grid" element={<LazyComponents.GridPage/>}/>
+                    <Route path="right-now" element={<LazyComponents.RightNowFeed/>}/>
+                    <Route path="right-now/map" element={<LazyComponents.RightNowMap/>}/>
+                    <Route path="map" element={<LazyComponents.RightNowMap/>}/>
+
+                    {/* Communication */}
+                    <Route path="messages" element={<LazyComponents.MessagesPage/>}/>
+                    <Route path="chat/:conversationId" element={<LazyComponents.ChatThread/>}/>
+                    <Route path="room/:roomId" element={<LazyComponents.RoomChatPage/>}/>
+                    <Route path="events/:id/chat" element={<LazyComponents.EventChatPage/>}/>
+
+                    {/* Events */}
+                    <Route path="events" element={<LazyComponents.EventsHub/>}/>
+                    <Route path="events/create" element={<LazyComponents.CreateEvent/>}/>
+                    <Route path="events/:id" element={<LazyComponents.EventDetail/>}/>
+
+                    {/* Legacy event redirects */}
+                    <Route path="chills" element={<Navigate to="events?tab=plans" replace/>}/>
+                    <Route path="chills/create" element={<Navigate to="events/create" replace/>}/>
+                    <Route path="chills/:id" element={<Navigate to="events/:id" replace/>}/>
+                    <Route path="house-parties" element={<Navigate to="events?tab=parties" replace/>}/>
+                    <Route path="house-parties/create" element={<Navigate to="events/create" replace/>}/>
+                    <Route path="house-parties/:id" element={<Navigate to="events/:id" replace/>}/>
+
+                    {/* Profile */}
+                    <Route path="profile/me" element={<LazyComponents.MePage/>}/>
+                    <Route path="profile/me/edit" element={<LazyComponents.EditProfile/>}/>
+                    <Route path="profile/me/photos" element={<LazyComponents.ProfilePhotosPage/>}/>
+                    <Route path="profile/:userId" element={<LazyComponents.ViewProfile/>}/>
+
+                    {/* User Management */}
+                    <Route path="notifications" element={<LazyComponents.NotificationsPage/>}/>
+                    <Route path="safety" element={<LazyComponents.SafetyPage/>}/>
+                    <Route path="blocked" element={<LazyComponents.BlockedPage/>}/>
+                    <Route path="reports" element={<LazyComponents.ReportsPage/>}/>
+
+                    {/* Settings */}
+                    <Route path="settings" element={<LazyComponents.SettingsPage/>}/>
+                    <Route path="settings/account" element={<LazyComponents.SettingsAccount/>}/>
+                    <Route path="settings/security" element={<LazyComponents.SettingsSecurity/>}/>
+                    <Route path="settings/privacy" element={<LazyComponents.SettingsPrivacy/>}/>
+                    <Route path="settings/notifications" element={<LazyComponents.SettingsNotifications/>}/>
+                    <Route path="settings/content" element={<LazyComponents.SettingsContent/>}/>
+                    <Route path="settings/subscription" element={<LazyComponents.SubscriptionPage/>}/>
+
+                    {/* Admin Routes */}
+                    <Route path="admin" element={<ProtectedRoute requiredRole="admin"><LazyComponents.AdminHome/></ProtectedRoute>}/>
+                    <Route path="admin/reports" element={<ProtectedRoute requiredRole="admin"><LazyComponents.AdminReports/></ProtectedRoute>}/>
+                    <Route path="admin/moderation" element={<ProtectedRoute requiredRole="admin"><LazyComponents.AdminModeration/></ProtectedRoute>}/>
+                    <Route path="admin/audit" element={<ProtectedRoute requiredRole="admin"><LazyComponents.AdminAudit/></ProtectedRoute>}/>
+                    <Route path="admin/metrics" element={<ProtectedRoute requiredRole="admin"><LazyComponents.AdminMetrics/></ProtectedRoute>}/>
                 </Route>
 
                 {/* Legacy redirects */}
-                <Route path="/app/chills" element={<Navigate to="/app/events?tab=plans" replace/>}/>
-                <Route path="/app/parties" element={<Navigate to="/app/events?tab=parties" replace/>}/>
-                <Route path="/app/meetnow" element={<Navigate to="/app/right-now" replace/>}/>
+                <Route path={ROUTES.APP + "/chills"} element={<Navigate to={ROUTES.APP + "/events?tab=plans"} replace/>}/>
+                <Route path={ROUTES.APP + "/parties"} element={<Navigate to={ROUTES.APP + "/events?tab=parties"} replace/>}/>
+                <Route path={ROUTES.APP + "/meetnow"} element={<Navigate to={ROUTES.APP + "/right-now"} replace/>}/>
 
+                {/* 404 */}
                 <Route path="*" element={<NotFound/>}/>
             </Routes>
         </Suspense>
     );
 };
 
-const App = () => (
-    <ErrorBoundary>
-        <QueryClientProvider client={queryClient}>
-            <TooltipProvider>
+// Main App Component
+const App = () => {
+    log.info('APP', 'Application starting');
+
+    return (
+        <ErrorBoundary>
+            <QueryClientProvider client={queryClient}>
                 <Toaster/>
                 <Sonner/>
-                <BrowserRouter>
+                <BrowserRouter future={{v7_startTransition: true, v7_relativeSplatPath: true}}>
                     <AuthProvider>
                         <AppRoutes/>
+                        {/* Global Voice Assistant - Floating */}
+                        <VoiceAssistantButton
+                            variant="floating"
+                            showSettings={true}
+                        />
                     </AuthProvider>
                 </BrowserRouter>
-            </TooltipProvider>
-        </QueryClientProvider>
-    </ErrorBoundary>
-);
+            </QueryClientProvider>
+        </ErrorBoundary>
+    );
+};
 
 export default App;

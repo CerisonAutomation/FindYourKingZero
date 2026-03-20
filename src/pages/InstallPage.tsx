@@ -63,7 +63,7 @@ export default function InstallPage() {
                 <motion.div initial={{opacity: 0, y: 12}} animate={{opacity: 1, y: 0}} transition={{delay: 0.2}}
                             className="text-center">
                     <h1 className="text-2xl font-black mb-2">You're all set!</h1>
-                    <p className="text-muted-foreground">MACHOBB is installed on your device.</p>
+                    <p className="text-muted-foreground">FIND YOUR KING is installed on your device.</p>
                 </motion.div>
                 <Button onClick={() => navigate('/app/grid')}
                         className="gradient-primary w-full max-w-xs h-12 rounded-2xl font-bold">
@@ -114,7 +114,7 @@ export default function InstallPage() {
                     transition={{delay: 0.15}}
                     className="text-center space-y-2"
                 >
-                    <h1 className="text-3xl font-black tracking-tight">Install MACHOBB</h1>
+                    <h1 className="text-3xl font-black tracking-tight">Install FIND YOUR KING</h1>
                     <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
                         Add to your home screen for the fastest, fullscreen experience — no app store needed.
                     </p>

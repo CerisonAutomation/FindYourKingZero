@@ -1,6 +1,7 @@
 import {createContext, ReactNode, useContext, useEffect, useState} from 'react';
 import {Session, User, AuthError} from '@supabase/supabase-js';
 import {supabase} from '@/integrations/supabase/client';
+import {log} from '@/lib/enterprise/Logger';
 
 interface AuthContextType {
     user: User | null;
@@ -42,7 +43,7 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
     const handleError = (error: AuthError | null) => {
         setError(error);
         if (error) {
-            console.error('Auth error:', error);
+            log.error('AUTH', 'Authentication error occurred', error);
         }
     };
 
@@ -50,7 +51,11 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
         // Set up auth state listener FIRST
         const {data: {subscription}} = supabase.auth.onAuthStateChange(
             async (event, session) => {
-                console.log('Auth state changed:', event, session?.user?.id);
+                log.info('AUTH', 'Auth state changed', {
+                    event,
+                    userId: session?.user?.id,
+                    hasSession: !!session
+                });
 
                 setSession(session);
                 setUser(session?.user ?? null);
@@ -65,7 +70,9 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
                 // Update online status when auth changes
                 if (session?.user && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
                     // Don't wait for this to complete to avoid blocking UI
-                    updateOnlineStatus(session.user.id, true).catch(console.error);
+                    updateOnlineStatus(session.user.id, true).catch((error) => {
+                        log.warn('AUTH', 'Failed to update online status', error);
+                    });
                 }
             }
         );
@@ -87,7 +94,7 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
                     }
                 }
             } catch (err) {
-                console.error('Error initializing auth:', err);
+                log.error('AUTH', 'Error initializing auth', err as Error);
                 handleError(err as AuthError);
             } finally {
                 setIsLoading(false);
@@ -112,7 +119,7 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
                 })
                 .eq('user_id', userId);
         } catch (error) {
-            console.error('Error updating online status:', error);
+            log.error('AUTH', 'Error updating online status', error as Error);
         }
     };
 

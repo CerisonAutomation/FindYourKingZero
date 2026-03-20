@@ -1,43 +1,41 @@
-import {serve} from "https://deno.land/std@0.168.0/http/server.ts";
+import 'jsr:@supabase/functions-js/edge-runtime.d.ts'
+import { corsHeaders, handleCORS } from '../_shared/cors.ts'
+import { getSystemPrompt } from '../_shared/ai-types.ts'
 
-const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
-serve(async (req) => {
-    if (req.method === 'OPTIONS') {
-        return new Response(null, {headers: corsHeaders});
-    }
+Deno.serve(async (req) => {
+    const corsResponse = handleCORS(req)
+    if (corsResponse) return corsResponse
 
     try {
-        const {messages} = await req.json();
-        const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+        const {messages, mode = 'chat'} = await req.json();
+        const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 
-        if (!LOVABLE_API_KEY) {
-            throw new Error("LOVABLE_API_KEY is not configured");
+        if (!OPENAI_API_KEY) {
+            throw new Error("OPENAI_API_KEY is not configured");
         }
 
-        console.log(`AI Stream request - messages: ${messages.length}`);
+        console.log(`Find Your King AI Stream request - mode: ${mode}, messages: ${messages.length}`);
 
-        const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        const systemPrompt = getSystemPrompt(mode);
+
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
             headers: {
-                Authorization: `Bearer ${LOVABLE_API_KEY}`,
+                Authorization: `Bearer ${OPENAI_API_KEY}`,
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                model: "google/gemini-3-flash-preview",
+                model: "gpt-4-turbo-preview",
                 messages: [
                     {
                         role: "system",
-                        content: `You are a friendly AI assistant for MACHOBB dating app.
-Be helpful, warm, and supportive. Keep responses clear and concise.
-Use emojis occasionally to be friendly. Be inclusive and sex-positive.`
+                        content: systemPrompt
                     },
                     ...messages,
                 ],
                 stream: true,
+                max_tokens: 1024,
+                temperature: 0.7,
             }),
         });
 
@@ -54,18 +52,23 @@ Use emojis occasionally to be friendly. Be inclusive and sex-positive.`
                     {status: 402, headers: {...corsHeaders, "Content-Type": "application/json"}}
                 );
             }
-            const t = await response.text();
-            console.error("AI gateway error:", response.status, t);
-            throw new Error("AI gateway error");
+            const errorText = await response.text();
+            console.error("OpenAI API error:", response.status, errorText);
+            throw new Error("OpenAI API error");
         }
 
         return new Response(response.body, {
-            headers: {...corsHeaders, "Content-Type": "text/event-stream"},
+            headers: {
+                ...corsHeaders,
+                "Content-Type": "text/event-stream",
+                "Cache-Control": "no-cache",
+                "X-Accel-Buffering": "no",
+            },
         });
-    } catch (e) {
-        console.error("Stream error:", e);
+    } catch (error) {
+        console.error("Stream error:", error);
         return new Response(
-            JSON.stringify({error: e instanceof Error ? e.message : "Unknown error"}),
+            JSON.stringify({error: error instanceof Error ? error.message : "Unknown error"}),
             {status: 500, headers: {...corsHeaders, "Content-Type": "application/json"}}
         );
     }

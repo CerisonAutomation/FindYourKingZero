@@ -248,7 +248,7 @@ export default function HomePage() {
                         <span
                             className="block text-[7px] font-black tracking-[0.22em] uppercase mt-0.5"
                             style={{color: 'hsl(var(--primary))'}}
-                        >by MACHOBB</span>
+                        >by FIND YOUR KING</span>
                     </div>
                 </div>
 
@@ -1066,7 +1066,7 @@ export default function HomePage() {
                                 <div>
                                     <p className="text-[12px] font-black tracking-[-0.01em]">FIND YOUR KING</p>
                                     <p className="text-[7px] font-black tracking-[0.22em] uppercase text-muted-foreground mt-0.5">by
-                                        MACHOBB</p>
+                                        FIND YOUR KING</p>
                                 </div>
                             </div>
                             <p className="text-[11px] text-muted-foreground max-w-[220px] leading-relaxed">
@@ -1124,7 +1124,7 @@ export default function HomePage() {
                         className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6"
                         style={{borderTop: '1px solid hsl(var(--border) / 0.5)'}}
                     >
-                        <p className="text-[10px] text-muted-foreground/40">© 2026 MACHOBB · Find Your King · All rights
+                        <p className="text-[10px] text-muted-foreground/40">© 2026 FIND YOUR KING · Find Your King · All rights
                             reserved</p>
                         <div
                             className="px-3 py-1 text-[9px] font-black tracking-[0.14em] uppercase"

@@ -64,7 +64,7 @@ export function PWAInstallBanner() {
 
                         {/* Text */}
                         <div className="flex-1 min-w-0">
-                            <p className="text-xs font-bold text-foreground truncate">Add MACHOBB to Home Screen</p>
+                            <p className="text-xs font-bold text-foreground truncate">Add FIND YOUR KING to Home Screen</p>
                             <p className="text-[10px] text-muted-foreground">
                                 {isIOS ? 'Tap Share → Add to Home Screen' : 'Install for the full experience'}
                             </p>
