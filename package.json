@@ -106,6 +106,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
+    "@faker-js/faker": "^10.3.0",
     "@playwright/test": "^1.40.0",
     "@storybook/addon-essentials": "^7.6.0",
     "@storybook/addon-interactions": "^7.6.0",

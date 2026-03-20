@@ -47,6 +47,16 @@ const ConnectPage = () => {
         e.preventDefault();
         setIsLoading(true);
         try {
+            // Mock authentication for development
+            if (import.meta.env.VITE_MOCK_API === 'true') {
+                toast({
+                    title: "Magic Link Sent",
+                    description: "Check your email for the magic link (mock mode)",
+                });
+                setMagicLinkSent(true);
+                return;
+            }
+
             const {error} = await supabase.auth.signInWithOtp({
                 email,
                 options: {emailRedirectTo: `${window.location.origin}/app`},
@@ -70,6 +80,14 @@ const ConnectPage = () => {
                     toast({title: "Passwords don't match", variant: 'destructive'});
                     return;
                 }
+
+                // Mock authentication for development
+                if (import.meta.env.VITE_MOCK_API === 'true') {
+                    toast({title: 'Welcome to the kingdom!', description: 'Account created successfully (mock mode)'});
+                    window.location.href = '/app';
+                    return;
+                }
+
                 const {error} = await supabase.auth.signUp({
                     email,
                     password,
@@ -78,6 +96,14 @@ const ConnectPage = () => {
                 if (error) throw error;
                 toast({title: 'Welcome to the kingdom!', description: 'Check your email to verify your account.'});
             } else {
+
+                // Mock authentication for development
+                if (import.meta.env.VITE_MOCK_API === 'true') {
+                    toast({title: 'Welcome back, King!', description: 'Signed in successfully (mock mode)'});
+                    window.location.href = '/app';
+                    return;
+                }
+
                 const {error} = await supabase.auth.signInWithPassword({email, password});
                 if (error) throw error;
                 toast({title: 'Welcome back, King!'});
