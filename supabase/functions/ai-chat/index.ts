@@ -6,9 +6,9 @@ const corsHeaders = {
 };
 
 const SYSTEM_PROMPTS: Record<string, string> = {
-    companion: `You are a warm, empathetic AI companion for MACHOBB, a premium gay dating and social app. Be supportive, friendly, and helpful. Keep responses concise and conversational. Be sex-positive and inclusive.`,
+    companion: `You are a warm, empathetic AI companion for Find Your King, a premium gay dating and social app. Be supportive, friendly, and helpful. Keep responses concise and conversational. Be sex-positive and inclusive.`,
 
-    coach: `You are a dating coach AI for gay men on MACHOBB. Give confident, actionable advice about dating, attraction, and relationships. Be direct, positive, and encouraging. Keep it real.`,
+    coach: `You are a dating coach AI for gay men on Find Your King. Give confident, actionable advice about dating, attraction, and relationships. Be direct, positive, and encouraging. Keep it real.`,
 
     safety: `You are a safety advisor AI for a gay dating app. Help users stay safe, recognize red flags, and make smart decisions when meeting people online and in person. Prioritize harm prevention.`,
 
@@ -16,7 +16,7 @@ const SYSTEM_PROMPTS: Record<string, string> = {
 
     quick_reply: `Generate exactly 3 short, smart reply suggestions for the given dating app conversation. Each must be under 60 characters. Be flirty, engaging, and natural. Return ONLY a JSON array of 3 strings, nothing else. Example: ["Hey cutie!", "You seem interesting", "Want to grab coffee?"]`,
 
-    chat: `You are a friendly and flirty AI assistant for MACHOBB, a premium gay dating and social app. Be warm, supportive, inclusive, and sex-positive. Use casual, friendly language. Keep responses concise but helpful.`,
+    chat: `You are a friendly and flirty AI assistant for Find Your King, a premium gay dating and social app. Be warm, supportive, inclusive, and sex-positive. Use casual, friendly language. Keep responses concise but helpful.`,
 
     auto_reply: `You are generating a smart auto-reply for a dating app message. Based on the conversation context, generate a brief, flirty, and engaging response. Keep it under 100 characters. Be playful but respectful.`,
 
@@ -32,19 +32,19 @@ serve(async (req) => {
         const body = await req.json();
         const {messages = [], mode = 'chat', context, stream: wantStream = false} = body;
 
-        const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-        if (!LOVABLE_API_KEY) {
-            throw new Error("LOVABLE_API_KEY is not configured");
+        const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
+        if (!OPENAI_API_KEY) {
+            throw new Error("OPENAI_API_KEY is not configured");
         }
 
         const systemPrompt = (mode === 'chat' && context)
             ? context
             : (SYSTEM_PROMPTS[mode] || SYSTEM_PROMPTS.chat);
 
-        console.log(`AI Chat — mode: ${mode}, stream: ${wantStream}, messages: ${messages.length}`);
+        console.log(`Find Your King AI Chat — mode: ${mode}, stream: ${wantStream}, messages: ${messages.length}`);
 
         const payload = {
-            model: "google/gemini-2.5-flash",
+            model: "gpt-4-turbo-preview",
             messages: [
                 {role: "system", content: systemPrompt},
                 ...messages,
@@ -54,10 +54,10 @@ serve(async (req) => {
             temperature: mode === 'icebreaker' || mode === 'quick_reply' ? 0.9 : 0.7,
         };
 
-        const upstream = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        const upstream = await fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
             headers: {
-                Authorization: `Bearer ${LOVABLE_API_KEY}`,
+                Authorization: `Bearer ${OPENAI_API_KEY}`,
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(payload),
@@ -65,7 +65,7 @@ serve(async (req) => {
 
         if (!upstream.ok) {
             const errorText = await upstream.text();
-            console.error("AI gateway error:", upstream.status, errorText);
+            console.error("OpenAI API error:", upstream.status, errorText);
 
             if (upstream.status === 429) {
                 return new Response(
@@ -79,7 +79,7 @@ serve(async (req) => {
                     {status: 402, headers: {...corsHeaders, "Content-Type": "application/json"}}
                 );
             }
-            throw new Error(`AI gateway error: ${upstream.status}`);
+            throw new Error(`OpenAI API error: ${upstream.status}`);
         }
 
         // ── Streaming passthrough ────────────────────────────────
@@ -117,14 +117,14 @@ serve(async (req) => {
             }
         }
 
-        console.log("AI response generated successfully");
+        console.log("Find Your King AI response generated successfully");
         return new Response(
             JSON.stringify({content, mode}),
             {headers: {...corsHeaders, "Content-Type": "application/json"}}
         );
 
     } catch (error) {
-        console.error("AI chat error:", error);
+        console.error("Find Your King AI chat error:", error);
         return new Response(
             JSON.stringify({error: error instanceof Error ? error.message : "Unknown error"}),
             {status: 500, headers: {...corsHeaders, "Content-Type": "application/json"}}
