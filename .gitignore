@@ -1,0 +1,511 @@
+# =====================================================
+# OMNI-PERFECT ENTERPRISE .GITIGNORE
+# Comprehensive ignore patterns for maximum security and organization
+
+# =====================================================
+# DEPENDENCIES AND BUILD ARTIFACTS
+# =====================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build outputs
+dist/
+build/
+.next/
+.nuxt/
+.vuepress/dist/
+.server/
+out/
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+.nyc_output/
+
+# Dependency directories
+jspm_packages/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+
+# Nuxt.js build / generate output
+.nuxt
+
+# Storybook build outputs
+storybook-static/
+
+# Temporary folders
+tmp/
+temp/
+
+# =====================================================
+# ENVIRONMENT AND CONFIGURATION
+# =====================================================
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+# Configuration files with secrets
+config/secrets/
+config/production/
+config/staging/
+
+# =====================================================
+# IDE AND EDITOR FILES
+# =====================================================
+# VSCode
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# =====================================================
+# OPERATING SYSTEM FILES
+# =====================================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# =====================================================
+# LOGS AND TEMPORARY FILES
+# =====================================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# =====================================================
+# TESTING AND COVERAGE
+# =====================================================
+coverage/
+*.lcov
+.nyc_output/
+junit.xml
+test-results/
+playwright-report/
+test-results/
+visual-diff/
+a11y-report/
+bundle-analysis/
+
+# =====================================================
+# DATABASE AND BACKUPS
+# =====================================================
+*.sqlite
+*.sqlite3
+*.db
+*.backup
+*.bak
+*.sql.gz
+database/
+backups/
+
+# =====================================================
+# SECURITY AND SECRETS
+# =====================================================
+# Private keys
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Certificates
+*.cert
+*.crt
+*.ca-bundle
+
+# SSH keys
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+
+# AWS credentials
+.aws/
+.aws/credentials
+.aws/config
+
+# Service account files
+*.json
+!package.json
+!package-lock.json
+
+# =====================================================
+# MEDIA AND ASSETS
+# =====================================================
+# Images (keep source, ignore processed)
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.ico
+!src/assets/
+!public/icons/
+!public/favicon.ico
+
+# Videos
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.flv
+*.webm
+
+# Audio
+*.mp3
+*.wav
+*.flac
+*.aac
+
+# Documents
+*.pdf
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.ppt
+*.pptx
+
+# =====================================================
+# DOCKER AND CONTAINERS
+# =====================================================
+.dockerignore
+docker-compose.override.yml
+docker-compose.local.yml
+.docker/
+
+# =====================================================
+# KUBERNETES
+# =====================================================
+kubeconfig*
+*.kubeconfig
+k8s/secrets/
+k8s/local/
+
+# =====================================================
+# MONITORING AND ANALYTICS
+# =====================================================
+# Monitoring data
+prometheus_data/
+grafana_data/
+elasticsearch_data/
+logstash_data/
+kibana_data/
+
+# Analytics and tracking
+analytics/
+tracking/
+metrics/
+
+# =====================================================
+# CLOUD PROVIDER FILES
+# =====================================================
+# AWS
+.aws/
+.s3/
+
+# Google Cloud
+.gcloud/
+gsutil_path
+
+# Azure
+.azure/
+
+# DigitalOcean
+.digitalocean/
+
+# =====================================================
+# DEVELOPMENT TOOLS
+# =====================================================
+# Local development
+.local/
+dev/
+development/
+
+# Experimental features
+experimental/
+beta/
+alpha/
+
+# Archived files
+archive/
+archived/
+old/
+deprecated/
+
+# =====================================================
+# GENERATED FILES
+# =====================================================
+# Auto-generated documentation
+docs/generated/
+api-docs/
+swagger/
+
+# Auto-generated types
+types/generated/
+*.d.ts.map
+
+# Auto-generated configs
+*.config.js
+*.config.ts
+
+# =====================================================
+# USER-SPECIFIC FILES
+# =====================================================
+# User profiles
+*.user
+*.profile
+*.user.js
+*.user.ts
+
+# Personal notes
+notes/
+todo/
+scratch/
+
+# =====================================================
+# PERFORMANCE AND PROFILING
+# =====================================================
+# Profiling data
+*.prof
+*.profile
+flamegraph/
+heapdump/
+
+# Performance reports
+performance/
+benchmarks/
+load-tests/
+
+# =====================================================
+# LEGACY AND DEPRECATED
+# =====================================================
+# Old build systems
+Gruntfile.js
+Gulpfile.js
+webpack.config.js
+webpack.config.ts
+.babelrc
+.browserslistrc
+
+# Old dependency managers
+bower_components/
+.component/
+
+# =====================================================
+# MISCELLANEOUS
+# =====================================================
+# Lock files (keep package-lock.json)
+yarn.lock
+pnpm-lock.yaml
+
+# Temporary editor files
+.#*
+.~*
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store?
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# =====================================================
+# CUSTOM PATTERNS FOR THIS PROJECT
+# =====================================================
+# Supabase local
+.supabase/
+supabase/.branches/
+supabase/.temp/
+
+# Attached assets
+attached_assets/
+uploads/
+user-content/
+
+# Test assets
+test-assets/
+test-data/
+
+# Build artifacts
+.eslintcache
+.stylelintcache
+.parcel-cache
+
+# Storybook
+.out
+.storybook-out
+
+# Temporary development files
+.tmp/
+.temp/
+.work/
+
+# Local configuration overrides
+config/local.*
+local.*
+*.local.*
+
+# =====================================================
+# ALLOWED EXCEPTIONS (IMPORTANT FILES TO KEEP)
+# =====================================================
+# Keep essential configuration files
+!.env.example
+!.env.production.example
+!.gitignore
+!.dockerignore
+!.eslintrc.*
+!.prettierrc.*
+!.editorconfig
+!.npmrc
+!.yarnrc
+!.nvmrc
+!.babelrc.*
+!.postcssrc.*
+!.tailwindrc.*
+!.tsconfig.*
+!.vite.config.*
+
+# Keep documentation
+!README.md
+!CHANGELOG.md
+!LICENSE
+!CONTRIBUTING.md
+!docs/
+!.github/
+
+# Keep deployment files
+!Dockerfile*
+!docker-compose*.yml
+!k8s/
+!.vercel
+!.netlify
+
+# Keep scripts and tools
+!scripts/
+!tools/
+!bin/

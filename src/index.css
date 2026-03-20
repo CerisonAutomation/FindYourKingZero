@@ -1,0 +1,448 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MACHOBB REGAL × LUXURY — OBSIDIAN NEBULA WITH GOLD × CRIMSON × ROYAL BLUES
+   Maximum fidelity. Pixel-perfect responsive. Cinematic animations.
+═══════════════════════════════════════════════════════════════════════════ */
+
+@layer base {
+    :root {
+        /* ── LUXURY COLOR PALETTE — Regal reds, golds, royal blues, obsidian ── */
+
+        /* Canvas — obsidian nebula, not grey */
+        --background: 220 18% 2%;
+        --foreground: 210 15% 97%;
+
+        /* Surface hierarchy — layered obsidian depth */
+        --surface-0: 220 18% 2%;
+        --surface-1: 220 16% 5%;
+        --surface-2: 220 14% 8%;
+        --surface-3: 220 12% 11%;
+        --surface-4: 220 11% 14%;
+
+        --card: 220 16% 5%;
+        --card-foreground: 210 15% 97%;
+        --popover: 220 17% 3%;
+        --popover-foreground: 210 15% 97%;
+
+        /* Primary — living gold shimmer (luxury) */
+        --primary: 42 98% 56%;
+        --primary-foreground: 220 18% 2%;
+        --primary-glow: 42 100% 62%;
+        --primary-dim: 42 80% 40%;
+
+        /* Accent — royal electric blue */
+        --accent: 214 85% 58%;
+        --accent-foreground: 220 18% 2%;
+        --accent-glow: 214 100% 70%;
+
+        /* Secondary / muted — cool obsidian tones */
+        --secondary: 220 14% 8%;
+        --secondary-foreground: 210 12% 80%;
+        --muted: 220 13% 10%;
+        --muted-foreground: 220 8% 45%;
+
+        /* Destructive — bold crimson */
+        --destructive: 0 92% 54%;
+        --destructive-foreground: 0 0% 100%;
+
+        /* Borders — near-invisible separation */
+        --border: 220 12% 11%;
+        --border-subtle: 220 12% 8%;
+        --border-strong: 220 14% 16%;
+        --input: 220 14% 7%;
+        --ring: 42 98% 56%;
+
+        /* ZERO RADIUS — pure sharp geometry */
+        --radius: 0px;
+        --radius-sm: 0px;
+        --radius-lg: 0px;
+        --radius-xl: 0px;
+
+        /* LUXURY PALETTE — Reds, Golds, Royals, Obsidian */
+        --red: 0 92% 54%;
+        --gold: 42 98% 56%;
+        --royal: 214 85% 58%;
+        --obsidian: 220 18% 2%;
+        --crimson: 0 85% 48%;
+        --amber: 30 98% 54%;
+
+        --emerald: 160 72% 40%;
+        --cobalt: 214 100% 58%;
+        --violet: 258 82% 62%;
+        --rose: 340 85% 54%;
+        --coral: 4 88% 54%;
+        --cyan: 188 100% 50%;
+        --steel: 210 14% 60%;
+
+        /* Holographic — regal shimmer */
+        --holo-1: 42 98% 56%;
+        --holo-2: 214 85% 58%;
+        --holo-3: 0 92% 54%;
+
+        /* Gradients — luxury, directional, controlled */
+        --gradient-primary: linear-gradient(135deg, hsl(42 98% 56%), hsl(30 98% 54%));
+        --gradient-primary-v: linear-gradient(180deg, hsl(42 98% 56%), hsl(30 98% 54%));
+        --gradient-surface: linear-gradient(160deg, hsl(220 16% 6%), hsl(220 18% 3%));
+        --gradient-card: linear-gradient(180deg, hsl(220 16% 6%), hsl(220 18% 3%));
+        --gradient-hero: linear-gradient(160deg, hsl(42 98% 56% / 0.12) 0%, hsl(214 85% 58% / 0.08) 50%, transparent 100%);
+        --gradient-gold: linear-gradient(135deg, hsl(42 98% 56%), hsl(30 98% 54%));
+        --gradient-red: linear-gradient(135deg, hsl(0 92% 54%), hsl(0 85% 48%));
+        --gradient-royal: linear-gradient(135deg, hsl(214 85% 58%), hsl(258 82% 62%));
+        --gradient-holo: linear-gradient(135deg, hsl(42 98% 56%), hsl(214 85% 58%), hsl(0 92% 54%));
+        --gradient-luxury: linear-gradient(135deg, hsl(42 98% 56%) 0%, hsl(214 85% 58%) 50%, hsl(0 92% 54%) 100%);
+        --gradient-king: linear-gradient(135deg, hsl(214 85% 58%) 0%, hsl(0 92% 54%) 50%, hsl(42 98% 56%) 100%);
+        --gradient-depth: linear-gradient(180deg, transparent 0%, hsl(220 18% 2% / 0.97) 100%);
+
+        /* Glass — surgical precision */
+        --glass-bg: 220 16% 100% / 0.025;
+        --glass-border: 220 16% 100% / 0.06;
+        --glass-hover: 220 16% 100% / 0.045;
+        --glass-heavy: 220 18% 2%  / 0.94;
+        --glass-card: 220 16% 5%  / 0.88;
+
+        /* Shadow system — deep and directional */
+        --shadow-xs: 0 1px 3px hsl(0 0% 0% / 0.65), 0 0 0 1px hsl(0 0% 100% / 0.02);
+        --shadow-sm: 0 2px 8px hsl(0 0% 0% / 0.7), 0 0 0 1px hsl(0 0% 100% / 0.025);
+        --shadow-md: 0 4px 18px hsl(0 0% 0% / 0.8), 0 0 0 1px hsl(0 0% 100% / 0.03);
+        --shadow-lg: 0 12px 40px hsl(0 0% 0% / 0.88), 0 0 0 1px hsl(0 0% 100% / 0.04);
+        --shadow-card: 0 2px 10px hsl(0 0% 0% / 0.55), 0 0 0 1px hsl(220 12% 100% / 0.035);
+        --shadow-float: 0 10px 30px hsl(0 0% 0% / 0.7), 0 0 0 1px hsl(0 0% 100% / 0.05);
+        --shadow-glow: 0 0 28px hsl(214 85% 58% / 0.32), 0 0 56px hsl(214 85% 58% / 0.1);
+        --shadow-glow-sm: 0 0 12px hsl(214 85% 58% / 0.22);
+        --shadow-glow-gold: 0 0 24px hsl(42 98% 56% / 0.38), 0 0 48px hsl(42 98% 56% / 0.12);
+        --shadow-glow-red: 0 0 24px hsl(0 92% 54% / 0.38), 0 0 48px hsl(0 92% 54% / 0.12);
+        --shadow-glow-royal: 0 0 28px hsl(214 85% 58% / 0.42), 0 0 56px hsl(214 85% 58% / 0.15);
+        --shadow-glow-king: 0 0 36px hsl(214 85% 58% / 0.42), 0 0 72px hsl(42 98% 56% / 0.16);
+        --shadow-inset: inset 0 1px 0 hsl(0 0% 100% / 0.055), inset 0 -1px 0 hsl(0 0% 0% / 0.35);
+
+        /* Sidebar */
+        --sidebar-background: 220 18% 1%;
+        --sidebar-foreground: 210 15% 97%;
+        --sidebar-primary: 42 98% 56%;
+        --sidebar-primary-foreground: 220 18% 2%;
+        --sidebar-accent: 220 14% 7%;
+        --sidebar-accent-foreground: 210 15% 97%;
+        --sidebar-border: 220 12% 9%;
+        --sidebar-ring: 42 98% 56%;
+    }
+
+    .dark {
+        --background: 220 18% 2%;
+        --foreground: 210 15% 97%;
+        --primary: 42 98% 56%;
+        --accent: 214 85% 58%;
+        --destructive: 0 92% 54%;
+    }
+}
+
+/* ── Base resets ─────────────────────────────────────────── */
+@layer base {
+    *, *::before, *::after {
+        @apply border-border;
+        box-sizing: border-box;
+    }
+
+    html {
+        @apply scroll-smooth;
+        -webkit-tap-highlight-color: transparent;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-text-size-adjust: 100%;
+        font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "tnum" 1;
+    }
+
+    html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        overscroll-behavior: none;
+        overscroll-behavior-y: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    body {
+        font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+        @apply bg-background text-foreground antialiased;
+        font-size: clamp(13px, 1.4vw, 16px);
+        line-height: 1.5;
+        background-color: hsl(220 18% 2%);
+        background-image: radial-gradient(ellipse 90% 50% at 15% -5%, hsl(214 85% 58% / 0.07) 0%, transparent 58%),
+        radial-gradient(ellipse 70% 45% at 85% 105%, hsl(42 98% 56% / 0.055) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 70% at 50% 50%, hsl(0 92% 54% / 0.02) 0%, transparent 65%);
+        background-attachment: fixed;
+    }
+
+    #root {
+        width: 100%;
+        /* 100dvh = dynamic viewport height — reacts to browser chrome show/hide */
+        height: 100dvh;
+        max-height: 100dvh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        /* Prevent iOS rubber-band bounce from bleeding outside shell */
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        contain: strict;
+    }
+
+    /* Invisible scrollbar */
+    ::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+    }
+
+    * {
+        scrollbar-width: none;
+    }
+
+    ::selection {
+        background: hsl(var(--primary) / 0.28);
+        color: hsl(var(--background));
+    }
+}
+
+/* ── Typography ──────────────────────────────────────────── */
+@layer base {
+    h1, h2, h3, h4, h5, h6 {
+        @apply font-semibold tracking-tight;
+    }
+
+    h1 {
+        @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl;
+    }
+
+    h2 {
+        @apply text-2xl sm:text-3xl md:text-4xl lg:text-5xl;
+    }
+
+    h3 {
+        @apply text-xl sm:text-2xl md:text-3xl lg:text-4xl;
+    }
+
+    h4 {
+        @apply text-lg sm:text-xl md:text-2xl;
+    }
+
+    h5 {
+        @apply text-base sm:text-lg md:text-xl;
+    }
+
+    h6 {
+        @apply text-sm sm:text-base md:text-lg;
+    }
+
+    p {
+        @apply text-sm sm:text-base md:text-base leading-relaxed;
+    }
+
+    a {
+        @apply transition-colors duration-120;
+    }
+
+    button {
+        @apply transition-all duration-120;
+    }
+}
+
+/* ── Responsive Utility Classes ──────────────────────────── */
+@layer components {
+    .responsive-container {
+        @apply w-full h-full max-w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-10;
+    }
+
+    .responsive-grid {
+        @apply grid gap-4 sm:gap-6 md:gap-8 lg:gap-10;
+    }
+
+    .responsive-text {
+        @apply text-xs sm:text-sm md:text-base lg:text-lg;
+    }
+
+    /* Luxury shimmer animations */
+    .shimmer-gold {
+        @apply animate-shimmer-gold;
+        background: linear-gradient(90deg, transparent, hsl(42 98% 56% / 0.3), transparent);
+        background-size: 200% 100%;
+    }
+
+    .pulse-luxury {
+        @apply animate-pulse-luxury;
+    }
+
+    .float-slow {
+        @apply animate-float-slow;
+    }
+
+    /* Glass effect — surgical precision */
+    .glass-light {
+        @apply bg-white/5 backdrop-blur-md border border-white/10;
+    }
+
+    .glass-heavy {
+        @apply bg-black/40 backdrop-blur-xl border border-white/15;
+    }
+
+    /* Glow effects — luxury premium */
+    .glow-gold {
+        @apply shadow-glow-gold;
+    }
+
+    .glow-red {
+        @apply shadow-glow-red;
+    }
+
+    .glow-royal {
+        @apply shadow-glow-royal;
+    }
+
+    /* Responsive padding/margin */
+    .p-responsive {
+        @apply p-4 sm:p-6 md:p-8 lg:p-10;
+    }
+
+    .m-responsive {
+        @apply m-4 sm:m-6 md:m-8 lg:m-10;
+    }
+
+    /* Pixel-perfect centering */
+    .center-flex {
+        @apply flex items-center justify-center;
+    }
+
+    .center-grid {
+        @apply grid place-items-center;
+    }
+}
+
+/* ── Responsive images ──────────────────────────────────── */
+@layer base {
+    img {
+        @apply max-w-full h-auto block;
+    }
+
+    picture {
+        @apply block w-full h-auto;
+    }
+
+    video {
+        @apply max-w-full h-auto block;
+    }
+}
+
+/* ── Editorial utility classes ──────────────────────────── */
+@layer utilities {
+    /* Gradient text — luxury metallic */
+    .text-gradient {
+        background: var(--gradient-gold);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .text-gradient-king {
+        background: var(--gradient-king);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .text-gradient-luxury {
+        background: var(--gradient-luxury);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Eyebrow — small overline label */
+    .eyebrow {
+        @apply text-[9px] font-black tracking-[0.28em] uppercase;
+        color: hsl(var(--muted-foreground));
+    }
+
+    /* Numerical display — tabular figures */
+    .num-display {
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: "tnum" 1;
+    }
+
+    /* Holographic border — animated gradient ring */
+    .holo-border {
+        position: relative;
+    }
+
+    .holo-border::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        padding: 1px;
+        background: var(--gradient-king);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        animation: holo-shift 4s ease infinite;
+        background-size: 200% 200%;
+    }
+
+    /* Noise texture overlay */
+    .noise-overlay::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.025;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+        background-repeat: repeat;
+        background-size: 128px 128px;
+    }
+
+    /* Marquee continuous scroll */
+    .marquee-track {
+        display: flex;
+        gap: 0;
+        animation: marquee-scroll 28s linear infinite;
+        will-change: transform;
+    }
+
+    /* Ticker line separator */
+    .ticker-sep {
+        @apply w-[1px] h-4 bg-border mx-5 shrink-0 self-center;
+    }
+
+    /* Sharp card base */
+    .card-sharp {
+        background: hsl(var(--surface-1));
+        border: 1px solid hsl(var(--border));
+        box-shadow: var(--shadow-card), var(--shadow-inset);
+    }
+}
+
+@keyframes marquee-scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+/* ── Print styles ────────────────────────────────────────── */
+@media print {
+    body {
+        @apply bg-white text-black;
+    }
+
+    * {
+        @apply shadow-none !important;
+    }
+}
