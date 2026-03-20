@@ -96,7 +96,7 @@ export const AIAssistant = ({isOpen, onClose}: AIAssistantProps) => {
                                     <Bot className="w-5 h-5 text-primary"/>
                                 </div>
                                 <div>
-                                    <h3 className="font-semibold">MACHOBB AI</h3>
+                                    <h3 className="font-semibold">Find Your King AI</h3>
                                     <p className="text-xs text-muted-foreground">Your dating assistant</p>
                                 </div>
                             </div>

@@ -1,5 +1,3 @@
-import {serve} from "https://deno.land/std@0.168.0/http/server.ts";
-
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
@@ -23,7 +21,7 @@ const SYSTEM_PROMPTS: Record<string, string> = {
     bio_suggestions: `You help users write compelling dating profile bios. Based on their interests and what they're looking for, suggest a bio. Keep it under 150 characters. Be authentic and engaging.`,
 };
 
-serve(async (req) => {
+Deno.serve(async (req) => {
     if (req.method === 'OPTIONS') {
         return new Response(null, {headers: corsHeaders});
     }
