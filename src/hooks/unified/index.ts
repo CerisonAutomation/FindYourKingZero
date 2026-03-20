@@ -12,19 +12,30 @@
  */
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// DATING HOOK - Consolidates useP2PDating, useProductionDating, use-hybrid-p2p-dating
+// CORE HOOKS (Simplified from Zenith Connect inspiration)
 // ═══════════════════════════════════════════════════════════════════════════════
-export { default as useDating, type DatingProfile, type DatingMessage, type DatingCall, type DatingRoom, type DiscoverySettings, type DatingState } from './useDating';
+export { useP2PChat, useP2PChatWithProfile, useMultiP2PChat } from '../useP2PChat'
+export { useLocation, useTravelMode } from '../useLocation'
+export { 
+  useAI, 
+  useIcebreakers, 
+  useBioOptimizer, 
+  useModeration, 
+  useCompatibilityAnalysis, 
+  useConversationHelp, 
+  useAIAssistant 
+} from '../useAI'
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// BACKWARD COMPATIBILITY ALIASES
+// LEGACY DATING HOOK (Being replaced by useP2PChat)
 // ═══════════════════════════════════════════════════════════════════════════════
+export { default as useDating, type DatingProfile, type DatingMessage, type DatingCall, type DatingRoom, type DiscoverySettings, type DatingState } from './useDating';
 export { default as useP2PDating } from './useDating';
 export { default as useProductionDating } from './useDating';
 export { default as useHybridDating } from './useDating';
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// RE-EXPORT EXISTING HOOKS (for gradual migration)
+// ESSENTIAL SYSTEM HOOKS
 // ═══════════════════════════════════════════════════════════════════════════════
 export { useAuth } from '../useAuth';
 export { useToast } from '../use-toast';
@@ -53,7 +64,7 @@ export { useSafetyFeatures } from '../useSafetyFeatures';
 export { useReports } from '../useReports';
 export { useGDPR } from '../useGDPR';
 export { useSubscription } from '../useSubscription';
-export { useSubscriptionTier as UserSubscription } from '../useSubscriptionTier';
+export { useMySubscription, useMyLevel, useAwardXP } from '../useSubscriptionTier';
 export { usePayments } from '../usePayments';
 export { usePresence } from '../usePresence';
 export { useConsent } from '../useConsent';
@@ -66,17 +77,10 @@ export { useMapMarkers } from '../useMapMarkers';
 export { useRealtimeMap } from '../useRealtimeMap';
 export { useRealtimeLocationTracking } from '../useRealtimeLocationTracking';
 
-// AI hooks
-export { useAI } from '../useAI';
-
-// Audio/Voice hooks
+// LEGACY AI HOOKS (Being replaced by simplified useAI)
 export { useAudioFeatures } from '../useAudioFeatures';
 export { useOmniAudio } from '../useOmniAudio';
-
-// Map hooks
 export { useOmniMapMarkers } from '../useOmniMapMarkers';
-
-// Specialized hooks
 export { useOmniGameChanger } from '../useOmniGameChanger';
 export { useOmniSOS } from '../useOmniSOS';
 export { useMeateorPatterns } from '../useMeateorPatterns';
