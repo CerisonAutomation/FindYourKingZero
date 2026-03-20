@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {Link, useSearchParams} from 'react-router-dom';
+import {Link, useSearchParams, useNavigate} from 'react-router-dom';
 import {AnimatePresence, motion} from 'framer-motion';
 import {
     ArrowRight,
@@ -15,6 +15,7 @@ import {
     Sparkles,
     Trophy,
     Zap,
+    SkipForward,
 } from 'lucide-react';
 import {Input} from '@/components/ui/input';
 import {supabase} from '@/integrations/supabase/client';
@@ -31,6 +32,7 @@ const PERKS = [
 // ── Main ────────────────────────────────────────────────────────
 const ConnectPage = () => {
     const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
     const isRegisterMode = searchParams.get('mode') === 'register';
 
     const [email, setEmail] = useState('');
@@ -42,6 +44,14 @@ const ConnectPage = () => {
     const [isMagicLink, setIsMagicLink] = useState(false);
     const [magicLinkSent, setMagicLinkSent] = useState(false);
     const {toast} = useToast();
+
+    const handleSkipAuth = () => {
+        toast({
+            title: 'Skipped Authentication',
+            description: 'Continuing without sign in.',
+        });
+        navigate('/app/grid');
+    };
 
     const handleMagicLink = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -454,6 +464,18 @@ const ConnectPage = () => {
                                     {isRegister
                                         ? 'Already have an account? Sign in →'
                                         : "Don't have an account? Join us →"}
+                                </button>
+                            </div>
+
+                            {/* Skip Button */}
+                            <div className="mt-4 text-center">
+                                <button
+                                    onClick={handleSkipAuth}
+                                    className="text-[11px] text-muted-foreground/60 hover:text-muted-foreground transition-colors flex items-center gap-1 mx-auto"
+                                    disabled={isLoading}
+                                >
+                                    <SkipForward className="w-3 h-3" />
+                                    Skip for now
                                 </button>
                             </div>
 

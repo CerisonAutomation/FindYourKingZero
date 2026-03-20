@@ -587,3 +587,37 @@ export const useAIStream = () => {
         streamResponse,
     };
 };
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// BACKWARD COMPATIBILITY EXPORTS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * @deprecated Use useConversationStarters instead
+ */
+export const useIcebreakers = useConversationStarters;
+
+/**
+ * @deprecated Use useBioGeneration instead
+ */
+export const useBioOptimizer = useBioGeneration;
+
+/**
+ * @deprecated Use useContentSafety instead
+ */
+export const useModeration = useContentSafety;
+
+/**
+ * @deprecated Use useProfileAnalysis instead
+ */
+export const useCompatibilityAnalysis = useProfileAnalysis;
+
+/**
+ * @deprecated Use useConversationStarters instead
+ */
+export const useConversationHelp = useConversationStarters;
+
+/**
+ * @deprecated Use useAIChat instead
+ */
+export const useAIAssistant = useAIChat;

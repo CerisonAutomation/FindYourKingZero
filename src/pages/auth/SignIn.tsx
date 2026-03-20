@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import {motion} from 'framer-motion';
-import {ArrowRight, ChevronRight, Crown, Eye, EyeOff, Lock, Mail, AlertCircle} from 'lucide-react';
+import {ArrowRight, ChevronRight, Crown, Eye, EyeOff, Lock, Mail, AlertCircle, SkipForward} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
@@ -63,6 +63,14 @@ export default function SignIn() {
         } finally {
             setIsSubmitting(false);
         }
+    };
+
+    const handleSkipAuth = () => {
+        toast({
+            title: 'Skipped Authentication',
+            description: 'Continuing without sign in.',
+        });
+        navigate('/app/grid');
     };
 
     // Don't render until auth is initialized
@@ -266,6 +274,20 @@ export default function SignIn() {
                             Create Account <ChevronRight className="inline w-3 h-3"/>
                         </Link>
                     </p>
+                </div>
+
+                {/* Skip Button */}
+                <div className="mt-6 text-center">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleSkipAuth}
+                        className="text-[11px] text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+                        disabled={isLoading || isSubmitting}
+                    >
+                        <SkipForward className="w-3 h-3 mr-1" />
+                        Skip for now
+                    </Button>
                 </div>
 
                 {/* Trust signals */}

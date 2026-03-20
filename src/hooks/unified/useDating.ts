@@ -22,7 +22,7 @@
  * @license Enterprise
  */
 
-import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 // @ts-ignore - trystero types not available
 import { selfId, joinRoom as joinTrysteroRoom } from 'trystero';
 import * as Y from 'yjs';
@@ -467,7 +467,7 @@ export function useDating() {
             : [profile.relationship_goals || 'dating'],
           position: 'flexible',
           relationshipStatus: 'single',
-          hivStatus: profile.hiv_status,
+          hivStatus: profile.hiv_status as DatingProfile['hivStatus'],
           pronouns: 'he/him',
           lastSeen: new Date().toISOString(),
         };
@@ -592,17 +592,17 @@ export function useDating() {
               longitude: profile.longitude!,
               timestamp: new Date(profile.location_updated_at).getTime(),
             },
-            isOnline: profile.is_online,
-            isVerified: profile.age_verified || false,
-            membershipTier: 'free',
-            interests: profile.interests || [],
-            tribes: profile.tribes || [],
-            relationshipGoals: Array.isArray(profile.relationship_goals)
-              ? profile.relationship_goals
-              : [profile.relationship_goals || 'dating'],
-            position: 'flexible',
-            relationshipStatus: 'single',
-            hivStatus: profile.hiv_status,
+          isOnline: profile.is_online ?? false,
+          isVerified: profile.age_verified ?? false,
+          membershipTier: 'free' as const,
+          interests: profile.interests ?? [],
+          tribes: profile.tribes ?? [],
+          relationshipGoals: Array.isArray(profile.relationship_goals)
+            ? profile.relationship_goals
+            : [profile.relationship_goals || 'dating'],
+          position: 'flexible' as const,
+          relationshipStatus: 'single' as const,
+          hivStatus: (profile.hiv_status ?? null) as DatingProfile['hivStatus'],
             pronouns: 'he/him',
             lastSeen: profile.last_seen || new Date().toISOString(),
             distance: calculateDistance(
@@ -628,13 +628,12 @@ export function useDating() {
     try {
       const { data: matches } = await supabase
         .from('matches')
-        .select('*, matched_profile:profiles(*)')
-        .or(`user_id.eq.${user.id},matched_user_id.eq.${user.id}`)
-        .eq('is_active', true);
+        .select('*, profile_one:profiles!user_one(*), profile_two:profiles!user_two(*)')
+        .or(`user_one.eq.${user.id},user_two.eq.${user.id}`);
 
       if (matches) {
         const matchProfiles: DatingProfile[] = matches.map(match => {
-          const profile = match.user_id === user.id ? match.matched_profile : match;
+          const profile = match.user_one === user.id ? match.profile_two : match.profile_one;
           return transformProfile(profile);
         });
 
@@ -651,8 +650,8 @@ export function useDating() {
     try {
       const { data: messages } = await supabase
         .from('messages')
-        .select('*')
-        .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+        .select('*, conversation:conversations!conversation_id(participant_one, participant_two)')
+        .or(`conversation.participant_one.eq.${user.id},conversation.participant_two.eq.${user.id}`)
         .order('created_at', { ascending: false })
         .limit(1000);
 
@@ -661,7 +660,12 @@ export function useDating() {
         const unreadCounts = new Map<string, number>();
 
         messages.forEach(msg => {
-          const otherUserId = msg.sender_id === user.id ? msg.receiver_id : msg.sender_id;
+          const conv = msg.conversation as any;
+          const otherUserId = conv?.participant_one === user.id
+            ? conv?.participant_two
+            : conv?.participant_one;
+
+          if (!otherUserId) return;
 
           if (!conversations.has(otherUserId)) {
             conversations.set(otherUserId, []);
@@ -671,17 +675,17 @@ export function useDating() {
           const message: DatingMessage = {
             id: msg.id,
             senderId: msg.sender_id,
-            receiverId: msg.receiver_id,
+            receiverId: otherUserId,
             content: msg.content,
-            timestamp: new Date(msg.created_at).getTime(),
-            type: msg.type || 'text',
-            metadata: msg.metadata ? JSON.parse(msg.metadata) : undefined,
-            isRead: msg.is_read,
+            timestamp: new Date(msg.created_at ?? Date.now()).getTime(),
+            type: (msg.message_type || 'text') as DatingMessage['type'],
+            metadata: msg.metadata ? JSON.parse(msg.metadata as string) : undefined,
+            isRead: msg.is_read ?? false,
           };
 
           conversations.get(otherUserId)!.push(message);
 
-          if (!msg.is_read && msg.receiver_id === user.id) {
+          if (!msg.is_read && msg.sender_id !== user.id) {
             unreadCounts.set(otherUserId, (unreadCounts.get(otherUserId) || 0) + 1);
           }
         });
@@ -712,14 +716,38 @@ export function useDating() {
     const startTime = performance.now();
 
     try {
+      // First get or create conversation
+      let conversationId: string;
+      const { data: existingConv } = await supabase
+        .from('conversations')
+        .select('id')
+        .or(`and(participant_one.eq.${user.id},participant_two.eq.${receiverId}),and(participant_one.eq.${receiverId},participant_two.eq.${user.id})`)
+        .maybeSingle();
+
+      if (existingConv) {
+        conversationId = existingConv.id;
+      } else {
+        const { data: newConv } = await supabase
+          .from('conversations')
+          .insert({
+            participant_one: user.id,
+            participant_two: receiverId,
+          })
+          .select('id')
+          .single();
+
+        if (!newConv) throw new Error('Failed to create conversation');
+        conversationId = newConv.id;
+      }
+
       // Send via Supabase
       const { data: message } = await supabase
         .from('messages')
         .insert({
+          conversation_id: conversationId,
           sender_id: user.id,
-          receiver_id: receiverId,
           content,
-          type,
+          message_type: type,
           is_read: false,
         })
         .select()
@@ -729,11 +757,11 @@ export function useDating() {
         const datingMessage: DatingMessage = {
           id: message.id,
           senderId: message.sender_id,
-          receiverId: message.receiver_id,
+          receiverId,
           content: message.content,
-          timestamp: new Date(message.created_at).getTime(),
-          type: message.type || 'text',
-          isRead: message.is_read,
+          timestamp: new Date(message.created_at ?? Date.now()).getTime(),
+          type: (message.message_type || 'text') as DatingMessage['type'],
+          isRead: message.is_read ?? false,
         };
 
         // Update local state
@@ -799,21 +827,21 @@ export function useDating() {
   const handleRealtimeMessage = useCallback((payload: any) => {
     const { event, new: record } = payload;
 
-    if (event === 'INSERT') {
+    if (event === 'INSERT' && record.sender_id !== user?.id) {
       const message: DatingMessage = {
         id: record.id,
         senderId: record.sender_id,
-        receiverId: record.receiver_id,
+        receiverId: user?.id || '',
         content: record.content,
-        timestamp: new Date(record.created_at).getTime(),
-        type: record.type || 'text',
+        timestamp: new Date(record.created_at ?? Date.now()).getTime(),
+        type: (record.message_type || 'text') as DatingMessage['type'],
         metadata: record.metadata ? JSON.parse(record.metadata) : undefined,
-        isRead: record.is_read,
+        isRead: record.is_read ?? false,
       };
 
       handleIncomingMessage(message);
     }
-  }, [handleIncomingMessage]);
+  }, [handleIncomingMessage, user]);
 
   const handleRealtimeProfile = useCallback((payload: any) => {
     const { event, new: record } = payload;
@@ -1010,19 +1038,19 @@ export function useDating() {
     location: profile.latitude && profile.longitude ? {
       latitude: profile.latitude,
       longitude: profile.longitude,
-      timestamp: new Date(profile.location_updated_at).getTime(),
+      timestamp: new Date(profile.location_updated_at ?? Date.now()).getTime(),
     } : null,
-    isOnline: profile.is_online,
-    isVerified: profile.age_verified || false,
-    membershipTier: 'free',
-    interests: profile.interests || [],
-    tribes: profile.tribes || [],
+    isOnline: profile.is_online ?? false,
+    isVerified: profile.age_verified ?? false,
+    membershipTier: 'free' as const,
+    interests: profile.interests ?? [],
+    tribes: profile.tribes ?? [],
     relationshipGoals: Array.isArray(profile.relationship_goals)
       ? profile.relationship_goals
       : [profile.relationship_goals || 'dating'],
-    position: 'flexible',
-    relationshipStatus: 'single',
-    hivStatus: profile.hiv_status,
+    position: 'flexible' as const,
+    relationshipStatus: 'single' as const,
+    hivStatus: (profile.hiv_status ?? null) as DatingProfile['hivStatus'],
     pronouns: 'he/him',
     lastSeen: profile.last_seen || new Date().toISOString(),
   }), []);
@@ -1040,16 +1068,19 @@ export function useDating() {
       const index = nearbyProfiles.findIndex(p => p.id === peerId);
 
       if (index >= 0 && prev.profile?.location) {
-        nearbyProfiles[index] = {
-          ...nearbyProfiles[index],
-          location,
-          distance: calculateDistance(
-            prev.profile.location.latitude,
-            prev.profile.location.longitude,
-            location.latitude,
-            location.longitude
-          ),
-        };
+        const existingProfile = nearbyProfiles[index];
+        if (existingProfile) {
+          nearbyProfiles[index] = {
+            ...existingProfile,
+            location,
+            distance: calculateDistance(
+              prev.profile.location.latitude,
+              prev.profile.location.longitude,
+              location.latitude,
+              location.longitude
+            ),
+          };
+        }
       }
 
       return { ...prev, nearbyProfiles };

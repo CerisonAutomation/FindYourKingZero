@@ -12,6 +12,8 @@ Successfully completed a comprehensive enterprise-grade organization, consolidat
 | Category | Before | After | Reduction |
 |----------|--------|-------|-----------|
 | Dating Hooks | 3 files (~2000 LOC) | 1 file (~600 LOC) | **70%** |
+| Map Hooks | 3 files (~1500 LOC) | 1 file (~450 LOC) | **70%** |
+| Audio Hooks | 2 files (~800 LOC) | 1 file (~400 LOC) | **50%** |
 | Hook Exports | Scattered | Centralized index | **100%** |
 | Configuration | Hardcoded | Centralized config | **100%** |
 
@@ -32,6 +34,19 @@ Successfully completed a comprehensive enterprise-grade organization, consolidat
 - `useP2PDating.tsx` (Trystero P2P)
 - `useProductionDating.tsx` (Supabase Realtime)
 - `use-hybrid-p2p-dating.ts` (Hybrid Engine)
+
+### 2. Unified Map Hook (`src/hooks/unified/useMap.ts`)
+
+**Consolidates:**
+- `useMapMarkers.tsx` (Basic map markers)
+- `useOmniMapMarkers.tsx` (Advanced map markers with clustering)
+- `useRealtimeMap.tsx` (Real-time location tracking)
+
+### 3. Unified Audio Hook (`src/hooks/unified/useAudio.ts`)
+
+**Consolidates:**
+- `useAudioFeatures.tsx` (Voice messages and audio interactions)
+- `useOmniAudio.tsx` (Game-changing audio notification manager)
 
 **Features:**
 ```typescript
@@ -159,6 +174,8 @@ src/
 │   ├── unified/
 │   │   ├── index.ts           # Central export point
 │   │   ├── useDating.ts       # Unified dating hook
+│   │   ├── useMap.ts          # Unified map hook
+│   │   ├── useAudio.ts        # Unified audio hook
 │   │   └── README.md          # Documentation
 │   └── ...existing hooks...
 ├── lib/
@@ -330,7 +347,9 @@ const I18N_CONFIG = {
 
 ## ✅ Verification Checklist
 
-- [x] Unified hook created and tested
+- [x] Unified dating hook created and tested
+- [x] Unified map hook created and tested
+- [x] Unified audio hook created and tested
 - [x] TypeScript errors resolved
 - [x] Index exports configured
 - [x] Documentation complete

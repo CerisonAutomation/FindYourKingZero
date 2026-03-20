@@ -298,8 +298,11 @@ export function useP2PDating() {
         if (messageIndex >= 0) {
           const message = chat[messageIndex]
           if (message) {
-            message.metadata = { ...message.metadata, reaction: data.reaction }
-            chat[messageIndex] = message
+            const updatedMessage: P2PMessage = {
+              ...message,
+              metadata: { ...message.metadata, reaction: data.reaction }
+            }
+            chat[messageIndex] = updatedMessage
           }
           conversations.set(peerId, chat)
         }

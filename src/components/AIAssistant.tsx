@@ -4,13 +4,8 @@ import {Bot, Lightbulb, MessageCircle, Send, Sparkles, X} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Avatar, AvatarFallback} from '@/components/ui/avatar';
-import {useAIStream} from '@/hooks/useAI';
+import {useAIAssistant} from '@/hooks/useAI';
 import {cn} from '@/lib/utils';
-
-interface Message {
-    role: 'user' | 'assistant';
-    content: string;
-}
 
 interface AIAssistantProps {
     isOpen: boolean;
@@ -24,59 +19,21 @@ const QUICK_PROMPTS = [
 ];
 
 export const AIAssistant = ({isOpen, onClose}: AIAssistantProps) => {
-    const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
-    const [assistantContent, setAssistantContent] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const {streamResponse, isStreaming} = useAIStream();
+    const {messages, currentResponse, isLoading, sendMessage} = useAIAssistant();
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({behavior: 'smooth'});
-    }, [messages, assistantContent]);
+    }, [messages, currentResponse]);
 
     const handleSend = async (content?: string) => {
         const messageContent = content || input;
-        if (!messageContent.trim() || isStreaming) return;
+        if (!messageContent.trim() || isLoading) return;
 
-        const userMessage: Message = {role: 'user', content: messageContent};
-        setMessages((prev) => [...prev, userMessage]);
+        await sendMessage(messageContent);
         setInput('');
-        setAssistantContent('');
-
-        await streamResponse(
-            [...messages, userMessage],
-            (chunk) => {
-                setAssistantContent((prev) => prev + chunk);
-            },
-            () => {
-                setMessages((prev) => {
-                    const assistantMessage: Message = {
-                        role: 'assistant',
-                        content: assistantContent || ''
-                    };
-                    // Get the accumulated content from the closure
-                    return prev;
-                });
-            }
-        );
-
-        // After streaming completes, add the full message
-        setMessages((prev) => {
-            if (prev[prev.length - 1]?.role === 'assistant') return prev;
-            return prev;
-        });
     };
-
-    // Update messages when streaming completes
-    useEffect(() => {
-        if (!isStreaming && assistantContent) {
-            setMessages((prev) => {
-                if (prev[prev.length - 1]?.role === 'assistant') return prev;
-                return [...prev, {role: 'assistant', content: assistantContent}];
-            });
-            setAssistantContent('');
-        }
-    }, [isStreaming, assistantContent]);
 
     return (
         <AnimatePresence>
@@ -107,7 +64,7 @@ export const AIAssistant = ({isOpen, onClose}: AIAssistantProps) => {
 
                         {/* Messages */}
                         <div className="h-80 overflow-y-auto p-4 space-y-4">
-                            {messages.length === 0 && !assistantContent && (
+                            {messages.length === 0 && !currentResponse && (
                                 <div className="text-center py-8">
                                     <Bot className="w-12 h-12 mx-auto text-muted-foreground mb-3"/>
                                     <p className="text-muted-foreground mb-4">
@@ -159,7 +116,7 @@ export const AIAssistant = ({isOpen, onClose}: AIAssistantProps) => {
                             ))}
 
                             {/* Streaming response */}
-                            {assistantContent && (
+                            {currentResponse && (
                                 <motion.div
                                     initial={{opacity: 0, y: 10}}
                                     animate={{opacity: 1, y: 0}}
@@ -171,7 +128,7 @@ export const AIAssistant = ({isOpen, onClose}: AIAssistantProps) => {
                                         </AvatarFallback>
                                     </Avatar>
                                     <div className="max-w-[80%] px-3 py-2 rounded-2xl text-sm bg-secondary">
-                                        {assistantContent}
+                                        {currentResponse}
                                         <span className="inline-block w-1 h-4 bg-primary animate-pulse ml-1"/>
                                     </div>
                                 </motion.div>
@@ -193,13 +150,13 @@ export const AIAssistant = ({isOpen, onClose}: AIAssistantProps) => {
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     placeholder="Ask me anything..."
-                                    disabled={isStreaming}
+                                    disabled={isLoading}
                                     className="flex-1"
                                 />
                                 <Button
                                     type="submit"
                                     size="icon"
-                                    disabled={!input.trim() || isStreaming}
+                                    disabled={!input.trim() || isLoading}
                                 >
                                     <Send className="w-4 h-4"/>
                                 </Button>

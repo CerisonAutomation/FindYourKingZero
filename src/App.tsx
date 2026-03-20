@@ -108,7 +108,16 @@ const LazyComponents = {
   AdminReports: lazy(() => import("@/features/admin/pages/AdminReports")),
   AdminModeration: lazy(() => import("@/features/admin/pages/AdminModeration")),
   AdminAudit: lazy(() => import("@/features/admin/pages/AdminAudit")),
-  AdminMetrics: lazy(() => import("@/features/admin/pages/AdminMetrics"))
+  AdminMetrics: lazy(() => import("@/features/admin/pages/AdminMetrics")),
+
+  // Additional features
+  FavoritesPage: lazy(() => import("@/features/favorites/pages/FavoritesPage")),
+  BookingsPage: lazy(() => import("@/features/bookings/pages/BookingsPage")),
+  VerificationPage: lazy(() => import("@/features/verification/pages/VerificationPage")),
+  AlbumsPage: lazy(() => import("@/features/albums/pages/AlbumsPage")),
+  AnalyticsPage: lazy(() => import("@/features/analytics/pages/AnalyticsPage")),
+  VoicePage: lazy(() => import("@/features/voice/pages/VoicePage")),
+  AIPage: lazy(() => import("@/features/ai/pages/AIPage"))
 };
 
 // Enterprise Query Client Configuration
@@ -290,7 +299,6 @@ const AppRoutes = () => {
                     <Route path="grid" element={<LazyComponents.GridPage/>}/>
                     <Route path="right-now" element={<LazyComponents.RightNowFeed/>}/>
                     <Route path="right-now/map" element={<LazyComponents.RightNowMap/>}/>
-                    <Route path="map" element={<LazyComponents.RightNowMap/>}/>
 
                     {/* Communication */}
                     <Route path="messages" element={<LazyComponents.MessagesPage/>}/>
@@ -302,14 +310,6 @@ const AppRoutes = () => {
                     <Route path="events" element={<LazyComponents.EventsHub/>}/>
                     <Route path="events/create" element={<LazyComponents.CreateEvent/>}/>
                     <Route path="events/:id" element={<LazyComponents.EventDetail/>}/>
-
-                    {/* Legacy event redirects */}
-                    <Route path="chills" element={<Navigate to="events?tab=plans" replace/>}/>
-                    <Route path="chills/create" element={<Navigate to="events/create" replace/>}/>
-                    <Route path="chills/:id" element={<Navigate to="events/:id" replace/>}/>
-                    <Route path="house-parties" element={<Navigate to="events?tab=parties" replace/>}/>
-                    <Route path="house-parties/create" element={<Navigate to="events/create" replace/>}/>
-                    <Route path="house-parties/:id" element={<Navigate to="events/:id" replace/>}/>
 
                     {/* Profile */}
                     <Route path="profile/me" element={<LazyComponents.MePage/>}/>
@@ -338,6 +338,15 @@ const AppRoutes = () => {
                     <Route path="admin/moderation" element={<ProtectedRoute requiredRole="admin"><LazyComponents.AdminModeration/></ProtectedRoute>}/>
                     <Route path="admin/audit" element={<ProtectedRoute requiredRole="admin"><LazyComponents.AdminAudit/></ProtectedRoute>}/>
                     <Route path="admin/metrics" element={<ProtectedRoute requiredRole="admin"><LazyComponents.AdminMetrics/></ProtectedRoute>}/>
+
+                    {/* Additional Features */}
+                    <Route path="favorites" element={<LazyComponents.FavoritesPage/>}/>
+                    <Route path="bookings" element={<LazyComponents.BookingsPage/>}/>
+                    <Route path="verification" element={<LazyComponents.VerificationPage/>}/>
+                    <Route path="albums" element={<LazyComponents.AlbumsPage/>}/>
+                    <Route path="analytics" element={<LazyComponents.AnalyticsPage/>}/>
+                    <Route path="voice" element={<LazyComponents.VoicePage/>}/>
+                    <Route path="ai" element={<LazyComponents.AIPage/>}/>
                 </Route>
 
                 {/* Legacy redirects */}

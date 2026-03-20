@@ -5,9 +5,18 @@ import {Button} from '@/components/ui/button';
 import {Badge} from '@/components/ui/badge';
 import {useState, useEffect} from 'react';
 
+interface Report {
+    id: string;
+    reason: string;
+    status: 'pending' | 'resolved' | 'dismissed';
+    reporter_id: string;
+    reported: string;
+    time: string;
+}
+
 export default function AdminReports() {
     const navigate = useNavigate();
-    const [reports, setReports] = useState<any[]>([]);
+    const [reports, setReports] = useState<Report[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -56,9 +65,9 @@ export default function AdminReports() {
                     </div>
                 ) : (
                     reports.map((r, i) => (
-                        <motion.div 
-                            key={r.id} 
-                            initial={{opacity: 0, y: 10}} 
+                        <motion.div
+                            key={r.id}
+                            initial={{opacity: 0, y: 10}}
                             animate={{opacity: 1, y: 0}}
                             transition={{delay: i * 0.05}}
                             className="p-4 rounded-2xl bg-card border border-border/50 space-y-3"

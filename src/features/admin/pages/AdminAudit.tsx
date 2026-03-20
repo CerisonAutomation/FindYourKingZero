@@ -12,9 +12,17 @@ const actionIcon: Record<string, React.ReactNode> = {
     user_warned: <AlertTriangle className="w-4 h-4 text-amber-400"/>,
 };
 
+interface AuditLog {
+    id: string;
+    action: string;
+    actor: string;
+    target_type: string;
+    created_at: string;
+}
+
 export default function AdminAudit() {
     const navigate = useNavigate();
-    const [logs, setLogs] = useState<any[]>([]);
+    const [logs, setLogs] = useState<AuditLog[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {

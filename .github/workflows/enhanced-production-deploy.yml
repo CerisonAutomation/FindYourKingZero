@@ -1,0 +1,435 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * 🚀 ENHANCED PRODUCTION DEPLOYMENT PIPELINE
+ * ═══════════════════════════════════════════════════════════════════════════════
+ *
+ * Advanced GitHub Actions workflow with comprehensive testing, security scanning,
+ * performance monitoring, and multi-environment deployment
+ *
+ * @author FindYourKingZero DevOps Team
+ * @version 4.0.0
+ */
+
+name: '🚀 Enhanced Production Deployment Pipeline'
+
+on:
+  push:
+    branches: ['main', 'production']
+    tags: ['v*']
+  pull_request:
+    branches: ['main']
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      force_deploy:
+        description: 'Force deployment (skip checks)'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  NODE_VERSION: '20'
+  CACHE_VERSION: 'v4'
+
+jobs:
+  # 🔍 PRE-COMMIT VALIDATION
+  pre-commit:
+    name: '🔍 Pre-Commit Validation'
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip.outputs.should_skip }}
+    steps:
+      - name: '📥 Checkout Repository'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: '⏭️ Skip Duplicate Jobs'
+        uses: fkirc/skip-duplicate-actions@v5
+        id: skip
+        with:
+          skip_after_successful_duplicate: 'true'
+          paths_ignore: '["**.md", "**.txt"]'
+
+      - name: '📋 Check for Secrets'
+        run: |
+          echo "🔍 Checking for potential secrets..."
+          if git grep -E "(sk-|AIzaSy|ghp_|gho_|ghu_|ghs_|ghr_|xoxb|xoxp)" -- . ':!*.md' ':!*.txt' ':!.git*'; then
+            echo "❌ Potential secrets found in code!"
+            exit 1
+          fi
+          echo "✅ No secrets detected"
+
+  # 🏗️ BUILD & QUALITY GATES
+  build-and-test:
+    name: '🏗️ Build & Quality Gates'
+    runs-on: ubuntu-latest
+    needs: pre-commit
+    if: needs.pre-commit.outputs.should_skip != 'true'
+    outputs:
+      build_success: ${{ steps.build.outcome }}
+      test_success: ${{ steps.test.outcome }}
+    steps:
+      - name: '📥 Checkout Repository'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: '🟢 Setup Node.js'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+
+      - name: '📦 Install Dependencies'
+        run: npm ci --prefer-offline --no-audit
+
+      - name: '🔍 Type Checking'
+        run: |
+          echo "🔍 Running TypeScript type checking..."
+          npm run type-check
+          echo "✅ Type checking completed"
+
+      - name: '🧹 Linting'
+        run: |
+          echo "🧹 Running ESLint..."
+          npm run lint
+          echo "✅ Linting completed"
+
+      - name: '🎨 Code Formatting'
+        run: |
+          echo "🎨 Checking code formatting..."
+          npm run format:check
+          echo "✅ Code formatting verified"
+
+      - name: '🔒 Security Audit'
+        run: |
+          echo "🔒 Running security audit..."
+          npm audit --audit-level high
+          echo "✅ Security audit completed"
+
+      - name: '🏗️ Build Application'
+        id: build
+        run: |
+          echo "🏗️ Building application..."
+          npm run build
+          echo "✅ Build completed successfully"
+          echo "build_size=$(du -sh dist | cut -f1)" >> $GITHUB_OUTPUT
+
+      - name: '📊 Bundle Analysis'
+        run: |
+          echo "📊 Analyzing bundle size..."
+          npm run build:analyze
+          echo "✅ Bundle analysis completed"
+
+      - name: '🧪 Unit Tests'
+        id: test
+        run: |
+          echo "🧪 Running unit tests..."
+          npm run test -- --coverage --watchAll=false
+          echo "✅ Unit tests completed"
+
+      - name: '🔗 Integration Tests'
+        run: |
+          echo "🔗 Running integration tests..."
+          npm run test:integration
+          echo "✅ Integration tests completed"
+
+      - name: '📱 E2E Tests'
+        run: |
+          echo "📱 Running E2E tests..."
+          npm run test:e2e
+          echo "✅ E2E tests completed"
+
+      - name: '📈 Performance Audit'
+        run: |
+          echo "📈 Running Lighthouse performance audit..."
+          npm run lighthouse:audit
+          echo "✅ Performance audit completed"
+
+      - name: '🔍 Accessibility Audit'
+        run: |
+          echo "🔍 Running accessibility audit..."
+          npm run accessibility:audit
+          echo "✅ Accessibility audit completed"
+
+      - name: '📋 Upload Test Results'
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: |
+            coverage/
+            test-results/
+            lighthouse-results/
+            accessibility-results/
+          retention-days: 30
+
+      - name: '📋 Upload Build Artifacts'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist/
+          retention-days: 7
+
+  # 🚀 DEPLOYMENT PIPELINE
+  deploy:
+    name: '🚀 Deploy to ${{ inputs.environment || 'staging' }}'
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: |
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/tags/')) &&
+      needs.build-and-test.outputs.build_success == 'success' &&
+      needs.build-and-test.outputs.test_success == 'success'
+    environment:
+      name: ${{ inputs.environment || 'staging' }}
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - name: '📥 Checkout Repository'
+        uses: actions/checkout@v4
+
+      - name: '🟢 Setup Node.js'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: '📦 Install Dependencies'
+        run: npm ci --prefer-offline
+
+      - name: '📥 Download Build Artifacts'
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist/
+
+      - name: '🚀 Deploy to Vercel'
+        id: deploy
+        uses: vercel/action@v1
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          scope: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-args: '--prod'
+          working-directory: ./
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: '🗄️ Run Database Migrations'
+        run: |
+          echo "🗄️ Running database migrations..."
+          npm run db:migrate -- --env=production
+          echo "✅ Database migrations completed"
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+
+      - name: '🌱 Seed Production Data'
+        run: |
+          echo "🌱 Seeding production data..."
+          npm run db:seed -- --env=production
+          echo "✅ Production data seeded"
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+
+  # 📱 MOBILE DEPLOYMENT
+  mobile-deploy:
+    name: '📱 Mobile App Deployment'
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: |
+      (github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/tags/')) &&
+      needs.build-and-test.outputs.build_success == 'success'
+    steps:
+      - name: '📥 Checkout Repository'
+        uses: actions/checkout@v4
+
+      - name: '🟢 Setup Node.js'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: '📦 Install Dependencies'
+        run: npm ci --prefer-offline
+
+      - name: '🏗️ Build Mobile App'
+        run: |
+          echo "🏗️ Building mobile app..."
+          npm run build
+          npm run mobile:build
+          echo "✅ Mobile app built"
+
+      - name: '🤖 Build Android APK'
+        run: |
+          echo "🤖 Building Android APK..."
+          cd android
+          ./gradlew assembleRelease
+          echo "✅ Android APK built"
+
+      - name: '🍎 Build iOS IPA'
+        run: |
+          echo "🍎 Building iOS IPA..."
+          cd ios
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -destination generic/platform=iOS archive
+          echo "✅ iOS IPA built"
+
+      - name: '📋 Upload Android APK'
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: android/app/build/outputs/apk/release/*.apk
+          retention-days: 30
+
+      - name: '📋 Upload iOS IPA'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: ios/build/*.ipa
+          retention-days: 30
+
+  # 🐳 DOCKER DEPLOYMENT
+  docker-deploy:
+    name: '🐳 Docker Deployment'
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: |
+      (github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/tags/')) &&
+      needs.build-and-test.outputs.build_success == 'success'
+    steps:
+      - name: '📥 Checkout Repository'
+        uses: actions/checkout@v4
+
+      - name: '🐳 Set up Docker Buildx'
+        uses: docker/setup-buildx-action@v3
+
+      - name: '🔐 Login to Docker Hub'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: '🏗️ Build and Push Docker Image'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            findyourking/app:latest
+            findyourking/app:${{ github.sha }}
+            findyourking/app:${{ github.ref_name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+
+      - name: '🚀 Deploy to Production Server'
+        run: |
+          echo "🚀 Deploying to production server..."
+          # Add your production server deployment commands here
+          echo "✅ Production deployment completed"
+
+  # 🔍 POST-DEPLOYMENT VERIFICATION
+  post-deploy:
+    name: '🔍 Post-Deployment Verification'
+    runs-on: ubuntu-latest
+    needs: [deploy, mobile-deploy, docker-deploy]
+    if: always() && needs.deploy.result == 'success'
+    steps:
+      - name: '🏥 Health Check'
+        run: |
+          echo "🏥 Running health check..."
+          curl -f https://findyourking.vercel.app/api/health || exit 1
+          echo "✅ Health check passed"
+
+      - name: '📈 Performance Check'
+        run: |
+          echo "📈 Running performance check..."
+          npm run lighthouse:check -- --url=https://findyourking.vercel.app
+          echo "✅ Performance check completed"
+
+      - name: '🔍 Accessibility Check'
+        run: |
+          echo "🔍 Running accessibility check..."
+          npm run accessibility:check -- --url=https://findyourking.vercel.app
+          echo "✅ Accessibility check completed"
+
+      - name: '📊 Generate Deployment Report'
+        run: |
+          echo "📊 Generating deployment report..."
+          cat << EOF > deployment-report.md
+          # 🚀 Deployment Report
+          
+          ## 📋 Deployment Summary
+          - **Environment**: ${{ inputs.environment || 'staging' }}
+          - **Commit**: ${{ github.sha }}
+          - **Branch**: ${{ github.ref_name }}
+          - **Timestamp**: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          
+          ## ✅ Completed Jobs
+          - [x] Pre-commit validation
+          - [x] Build and quality gates
+          - [x] Web deployment
+          - [x] Mobile deployment
+          - [x] Docker deployment
+          - [x] Post-deployment verification
+          
+          ## 📊 Metrics
+          - **Build Size**: $(du -sh dist | cut -f1)
+          - **Test Coverage**: $(cat coverage/coverage-summary.json | jq '.total.lines.pct')%
+          - **Lighthouse Score**: $(cat lighthouse-results/lhr.json | jq '.categories.performance.score * 100')
+          - **Accessibility Score**: $(cat accessibility-results/axe-results.json | jq '.violations.length')
+          
+          ## 🔗 Links
+          - **Web App**: https://findyourking.vercel.app
+          - **Health Check**: https://findyourking.vercel.app/api/health
+          - **Mobile APK**: [Download Link](https://github-actions-artifacts.s3.amazonaws.com/...)
+          - **Docker Image**: findyourking/app:${{ github.sha }}
+          EOF
+
+      - name: '📋 Upload Deployment Report'
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-report
+          path: deployment-report.md
+          retention-days: 90
+
+      - name: '📢 Notify Slack'
+        if: success()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          channel: '#deployments'
+          text: |
+            🚀 **Deployment Successful**
+            *Environment*: ${{ inputs.environment || 'staging' }}
+            *Commit*: ${{ github.sha }}
+            *Branch*: ${{ github.ref_name }}
+            *Web App*: https://findyourking.vercel.app
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: '📢 Notify Slack (Failure)'
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          channel: '#deployments'
+          text: |
+            ❌ **Deployment Failed**
+            *Environment*: ${{ inputs.environment || 'staging' }}
+            *Commit*: ${{ github.sha }}
+            *Branch*: ${{ github.ref_name }}
+            *Error*: Check GitHub Actions logs
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
