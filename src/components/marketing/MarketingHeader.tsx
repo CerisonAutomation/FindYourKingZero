@@ -39,11 +39,11 @@ export const MarketingHeader = () => {
                             <Crown className="w-3.5 h-3.5 text-white" strokeWidth={2.2}/>
                         </div>
                         <div className="hidden sm:block">
-                            <p className="text-[13px] font-black tracking-[-0.02em] leading-none">MACHOBB</p>
+                            <p className="text-[13px] font-black tracking-[-0.02em] leading-none">FIND YOUR KING</p>
                             <p
                                 className="text-[7px] font-black tracking-[0.1em] uppercase"
                                 style={{color: 'hsl(var(--muted-foreground))'}}
-                            >CONNECT · EXPLORE</p>
+                            >KING'S DOMAIN</p>
                         </div>
                     </Link>
 

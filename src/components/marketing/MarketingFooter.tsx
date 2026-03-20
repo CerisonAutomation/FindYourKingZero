@@ -41,11 +41,11 @@ export const MarketingFooter = () => {
                                 <Crown className="w-3.5 h-3.5 text-white"/>
                             </div>
                             <div>
-                                <p className="text-[13px] font-black tracking-[-0.02em]">MACHOBB</p>
+                                <p className="text-[13px] font-black tracking-[-0.02em]">FIND YOUR KING</p>
                                 <p
                                     className="text-[8px] font-black tracking-[0.1em] uppercase"
                                     style={{color: 'hsl(var(--muted-foreground))'}}
-                                >CONNECT · EXPLORE · LIVE</p>
+                                >KING'S COURT · LIVE</p>
                             </div>
                         </div>
                         <p className="text-[12px] leading-relaxed" style={{color: 'hsl(var(--muted-foreground))'}}>
