@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_typing_responses: {
+        Row: {
+          context: string | null
+          conversation_id: string | null
+          created_at: string | null
+          id: string
+          suggested_reply: string
+          used: boolean | null
+          user_id: string | null
+        }
+        Insert: {
+          context?: string | null
+          conversation_id?: string | null
+          created_at?: string | null
+          id?: string
+          suggested_reply: string
+          used?: boolean | null
+          user_id?: string | null
+        }
+        Update: {
+          context?: string | null
+          conversation_id?: string | null
+          created_at?: string | null
+          id?: string
+          suggested_reply?: string
+          used?: boolean | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_typing_responses_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_typing_responses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blocks: {
         Row: {
           blocked_id: string
@@ -337,13 +382,50 @@ export type Database = {
           },
         ]
       }
+      message_templates: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          id: string
+          template_text: string
+          usage_count: number | null
+          user_id: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          template_text: string
+          usage_count?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          template_text?: string
+          usage_count?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_templates_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           content_encrypted: string | null
           conversation_id: string
           created_at: string | null
           delivered: boolean | null
+          edited_at: string | null
           id: string
+          is_deleted: boolean | null
           message_type: string | null
           read_at: string | null
           recalled: boolean | null
@@ -354,7 +436,9 @@ export type Database = {
           conversation_id: string
           created_at?: string | null
           delivered?: boolean | null
+          edited_at?: string | null
           id?: string
+          is_deleted?: boolean | null
           message_type?: string | null
           read_at?: string | null
           recalled?: boolean | null
@@ -365,7 +449,9 @@ export type Database = {
           conversation_id?: string
           created_at?: string | null
           delivered?: boolean | null
+          edited_at?: string | null
           id?: string
+          is_deleted?: boolean | null
           message_type?: string | null
           read_at?: string | null
           recalled?: boolean | null
@@ -569,6 +655,7 @@ export type Database = {
           looking_for: string[] | null
           meet_places: string[] | null
           on_prep: boolean | null
+          onboarding_completed: boolean | null
           online_status: string | null
           photo_url: string | null
           position: string | null
@@ -583,6 +670,7 @@ export type Database = {
           travel_lat: number | null
           travel_lng: number | null
           travel_mode: boolean | null
+          travel_mode_active: boolean | null
           travel_until: string | null
           tribes: string[] | null
           updated_at: string | null
@@ -618,6 +706,7 @@ export type Database = {
           looking_for?: string[] | null
           meet_places?: string[] | null
           on_prep?: boolean | null
+          onboarding_completed?: boolean | null
           online_status?: string | null
           photo_url?: string | null
           position?: string | null
@@ -632,6 +721,7 @@ export type Database = {
           travel_lat?: number | null
           travel_lng?: number | null
           travel_mode?: boolean | null
+          travel_mode_active?: boolean | null
           travel_until?: string | null
           tribes?: string[] | null
           updated_at?: string | null
@@ -667,6 +757,7 @@ export type Database = {
           looking_for?: string[] | null
           meet_places?: string[] | null
           on_prep?: boolean | null
+          onboarding_completed?: boolean | null
           online_status?: string | null
           photo_url?: string | null
           position?: string | null
@@ -681,6 +772,7 @@ export type Database = {
           travel_lat?: number | null
           travel_lng?: number | null
           travel_mode?: boolean | null
+          travel_mode_active?: boolean | null
           travel_until?: string | null
           tribes?: string[] | null
           updated_at?: string | null
@@ -693,6 +785,57 @@ export type Database = {
             columns: ["id"]
             isOneToOne: true
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quickshare_albums: {
+        Row: {
+          created_at: string | null
+          expires_at: string | null
+          files: Json
+          id: string
+          receiver_id: string | null
+          room_id: string | null
+          sender_id: string | null
+          viewed: boolean | null
+          viewed_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string | null
+          files?: Json
+          id?: string
+          receiver_id?: string | null
+          room_id?: string | null
+          sender_id?: string | null
+          viewed?: boolean | null
+          viewed_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string | null
+          files?: Json
+          id?: string
+          receiver_id?: string | null
+          room_id?: string | null
+          sender_id?: string | null
+          viewed?: boolean | null
+          viewed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quickshare_albums_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quickshare_albums_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -786,6 +929,48 @@ export type Database = {
           },
         ]
       }
+      super_favorites: {
+        Row: {
+          created_at: string | null
+          id: string
+          notes: string | null
+          priority: number | null
+          target_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          priority?: number | null
+          target_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          priority?: number | null
+          target_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "super_favorites_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "super_favorites_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       taps: {
         Row: {
           created_at: string | null
@@ -819,6 +1004,82 @@ export type Database = {
           {
             foreignKeyName: "taps_to_user_id_fkey"
             columns: ["to_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      travel_mode: {
+        Row: {
+          arrival_date: string | null
+          created_at: string | null
+          departure_date: string | null
+          destination_lat: number | null
+          destination_lng: number | null
+          destination_name: string | null
+          id: string
+          is_active: boolean | null
+          user_id: string | null
+        }
+        Insert: {
+          arrival_date?: string | null
+          created_at?: string | null
+          departure_date?: string | null
+          destination_lat?: number | null
+          destination_lng?: number | null
+          destination_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          user_id?: string | null
+        }
+        Update: {
+          arrival_date?: string | null
+          created_at?: string | null
+          departure_date?: string | null
+          destination_lat?: number | null
+          destination_lng?: number | null
+          destination_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "travel_mode_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_kinks: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_limit: boolean | null
+          kink: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_limit?: boolean | null
+          kink: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_limit?: boolean | null
+          kink?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_kinks_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -879,21 +1140,76 @@ export type Database = {
           },
         ]
       }
+      voice_commands: {
+        Row: {
+          ai_model_used: string | null
+          command_text: string
+          confidence: number | null
+          executed_at: string | null
+          id: string
+          parameters: Json | null
+          parsed_action: string
+          success: boolean | null
+          user_id: string | null
+        }
+        Insert: {
+          ai_model_used?: string | null
+          command_text: string
+          confidence?: number | null
+          executed_at?: string | null
+          id?: string
+          parameters?: Json | null
+          parsed_action: string
+          success?: boolean | null
+          user_id?: string | null
+        }
+        Update: {
+          ai_model_used?: string | null
+          command_text?: string
+          confidence?: number | null
+          executed_at?: string | null
+          id?: string
+          parameters?: Json | null
+          parsed_action?: string
+          success?: boolean | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      find_nearby_profiles: {
+        Args: { p_lat: number; p_lng: number; p_radius_km?: number }
+        Returns: {
+          age: number
+          display_name: string
+          distance_km: number
+          id: string
+          lat: number
+          lng: number
+          photo_url: string
+          premium: boolean
+          verified: boolean
+        }[]
+      }
       get_or_create_conversation: {
         Args: { user_a: string; user_b: string }
         Returns: string
       }
+      get_quickshare_sign: { Args: never; Returns: Json }
       increment_profile_views: {
         Args: { target_id: string }
         Returns: undefined
       }
       increment_taps_received: {
         Args: { target_user_id: string }
+        Returns: undefined
+      }
+      mark_messages_read: {
+        Args: { p_conversation_id: string }
         Returns: undefined
       }
       show_limit: { Args: never; Returns: number }
