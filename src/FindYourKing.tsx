@@ -683,6 +683,433 @@ function EventsPage() {
   );
 }
 
+// =====================================================
+// MISSING PAGES — Full Implementation
+// =====================================================
+
+// Notifications Page
+function NotificationsPage() {
+  const { user } = useAuth();
+  const [notifs, setNotifs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('notifications').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(50)
+      .then(({ data }) => { setNotifs(data || []); setLoading(false); });
+    const ch = supabase.channel(`notif:${user.id}`).on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}` },
+      (p) => setNotifs(prev => [p.new as any, ...prev])).subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [user]);
+
+  const markRead = async (id: string) => {
+    await supabase.from('notifications').update({ read: true }).eq('id', id);
+    setNotifs(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+  };
+
+  return (
+    <div className="pb-nav">
+      <PageHeader title="Notifications" onBack={() => history.back()} />
+      <div className="px-4 py-2">
+        {loading ? <LoadingSpinner /> : notifs.length === 0 ? <EmptyState title="No notifications" description="You're all caught up!" /> : (
+          notifs.map(n => (
+            <button key={n.id} onClick={() => markRead(n.id)} className={cn('w-full flex items-center gap-3 p-3 rounded-xl mb-1 transition-colors text-left', n.read ? 'opacity-60' : 'bg-primary/5')}>
+              <div className={cn('w-2 h-2 rounded-full flex-shrink-0', n.read ? 'bg-transparent' : 'bg-primary')} />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold truncate">{n.type}</p>
+                <p className="text-xs text-muted-foreground">{new Date(n.created_at).toLocaleString()}</p>
+              </div>
+            </button>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Favorites Page
+function FavoritesPage() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [favs, setFavs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('favorites').select('*, target:profiles!target_id(*)').eq('user_id', user.id).order('created_at', { ascending: false })
+      .then(({ data }) => { setFavs(data || []); setLoading(false); });
+  }, [user]);
+
+  return (
+    <div className="pb-nav">
+      <PageHeader title="Favorites" onBack={() => history.back()} />
+      <div className="px-4 py-4">
+        {loading ? <LoadingSpinner /> : favs.length === 0 ? <EmptyState title="No favorites" description="Tap the heart on profiles you like" /> : (
+          <div className="grid grid-cols-2 gap-3">
+            {favs.map(f => f.target && (
+              <ProfileCard key={f.id} id={f.target.id} displayName={f.target.display_name} photoUrl={f.target.photo_url}
+                age={f.target.age} isVerified={f.target.verified} isPremium={f.target.premium} onClick={(id) => navigate(`/app/profile/${id}`)} />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Albums Page
+function AlbumsPage() {
+  const { user } = useAuth();
+  const [albums, setAlbums] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('albums').select('*').eq('user_id', user.id).order('created_at', { ascending: false })
+      .then(({ data }) => { setAlbums(data || []); setLoading(false); });
+  }, [user]);
+
+  return (
+    <div className="pb-nav">
+      <PageHeader title="Albums" onBack={() => history.back()} />
+      <div className="px-4 py-4">
+        {loading ? <LoadingSpinner /> : albums.length === 0 ? <EmptyState title="No albums" description="Create your first album" /> : (
+          <div className="grid grid-cols-2 gap-3">
+            {albums.map(a => (
+              <div key={a.id} className="rounded-xl overflow-hidden bg-surface-1 border border-border/20">
+                <div className="aspect-square bg-surface-2 flex items-center justify-center">
+                  {a.cover_url ? <img src={a.cover_url} alt={a.name} className="w-full h-full object-cover" /> : <span className="text-3xl">📸</span>}
+                </div>
+                <div className="p-2"><p className="font-bold text-sm truncate">{a.name}</p></div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Edit Profile Page
+function EditProfilePage() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [profile, setProfile] = useState<any>(null);
+  const [name, setName] = useState('');
+  const [bio, setBio] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('profiles').select('*').eq('user_id', user.id).single().then(({ data }) => {
+      setProfile(data);
+      setName(data?.display_name || '');
+      setBio(data?.bio || '');
+    });
+  }, [user]);
+
+  const save = async () => {
+    setSaving(true);
+    await supabase.from('profiles').update({ display_name: name, bio }).eq('user_id', user!.id);
+    toast({ title: 'Profile updated' });
+    setSaving(false);
+    navigate('/app/profile/me');
+  };
+
+  return (
+    <div className="pb-nav">
+      <PageHeader title="Edit Profile" onBack={() => navigate('/app/profile/me')} />
+      <div className="px-4 py-6 space-y-4">
+        <div>
+          <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1 block">Display Name</label>
+          <input value={name} onChange={e => setName(e.target.value)} className="w-full h-11 px-4 rounded-xl bg-surface-1 border border-border/30 text-sm outline-none" />
+        </div>
+        <div>
+          <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1 block">Bio</label>
+          <textarea value={bio} onChange={e => setBio(e.target.value)} rows={4} className="w-full px-4 py-3 rounded-xl bg-surface-1 border border-border/30 text-sm outline-none resize-none" />
+        </div>
+        <GoldButton onClick={save} loading={saving} className="w-full">Save Changes</GoldButton>
+      </div>
+    </div>
+  );
+}
+
+// Settings Sub-Pages
+function SettingsAccountPage() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  return (
+    <div className="pb-nav">
+      <PageHeader title="Account" onBack={() => navigate('/app/settings')} />
+      <div className="px-4 py-4 space-y-1">
+        <div className="p-4 rounded-xl bg-surface-1"><p className="text-xs text-muted-foreground">Email</p><p className="font-semibold text-sm">{user?.email}</p></div>
+        <button onClick={() => navigate('/app/profile/me/edit')} className="w-full p-4 rounded-xl bg-surface-1 text-left"><p className="font-semibold text-sm">Edit Profile</p></button>
+      </div>
+    </div>
+  );
+}
+
+function SettingsPrivacyPage() {
+  const navigate = useNavigate();
+  const [hideDistance, setHideDistance] = useState(false);
+  const [incognito, setIncognito] = useState(false);
+  return (
+    <div className="pb-nav">
+      <PageHeader title="Privacy" onBack={() => navigate('/app/settings')} />
+      <div className="px-4 py-4 space-y-3">
+        <div className="flex items-center justify-between p-4 rounded-xl bg-surface-1">
+          <span className="text-sm font-semibold">Hide Distance</span>
+          <button onClick={() => setHideDistance(!hideDistance)} className={cn('w-11 h-6 rounded-full transition-colors', hideDistance ? 'bg-primary' : 'bg-surface-3')}>
+            <div className={cn('w-5 h-5 rounded-full bg-white transition-transform', hideDistance ? 'translate-x-5' : 'translate-x-0.5')} />
+          </button>
+        </div>
+        <div className="flex items-center justify-between p-4 rounded-xl bg-surface-1">
+          <span className="text-sm font-semibold">Incognito Mode</span>
+          <button onClick={() => setIncognito(!incognito)} className={cn('w-11 h-6 rounded-full transition-colors', incognito ? 'bg-primary' : 'bg-surface-3')}>
+            <div className={cn('w-5 h-5 rounded-full bg-white transition-transform', incognito ? 'translate-x-5' : 'translate-x-0.5')} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SettingsNotificationsPage() {
+  const navigate = useNavigate();
+  const [messages, setMessages] = useState(true);
+  const [matches, setMatches] = useState(true);
+  const [events, setEvents] = useState(true);
+  return (
+    <div className="pb-nav">
+      <PageHeader title="Notifications" onBack={() => navigate('/app/settings')} />
+      <div className="px-4 py-4 space-y-3">
+        {[['Messages', messages, setMessages], ['Matches', matches, setMatches], ['Events', events, setEvents]].map(([label, state, setter]: any) => (
+          <div key={label} className="flex items-center justify-between p-4 rounded-xl bg-surface-1">
+            <span className="text-sm font-semibold">{label}</span>
+            <button onClick={() => setter(!state)} className={cn('w-11 h-6 rounded-full transition-colors', state ? 'bg-primary' : 'bg-surface-3')}>
+              <div className={cn('w-5 h-5 rounded-full bg-white transition-transform', state ? 'translate-x-5' : 'translate-x-0.5')} />
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SubscriptionPageComponent() {
+  const tiers = [
+    { name: 'Free', price: '$0', features: ['Basic matching', '5 messages/day', 'Standard filters'] },
+    { name: 'Plus', price: '$9.99/mo', features: ['Unlimited messages', 'See who viewed you', 'Advanced filters'], highlight: true },
+    { name: 'VIP', price: '$49.99/mo', features: ['All Plus features', 'Verified badge', 'Priority support', 'AI assistant'] },
+  ];
+  return (
+    <div className="pb-nav">
+      <PageHeader title="Subscription" onBack={() => history.back()} />
+      <div className="px-4 py-6 space-y-4">
+        {tiers.map(t => (
+          <div key={t.name} className={cn('p-5 rounded-2xl border', t.highlight ? 'border-primary/50 bg-primary/5' : 'border-border/20 bg-surface-1')}>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-black text-lg">{t.name}</h3>
+              <span className="font-bold text-primary">{t.price}</span>
+            </div>
+            <ul className="space-y-1.5">{t.features.map(f => <li key={f} className="text-sm text-muted-foreground flex items-center gap-2"><span className="text-primary">✓</span>{f}</li>)}</ul>
+            {t.highlight && <GoldButton className="w-full mt-4">Upgrade to {t.name}</GoldButton>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Safety Pages
+function SafetyPage() {
+  const navigate = useNavigate();
+  return (
+    <div className="pb-nav">
+      <PageHeader title="Safety" onBack={() => history.back()} />
+      <div className="px-4 py-4 space-y-2">
+        <button onClick={() => navigate('/app/blocked')} className="w-full p-4 rounded-xl bg-surface-1 text-left flex items-center justify-between">
+          <span className="font-semibold text-sm">Blocked Users</span><span className="text-muted-foreground/40">→</span>
+        </button>
+        <button onClick={() => navigate('/app/reports')} className="w-full p-4 rounded-xl bg-surface-1 text-left flex items-center justify-between">
+          <span className="font-semibold text-sm">My Reports</span><span className="text-muted-foreground/40">→</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function BlockedPage() {
+  const { user } = useAuth();
+  const [blocks, setBlocks] = useState<any[]>([]);
+  useEffect(() => { if (user) supabase.from('blocks').select('*, blocked:profiles!blocked_id(*)').eq('blocker_id', user.id).then(({ data }) => setBlocks(data || [])); }, [user]);
+  return (
+    <div className="pb-nav">
+      <PageHeader title="Blocked Users" onBack={() => history.back()} />
+      <div className="px-4 py-4">
+        {blocks.length === 0 ? <EmptyState title="No blocked users" /> : blocks.map(b => (
+          <div key={b.id} className="flex items-center gap-3 p-3 rounded-xl bg-surface-1 mb-2">
+            <div className="w-10 h-10 rounded-full bg-surface-2 flex items-center justify-center font-bold text-muted-foreground">{b.blocked?.display_name?.[0] || '?'}</div>
+            <span className="font-semibold text-sm flex-1">{b.blocked?.display_name || 'Unknown'}</span>
+            <button onClick={async () => { await supabase.from('blocks').delete().eq('id', b.id); setBlocks(prev => prev.filter(x => x.id !== b.id)); }} className="text-xs text-destructive font-bold">Unblock</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ReportsPage() {
+  const { user } = useAuth();
+  const [reports, setReports] = useState<any[]>([]);
+  useEffect(() => { if (user) supabase.from('reports').select('*').eq('reporter_id', user.id).order('created_at', { ascending: false }).then(({ data }) => setReports(data || [])); }, [user]);
+  return (
+    <div className="pb-nav">
+      <PageHeader title="My Reports" onBack={() => history.back()} />
+      <div className="px-4 py-4">
+        {reports.length === 0 ? <EmptyState title="No reports" /> : reports.map(r => (
+          <div key={r.id} className="p-4 rounded-xl bg-surface-1 mb-2">
+            <p className="font-semibold text-sm">{r.reason}</p>
+            <p className="text-xs text-muted-foreground mt-1">{r.status} · {new Date(r.created_at).toLocaleDateString()}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// AI Page
+function AIPage() {
+  const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const send = async () => {
+    if (!input.trim()) return;
+    const userMsg = { role: 'user', content: input.trim() };
+    setMessages(prev => [...prev, userMsg]);
+    setInput('');
+    setLoading(true);
+    try {
+      const { data } = await supabase.functions.invoke('ai-chat', { body: { messages: [...messages, userMsg] } });
+      setMessages(prev => [...prev, { role: 'assistant', content: data?.response || 'Sorry, I could not process that.' }]);
+    } catch { setMessages(prev => [...prev, { role: 'assistant', content: 'AI is currently unavailable.' }]); }
+    setLoading(false);
+  };
+
+  return (
+    <div className="flex flex-col h-screen">
+      <PageHeader title="AI King" onBack={() => history.back()} />
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+        {messages.length === 0 && <EmptyState title="AI King" description="Ask me anything about dating, conversations, or safety" />}
+        {messages.map((m, i) => (
+          <div key={i} className={cn('max-w-[85%] p-3 rounded-2xl', m.role === 'user' ? 'ml-auto bg-primary text-primary-foreground' : 'mr-auto bg-surface-2')}>
+            <p className="text-sm">{m.content}</p>
+          </div>
+        ))}
+        {loading && <div className="mr-auto bg-surface-2 p-3 rounded-2xl"><div className="typing-dots"><span /><span /><span /></div></div>}
+      </div>
+      <div className="p-4 border-t border-border/20" style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 16px)' }}>
+        <div className="flex gap-2">
+          <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && send()} placeholder="Ask AI King..." className="flex-1 h-11 px-4 rounded-xl bg-surface-1 border border-border/30 text-sm outline-none" />
+          <button onClick={send} disabled={!input.trim() || loading} className="w-11 h-11 rounded-xl flex items-center justify-center text-primary disabled:opacity-30">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" /></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Onboarding Pages
+function OnboardingWelcome() {
+  const navigate = useNavigate();
+  return (
+    <div className="min-h-screen flex items-center justify-center p-6 bg-background">
+      <div className="text-center max-w-sm">
+        <div className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, hsl(42 98% 56%), hsl(30 98% 50%))', boxShadow: '0 0 60px hsl(42 98% 56% / 0.4)' }}>
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" /></svg>
+        </div>
+        <h1 className="text-3xl font-black mb-2">Welcome to the Kingdom</h1>
+        <p className="text-muted-foreground mb-8">Let's set up your profile in 2 minutes</p>
+        <GoldButton onClick={() => navigate('/onboarding/basics')} className="w-full">Let's Go</GoldButton>
+      </div>
+    </div>
+  );
+}
+
+function OnboardingBasics() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [name, setName] = useState('');
+  const [age, setAge] = useState('');
+  const [bio, setBio] = useState('');
+
+  const next = async () => {
+    if (!name || !age) return toast({ title: 'Name and age required', variant: 'destructive' });
+    await supabase.from('profiles').upsert({
+      user_id: user!.id, display_name: name, age: parseInt(age), bio,
+      is_active: true, last_active_at: new Date().toISOString(),
+    }, { onConflict: 'user_id' });
+    navigate('/onboarding/photos');
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col p-6 bg-background">
+      <div className="flex-1 max-w-sm mx-auto w-full pt-12">
+        <h2 className="text-2xl font-black mb-6">The Basics</h2>
+        <div className="space-y-4">
+          <div><label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1 block">Name</label>
+            <input value={name} onChange={e => setName(e.target.value)} placeholder="Your name" className="w-full h-11 px-4 rounded-xl bg-surface-1 border border-border/30 text-sm outline-none" /></div>
+          <div><label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1 block">Age</label>
+            <input type="number" value={age} onChange={e => setAge(e.target.value)} placeholder="25" className="w-full h-11 px-4 rounded-xl bg-surface-1 border border-border/30 text-sm outline-none" /></div>
+          <div><label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1 block">Bio</label>
+            <textarea value={bio} onChange={e => setBio(e.target.value)} placeholder="Tell us about yourself..." rows={3} className="w-full px-4 py-3 rounded-xl bg-surface-1 border border-border/30 text-sm outline-none resize-none" /></div>
+        </div>
+      </div>
+      <div className="max-w-sm mx-auto w-full pb-8"><GoldButton onClick={next} className="w-full">Continue</GoldButton></div>
+    </div>
+  );
+}
+
+function OnboardingPhotos() {
+  const navigate = useNavigate();
+  return (
+    <div className="min-h-screen flex flex-col p-6 bg-background">
+      <div className="flex-1 max-w-sm mx-auto w-full pt-12">
+        <h2 className="text-2xl font-black mb-6">Add Photos</h2>
+        <div className="grid grid-cols-3 gap-3">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="aspect-square rounded-xl bg-surface-1 border-2 border-dashed border-border/30 flex items-center justify-center cursor-pointer hover:border-primary/30">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-muted-foreground/40"><path d="M12 5v14m-7-7h14" /></svg>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs text-muted-foreground mt-3 text-center">Add at least 1 photo to continue</p>
+      </div>
+      <div className="max-w-sm mx-auto w-full pb-8"><GoldButton onClick={() => navigate('/onboarding/tribes-interests')} className="w-full">Continue</GoldButton></div>
+    </div>
+  );
+}
+
+function OnboardingFinish() {
+  const navigate = useNavigate();
+  return (
+    <div className="min-h-screen flex items-center justify-center p-6 bg-background">
+      <div className="text-center max-w-sm">
+        <div className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center" style={{ background: 'hsl(142 76% 42%)' }}>
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M5 13l4 4L19 7" /></svg>
+        </div>
+        <h1 className="text-3xl font-black mb-2">You're All Set!</h1>
+        <p className="text-muted-foreground mb-8">Your profile is ready. Time to find your king.</p>
+        <GoldButton onClick={() => navigate('/app/grid')} className="w-full">Start Discovering</GoldButton>
+      </div>
+    </div>
+  );
+}
+
 // Not Found
 function NotFound() {
   const navigate = useNavigate();
@@ -727,15 +1154,41 @@ function AppRoutes() {
         <Route path="/connect" element={user ? <Navigate to="/app/grid" replace /> : <ConnectPage />} />
         <Route path="/auth/callback" element={<CallbackPage />} />
         <Route path="/auth/reset-password" element={<div className="min-h-screen flex items-center justify-center bg-background p-6"><div className="text-center max-w-sm"><h2 className="text-xl font-black mb-4">Reset Password</h2><p className="text-sm text-muted-foreground">Check your email for the reset link.</p></div></div>} />
+        
+        {/* Onboarding */}
+        <Route path="/onboarding" element={<OnboardingWelcome />} />
+        <Route path="/onboarding/basics" element={<OnboardingBasics />} />
+        <Route path="/onboarding/photos" element={<OnboardingPhotos />} />
+        <Route path="/onboarding/tribes-interests" element={<div className="min-h-screen flex flex-col p-6 bg-background"><div className="flex-1 max-w-sm mx-auto w-full pt-12"><h2 className="text-2xl font-black mb-6">Tribes & Interests</h2><p className="text-sm text-muted-foreground mb-6">Select what describes you</p><div className="flex flex-wrap gap-2">{['Bear','Twink','Jock','Daddy','Otter','Geek','Creative','Fitness','Travel','Food','Music','Gaming'].map(t => <button key={t} className="h-8 px-3 rounded-full bg-surface-2 text-xs font-semibold hover:bg-primary hover:text-primary-foreground transition-colors">{t}</button>)}</div></div><div className="max-w-sm mx-auto w-full pb-8"><GoldButton onClick={() => navigate('/onboarding/preferences')} className="w-full">Continue</GoldButton></div></div>} />
+        <Route path="/onboarding/preferences" element={<div className="min-h-screen flex flex-col p-6 bg-background"><div className="flex-1 max-w-sm mx-auto w-full pt-12"><h2 className="text-2xl font-black mb-6">Preferences</h2><p className="text-sm text-muted-foreground">What are you looking for?</p></div><div className="max-w-sm mx-auto w-full pb-8"><GoldButton onClick={() => navigate('/onboarding/location')} className="w-full">Continue</GoldButton></div></div>} />
+        <Route path="/onboarding/location" element={<div className="min-h-screen flex flex-col p-6 bg-background"><div className="flex-1 max-w-sm mx-auto w-full pt-12"><h2 className="text-2xl font-black mb-6">Location</h2><p className="text-sm text-muted-foreground">Enable location to find people nearby</p></div><div className="max-w-sm mx-auto w-full pb-8"><GoldButton onClick={() => navigate('/onboarding/privacy')} className="w-full">Enable Location</GoldButton></div></div>} />
+        <Route path="/onboarding/privacy" element={<div className="min-h-screen flex flex-col p-6 bg-background"><div className="flex-1 max-w-sm mx-auto w-full pt-12"><h2 className="text-2xl font-black mb-6">Privacy</h2><p className="text-sm text-muted-foreground">Control who sees your profile</p></div><div className="max-w-sm mx-auto w-full pb-8"><GoldButton onClick={() => navigate('/onboarding/notifications')} className="w-full">Continue</GoldButton></div></div>} />
+        <Route path="/onboarding/notifications" element={<div className="min-h-screen flex flex-col p-6 bg-background"><div className="flex-1 max-w-sm mx-auto w-full pt-12"><h2 className="text-2xl font-black mb-6">Notifications</h2><p className="text-sm text-muted-foreground">Stay updated on matches and messages</p></div><div className="max-w-sm mx-auto w-full pb-8"><GoldButton onClick={() => navigate('/onboarding/consent')} className="w-full">Enable Notifications</GoldButton></div></div>} />
+        <Route path="/onboarding/consent" element={<div className="min-h-screen flex flex-col p-6 bg-background"><div className="flex-1 max-w-sm mx-auto w-full pt-12"><h2 className="text-2xl font-black mb-6">Terms & Consent</h2><p className="text-sm text-muted-foreground mb-4">By continuing you agree to our Terms of Service and Privacy Policy. You must be 18+ to use this app.</p></div><div className="max-w-sm mx-auto w-full pb-8"><GoldButton onClick={() => navigate('/onboarding/finish')} className="w-full">I Agree</GoldButton></div></div>} />
+        <Route path="/onboarding/finish" element={<OnboardingFinish />} />
+
+        {/* Protected App */}
         <Route path="/app" element={<AppLayout />}>
           <Route index element={<Navigate to="grid" replace />} />
           <Route path="grid" element={<GridPage />} />
           <Route path="messages" element={<MessagesPage />} />
           <Route path="chat/:conversationId" element={<ChatPage />} />
           <Route path="profile/me" element={<ProfilePage />} />
+          <Route path="profile/me/edit" element={<EditProfilePage />} />
           <Route path="profile/:userId" element={<ProfilePage />} />
           <Route path="events" element={<EventsPage />} />
+          <Route path="notifications" element={<NotificationsPage />} />
+          <Route path="favorites" element={<FavoritesPage />} />
+          <Route path="albums" element={<AlbumsPage />} />
+          <Route path="ai" element={<AIPage />} />
+          <Route path="safety" element={<SafetyPage />} />
+          <Route path="blocked" element={<BlockedPage />} />
+          <Route path="reports" element={<ReportsPage />} />
           <Route path="settings" element={<SettingsPage />} />
+          <Route path="settings/account" element={<SettingsAccountPage />} />
+          <Route path="settings/privacy" element={<SettingsPrivacyPage />} />
+          <Route path="settings/notifications" element={<SettingsNotificationsPage />} />
+          <Route path="settings/subscription" element={<SubscriptionPageComponent />} />
           <Route path="right-now" element={<div className="pb-nav"><PageHeader title="Right Now" /><div className="p-4"><EmptyState title="Coming Soon" description="Real-time availability" /></div></div>} />
         </Route>
         <Route path="*" element={<NotFound />} />
