@@ -648,8 +648,11 @@ export type Database = {
           hiv_status: string | null
           id: string
           incognito: boolean | null
+          is_active: boolean | null
+          is_banned: boolean | null
           kinks: string[] | null
           languages: string[] | null
+          last_active_at: string | null
           last_seen_at: string | null
           last_tested_at: string | null
           looking_for: string[] | null
@@ -699,8 +702,11 @@ export type Database = {
           hiv_status?: string | null
           id: string
           incognito?: boolean | null
+          is_active?: boolean | null
+          is_banned?: boolean | null
           kinks?: string[] | null
           languages?: string[] | null
+          last_active_at?: string | null
           last_seen_at?: string | null
           last_tested_at?: string | null
           looking_for?: string[] | null
@@ -750,8 +756,11 @@ export type Database = {
           hiv_status?: string | null
           id?: string
           incognito?: boolean | null
+          is_active?: boolean | null
+          is_banned?: boolean | null
           kinks?: string[] | null
           languages?: string[] | null
+          last_active_at?: string | null
           last_seen_at?: string | null
           last_tested_at?: string | null
           looking_for?: string[] | null
