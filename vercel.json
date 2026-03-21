@@ -1,9 +1,15 @@
 {
-  "framework": "vite",
-  "buildCommand": "npx vite build --mode production",
-  "outputDirectory": "dist",
-  "installCommand": "npm install --legacy-peer-deps",
-  "rewrites": [
-    { "source": "/((?!assets/).*)", "destination": "/index.html" }
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "status": 200, "dest": "/index.html" }
   ]
 }
