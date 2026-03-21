@@ -2,14 +2,32 @@ import {useLocation, useNavigate} from "react-router-dom";
 import {useEffect} from "react";
 import {motion} from "framer-motion";
 import {ArrowLeft, Compass, Crown} from "lucide-react";
+import {useAuth} from "@/hooks/useAuth";
 
 const NotFound = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const {user, isLoading} = useAuth();
 
     useEffect(() => {
         console.error("404:", location.pathname);
     }, [location.pathname]);
+
+    // Smart redirect — signed in → grid, not signed in → home
+    const goHome = () => {
+        if (user) {
+            navigate("/app/grid", {replace: true});
+        } else {
+            navigate("/", {replace: true});
+        }
+    };
+
+    // Auto-redirect after 5 seconds
+    useEffect(() => {
+        if (isLoading) return;
+        const timer = setTimeout(goHome, 5000);
+        return () => clearTimeout(timer);
+    }, [isLoading, user]);
 
     return (
         <div
@@ -81,8 +99,11 @@ const NotFound = () => {
                 <h1 className="text-[18px] font-black tracking-[-0.02em] mb-3">
                     PAGE NOT FOUND
                 </h1>
-                <p className="text-[13px] text-muted-foreground leading-relaxed mb-8">
+                <p className="text-[13px] text-muted-foreground leading-relaxed mb-2">
                     This throne is empty. The page you're looking for doesn't exist or has been moved.
+                </p>
+                <p className="text-[11px] text-muted-foreground/50 mb-8">
+                    Redirecting to {user ? 'Discover' : 'Home'} in 5 seconds...
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -99,7 +120,7 @@ const NotFound = () => {
                         Go Back
                     </button>
                     <button
-                        onClick={() => navigate("/")}
+                        onClick={goHome}
                         className="flex items-center justify-center gap-2 px-6 h-10 text-[12px] font-black tracking-[0.08em] uppercase transition-all duration-120 active:scale-[0.97]"
                         style={{
                             background: "var(--gradient-primary)",
@@ -108,7 +129,7 @@ const NotFound = () => {
                         }}
                     >
                         <Compass className="w-3.5 h-3.5"/>
-                        Return Home
+                        {user ? 'Go to Discover' : 'Return Home'}
                     </button>
                 </div>
             </motion.div>
