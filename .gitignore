@@ -509,3 +509,29 @@ local.*
 !scripts/
 !tools/
 !bin/
+
+# ============================================================
+# SECURITY — NEVER COMMIT THESE
+# ============================================================
+.env.production
+.env.production.local
+.env*.local
+*.env.production
+secrets.json
+secrets.yaml
+
+# Lock file conflicts — use ONE package manager (Bun)
+package-lock.json
+yarn.lock
+
+# Binary blobs — use Supabase Storage or CDN instead
+attached_assets.zip
+*.zip
+*.tar.gz
+
+# Vite config backups — only vite.config.ts is canonical
+vite.config.backup.ts
+vite.config.optimized.ts
+
+# Dead code directories
+src/graphql/
