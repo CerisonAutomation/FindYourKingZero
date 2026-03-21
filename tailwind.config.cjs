@@ -71,8 +71,8 @@ module.exports = {
       },
       keyframes: {
         "shimmer-gold": {
-          "0%, 100%": { backgroundPosition: "0% 50%" },
-          "50%": { backgroundPosition: "100% 50%" },
+          "0%": { backgroundPosition: "200% 0" },
+          "100%": { backgroundPosition: "-200% 0" },
         },
         "float-slow": {
           "0%, 100%": { transform: "translateY(0)" },
@@ -82,9 +82,25 @@ module.exports = {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0.7" },
         },
+        "pulse-glow": {
+          "0%, 100%": { opacity: "1", filter: "brightness(1)" },
+          "50%": { opacity: "0.85", filter: "brightness(1.15)" },
+        },
         "marquee-scroll": {
           "0%": { transform: "translateX(0)" },
           "100%": { transform: "translateX(-50%)" },
+        },
+        "grain": {
+          "0%, 100%": { transform: "translate(0, 0)" },
+          "10%": { transform: "translate(-5%, -10%)" },
+          "20%": { transform: "translate(-15%, 5%)" },
+          "30%": { transform: "translate(7%, -25%)" },
+          "40%": { transform: "translate(-5%, 25%)" },
+          "50%": { transform: "translate(-15%, 10%)" },
+          "60%": { transform: "translate(15%, 0%)" },
+          "70%": { transform: "translate(0%, 15%)" },
+          "80%": { transform: "translate(3%, 35%)" },
+          "90%": { transform: "translate(-10%, 10%)" },
         },
       },
       transitionDuration: {
@@ -94,10 +110,12 @@ module.exports = {
         snap: "cubic-bezier(0.2, 0, 0, 1)",
       },
       animation: {
-        "shimmer-gold": "shimmer-gold 3s ease-in-out infinite",
+        "shimmer-gold": "shimmer-gold 1.8s ease-in-out infinite",
         "float-slow": "float-slow 6s ease-in-out infinite",
         "pulse-luxury": "pulse-luxury 2s ease-in-out infinite",
+        "pulse-glow": "pulse-glow 2.5s ease-in-out infinite",
         "marquee-scroll": "marquee-scroll 25s linear infinite",
+        "grain": "grain 8s steps(10) infinite",
       },
     },
   },
@@ -115,6 +133,9 @@ module.exports = {
           "backdrop-filter": "blur(24px)",
         },
         ".glass-card": {
+          background: "hsl(var(--glass-card))",
+          "backdrop-filter": "blur(16px)",
+        },
         ".shadow-glow-gold": {
           "box-shadow": "0 0 24px hsl(var(--primary) / 0.38), 0 0 48px hsl(var(--primary) / 0.12)",
         },
@@ -123,9 +144,6 @@ module.exports = {
         },
         ".shadow-glow-royal": {
           "box-shadow": "0 0 28px hsl(var(--accent) / 0.42), 0 0 56px hsl(var(--accent) / 0.15)",
-        },
-          background: "hsl(var(--glass-card))",
-          "backdrop-filter": "blur(16px)",
         },
       });
     }),

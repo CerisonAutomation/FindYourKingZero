@@ -28,8 +28,47 @@ export default defineConfig(({ mode }) => {
       target: "es2020",
       outDir: "dist",
       sourcemap: false,
+      cssCodeSplit: true,
+      chunkSizeWarningLimit: 800,
+      minify: "terser",
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+          passes: 2,
+          pure_funcs: ["console.log", "console.debug", "console.info"],
+        },
+        mangle: {
+          safari10: true,
+        },
+        format: {
+          comments: false,
+        },
+      },
       rollupOptions: {
         output: {
+          manualChunks: {
+            "react-vendor": [
+              "react",
+              "react-dom",
+              "react-router-dom",
+            ],
+            "ui-vendor": [
+              "framer-motion",
+              "lucide-react",
+              "@radix-ui/react-dialog",
+              "@radix-ui/react-dropdown-menu",
+              "@radix-ui/react-slot",
+              "@radix-ui/react-toast",
+            ],
+            "supabase-vendor": [
+              "@supabase/supabase-js",
+            ],
+            "map-vendor": [
+              "leaflet",
+              "maplibre-gl",
+            ],
+          },
         },
       },
     },

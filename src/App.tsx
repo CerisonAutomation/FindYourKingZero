@@ -144,24 +144,44 @@ const queryClient = new QueryClient({
     },
 });
 
-// Enterprise Loading Component
+// Enterprise Loading Component — Premium Gold Gradient Spinner
 const LoadingSpinner = ({message = "Loading"}: {message?: string}) => (
     <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-            <div className="relative w-14 h-14">
+        <div className="flex flex-col items-center gap-5">
+            <div className="relative w-16 h-16">
+                {/* Outer ring — gold gradient */}
                 <div
-                    className="absolute inset-0 rounded-full border-2 border-primary/20 border-t-primary animate-spin"
+                    className="absolute inset-0 rounded-full animate-spin"
+                    style={{
+                        background: "conic-gradient(from 0deg, transparent 0%, #D4A853 25%, #F5D98A 40%, #D4A853 55%, transparent 75%)",
+                        mask: "radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px))",
+                        WebkitMask: "radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px))",
+                    }}
                 />
+                {/* Inner glow pulse */}
+                <div className="absolute inset-3 rounded-full bg-gradient-to-br from-amber-500/15 to-yellow-600/10 animate-pulse"/>
+                {/* Center crown icon */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-5 h-5 rounded-full bg-primary/20 animate-pulse"/>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-amber-500/60 animate-pulse">
+                        <path d="M2 17l3-9 5 5 2-8 2 8 5-5 3 9H2z" fill="currentColor"/>
+                    </svg>
                 </div>
             </div>
-            <p className="text-xs text-muted-foreground tracking-widest uppercase animate-pulse">
+            <p className="text-xs text-amber-500/70 tracking-[0.25em] uppercase animate-pulse font-medium">
                 {message}
             </p>
         </div>
     </div>
 );
+
+// Route prefetch utility — preloads likely next chunks on idle/idle-hover
+const prefetchRoute = (importFn: () => Promise<unknown>) => {
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+        (window as any).requestIdleCallback(() => importFn());
+    } else {
+        setTimeout(() => importFn(), 200);
+    }
+};
 
 // Enterprise Route Guards
 const ProtectedRoute = ({children, requiredRole = "user"}: {
@@ -240,6 +260,13 @@ const AppRoutes = () => {
     }
 
     log.info('ROUTE', 'App routes initialized', { hasUser: !!user });
+
+    // Prefetch likely next routes on idle
+    if (typeof window !== "undefined") {
+        prefetchRoute(() => import("@/features/grid/pages/GridPage"));
+        prefetchRoute(() => import("./pages/auth/SignIn"));
+        prefetchRoute(() => import("./pages/auth/SignUp"));
+    }
 
     return (
         <Suspense fallback={<LoadingSpinner/>}>

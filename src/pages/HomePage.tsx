@@ -17,6 +17,7 @@ import {
     Star,
     Trophy,
 } from 'lucide-react';
+import {GoldButton} from '@/components/ui/GoldButton';
 
 // ── Animated counter ─────────────────────────────────────────
 function Counter({end, duration = 1800, suffix = '', prefix = ''}: {
@@ -288,7 +289,7 @@ export default function HomePage() {
             {/* ════ HERO ════ */}
             <section
                 ref={heroRef}
-                className="relative flex flex-col justify-end overflow-hidden"
+                className="relative flex flex-col justify-end overflow-hidden grain-overlay"
                 style={{minHeight: '100svh', paddingTop: 60, position: 'relative'}}
             >
                 {/* Deep nebula background */}
@@ -355,10 +356,7 @@ export default function HomePage() {
                         animate={{opacity: 1}}
                         transition={{delay: 0.18, duration: 0.7}}
                     >
-                        <h1
-                            className="font-black leading-[0.88] tracking-[-0.055em] mb-0"
-                            style={{fontSize: 'clamp(56px, 12vw, 140px)'}}
-                        >
+                        <h1 className="text-mega mb-0">
                             <motion.span
                                 initial={{opacity: 0, x: -30}}
                                 animate={{opacity: 1, x: 0}}
@@ -411,16 +409,9 @@ export default function HomePage() {
                         {/* CTAs */}
                         <div className="flex flex-wrap gap-3 mb-10">
                             <Link to="/connect?mode=register">
-                                <button
-                                    className="flex items-center gap-2.5 px-8 h-12 text-[12px] font-black tracking-[0.1em] uppercase transition-all duration-120 active:scale-[0.97]"
-                                    style={{
-                                        background: 'var(--gradient-red)',
-                                        color: '#fff',
-                                        boxShadow: '0 4px 28px hsl(0 92% 54% / 0.45), inset 0 1px 0 hsl(0 0% 100% / 0.15)',
-                                    }}
-                                >
+                                <GoldButton size="lg">
                                     <Crown className="w-4 h-4" strokeWidth={2}/> Claim Your Throne
-                                </button>
+                                </GoldButton>
                             </Link>
                             <Link to="/connect">
                                 <button
@@ -453,7 +444,7 @@ export default function HomePage() {
                     initial={{opacity: 0}}
                     animate={{opacity: 1}}
                     transition={{delay: 0.7, duration: 0.6}}
-                    className="absolute bottom-10 right-6 sm:right-10 md:right-14 lg:right-20 z-10 flex flex-col items-end gap-5 hidden sm:flex"
+                    className="absolute bottom-10 right-6 sm:right-10 md:right-14 lg:right-20 z-10 flex flex-col items-end gap-6 hidden sm:flex"
                 >
                     {[
                         {n: 520000, s: '+', label: 'Members', color: 'hsl(var(--primary))'},
@@ -461,11 +452,11 @@ export default function HomePage() {
                         {n: 230, s: '+', label: 'Cities', color: 'hsl(var(--muted-foreground))'},
                     ].map(({n, s, label, color}) => (
                         <div key={label} className="text-right">
-                            <div className="text-[20px] font-black leading-none num-display" style={{color}}>
+                            <div className="text-[28px] font-black leading-none num-display" style={{color}}>
                                 <Counter end={n} suffix={s}/>
                             </div>
                             <div
-                                className="text-[8px] font-bold tracking-[0.18em] uppercase text-muted-foreground/50 mt-0.5">{label}</div>
+                                className="text-[9px] font-bold tracking-[0.18em] uppercase text-muted-foreground/50 mt-1">{label}</div>
                         </div>
                     ))}
                 </motion.div>
@@ -567,7 +558,7 @@ export default function HomePage() {
                                         background: i % 2 === 0 ? 'transparent' : 'hsl(var(--surface-1) / 0.4)',
                                     }}
                                 >
-                                    <div className="text-[28px] font-black tracking-[-0.04em] num-display"
+                                    <div className="text-[36px] font-black tracking-[-0.04em] num-display"
                                          style={{color: c}}>
                                         <Counter end={n} suffix={s}/>
                                     </div>
@@ -630,7 +621,7 @@ export default function HomePage() {
                                     transition={{delay: (i % 3) * 0.06, duration: 0.5, ease: [0.16, 1, 0.3, 1]}}
                                     onHoverStart={() => setActiveFeature(feat.id)}
                                     onHoverEnd={() => setActiveFeature(null)}
-                                    className={`relative group cursor-default p-8 overflow-hidden transition-all duration-200 ${
+                                    className={`relative group cursor-default p-8 overflow-hidden card-luxury ${
                                         isLarge ? 'lg:col-span-2 md:col-span-2' : ''
                                     }`}
                                     style={{

@@ -59,7 +59,7 @@ const ConnectPage = () => {
         try {
             const {error} = await supabase.auth.signInWithOtp({
                 email,
-                options: {emailRedirectTo: `${window.location.origin}/app`},
+                options: {emailRedirectTo: `${window.location.origin}/auth/callback`},
             });
             if (error) throw error;
             setMagicLinkSent(true);
@@ -85,7 +85,7 @@ const ConnectPage = () => {
                 const {error} = await supabase.auth.signUp({
                     email,
                     password,
-                    options: {emailRedirectTo: `${window.location.origin}/app`},
+                    options: {emailRedirectTo: `${window.location.origin}/auth/callback`},
                 });
                 if (error) throw error;
                 toast({title: 'Welcome to the kingdom!', description: 'Check your email to verify your account.'});
@@ -275,7 +275,7 @@ const ConnectPage = () => {
                 </div>
 
                 <div className="flex-1 flex items-center justify-center px-4 sm:px-8 py-12">
-                    <div className="w-full max-w-[400px]">
+                    <div className="w-full max-w-[420px] glass-effect glow-gold-ring p-8 sm:p-10">
                         <motion.div
                             initial={{opacity: 0, y: 16}}
                             animate={{opacity: 1, y: 0}}
@@ -283,10 +283,10 @@ const ConnectPage = () => {
                         >
                             {/* Header */}
                             <div className="mb-8">
-                                <h1 className="text-[22px] font-black tracking-[-0.03em] mb-1">
+                                <h1 className="text-hero mb-2">
                                     {isRegister ? 'Create Account' : 'Sign In'}
                                 </h1>
-                                <p className="text-[13px] text-muted-foreground">
+                                <p className="text-[14px] text-muted-foreground font-semibold">
                                     {isRegister
                                         ? 'Join 520,000+ members worldwide'
                                         : 'Your throne awaits'}
@@ -326,12 +326,12 @@ const ConnectPage = () => {
                                 <div>
                                     <label
                                         htmlFor="email"
-                                        className="block text-[10px] font-black tracking-[0.12em] uppercase mb-1.5"
+                                        className="block text-[11px] font-black tracking-[0.12em] uppercase mb-2"
                                         style={{color: 'hsl(var(--muted-foreground))'}}
                                     >Email Address</label>
                                     <div className="relative">
                                         <Mail
-                                            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
+                                            className="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px]"
                                             style={{color: 'hsl(var(--muted-foreground))'}}
                                         />
                                         <Input
@@ -341,7 +341,7 @@ const ConnectPage = () => {
                                             onChange={(e) => setEmail(e.target.value)}
                                             placeholder="king@example.com"
                                             required
-                                            className="pl-9 h-10"
+                                            className="pl-11 h-12 text-[14px] font-semibold"
                                         />
                                     </div>
                                 </div>
@@ -356,23 +356,23 @@ const ConnectPage = () => {
                                         >
                                             {/* Password */}
                                             <div>
-                                                <div className="flex items-center justify-between mb-1.5">
+                                                <div className="flex items-center justify-between mb-2">
                                                     <label
                                                         htmlFor="password"
-                                                        className="text-[10px] font-black tracking-[0.12em] uppercase"
+                                                        className="text-[11px] font-black tracking-[0.12em] uppercase"
                                                         style={{color: 'hsl(var(--muted-foreground))'}}
                                                     >Password</label>
                                                     {!isRegister && (
                                                         <Link
                                                             to="/auth/reset-password"
-                                                            className="text-[10px] font-semibold transition-colors"
+                                                            className="text-[11px] font-semibold transition-colors"
                                                             style={{color: 'hsl(var(--primary))'}}
                                                         >Forgot?</Link>
                                                     )}
                                                 </div>
                                                 <div className="relative">
                                                     <Lock
-                                                        className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
+                                                        className="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px]"
                                                         style={{color: 'hsl(var(--muted-foreground))'}}
                                                     />
                                                     <Input
@@ -382,16 +382,16 @@ const ConnectPage = () => {
                                                         onChange={(e) => setPassword(e.target.value)}
                                                         placeholder="••••••••"
                                                         required
-                                                        className="pl-9 pr-10 h-10"
+                                                        className="pl-11 pr-10 h-12 text-[14px] font-semibold"
                                                     />
                                                     <button
                                                         type="button"
                                                         onClick={() => setShowPassword(!showPassword)}
-                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                                                     >
                                                         {showPassword
-                                                            ? <EyeOff className="w-4 h-4"/>
-                                                            : <Eye className="w-4 h-4"/>}
+                                                            ? <EyeOff className="w-[18px] h-[18px]"/>
+                                                            : <Eye className="w-[18px] h-[18px]"/>}
                                                     </button>
                                                 </div>
                                             </div>
@@ -401,12 +401,12 @@ const ConnectPage = () => {
                                                 <div>
                                                     <label
                                                         htmlFor="confirm"
-                                                        className="block text-[10px] font-black tracking-[0.12em] uppercase mb-1.5"
+                                                        className="block text-[11px] font-black tracking-[0.12em] uppercase mb-2"
                                                         style={{color: 'hsl(var(--muted-foreground))'}}
                                                     >Confirm Password</label>
                                                     <div className="relative">
                                                         <Lock
-                                                            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
+                                                            className="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px]"
                                                             style={{color: 'hsl(var(--muted-foreground))'}}
                                                         />
                                                         <Input
@@ -416,7 +416,7 @@ const ConnectPage = () => {
                                                             onChange={(e) => setConfirmPassword(e.target.value)}
                                                             placeholder="••••••••"
                                                             required
-                                                            className="pl-9 h-10"
+                                                            className="pl-11 h-12 text-[14px] font-semibold"
                                                         />
                                                     </div>
                                                 </div>
@@ -429,13 +429,8 @@ const ConnectPage = () => {
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="w-full h-11 flex items-center justify-center gap-2 text-[12px] font-black tracking-[0.1em] uppercase transition-all duration-120 active:scale-[0.98] disabled:opacity-50"
-                                    style={{
-                                        background: 'var(--gradient-primary)',
-                                        color: '#fff',
-                                        boxShadow: '0 4px 20px hsl(214 100% 58% / 0.4)',
-                                        marginTop: '8px',
-                                    }}
+                                    className="w-full h-13 flex items-center justify-center gap-2 text-[13px] btn-gold disabled:opacity-50 disabled:pointer-events-none"
+                                    style={{marginTop: '8px'}}
                                 >
                                     {isLoading ? (
                                         <div

@@ -17,6 +17,12 @@
     <link href="/favicon.svg" rel="icon" type="image/svg+xml"/>
     <link href="/favicon.svg" rel="shortcut icon" type="image/svg+xml"/>
 
+    <!-- Preconnect — Supabase & Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link rel="dns-prefetch" href="https://*.supabase.co"/>
+    <link rel="preconnect" href="https://*.supabase.co" crossorigin/>
+
     <!-- PWA -->
     <link href="/manifest.webmanifest" rel="manifest"/>
     <meta content="yes" name="mobile-web-app-capable"/>
@@ -42,14 +48,53 @@
           name="twitter:description">
 
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com" rel="preconnect"/>
-    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect"/>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
           rel="stylesheet"/>
+
+    <style>
+        /* Critical inline splash — shown before JS loads */
+        #root:empty ~ .splash-screen,
+        #root:empty + .splash-screen { display: flex; }
+        .splash-screen {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #0B0B0D;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 24px;
+            font-family: 'Outfit', system-ui, sans-serif;
+        }
+        .splash-ring {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent 0%, #D4A853 25%, #F5D98A 40%, #D4A853 55%, transparent 75%);
+            -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+            mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+            animation: splash-spin 1s linear infinite;
+        }
+        @keyframes splash-spin { to { transform: rotate(360deg); } }
+        .splash-text {
+            color: rgba(212, 168, 83, 0.7);
+            font-size: 12px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            font-weight: 500;
+            animation: splash-pulse 2s ease-in-out infinite;
+        }
+        @keyframes splash-pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+    </style>
 </head>
 
 <body>
 <div id="root"></div>
+<!-- Splash screen — visible until React hydrates -->
+<div class="splash-screen" aria-hidden="true">
+    <div class="splash-ring"></div>
+    <div class="splash-text">Find Your King</div>
+</div>
 <script src="/src/main.tsx" type="module"></script>
 </body>
 </html>
