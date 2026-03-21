@@ -51,8 +51,8 @@ const PrivacyPolicy = () => {
                         </div>
                         <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
                             <Mail className="w-4 h-4"/>
-                            <a href="mailto:privacy@findyourking.com" className="text-primary hover:underline">
-                                privacy@findyourking.com
+                            <a href="mailto:privacy@fyking.men" className="text-primary hover:underline">
+                                privacy@fyking.men
                             </a>
                         </div>
                     </div>
@@ -134,8 +134,8 @@ const PrivacyPolicy = () => {
                     </ul>
                     <p className="text-muted-foreground">
                         To exercise these rights, visit your account settings or contact us at{' '}
-                        <a href="mailto:privacy@findyourking.com" className="text-primary hover:underline">
-                            privacy@findyourking.com
+                        <a href="mailto:privacy@fyking.men" className="text-primary hover:underline">
+                            privacy@fyking.men
                         </a>
                     </p>
 
@@ -175,10 +175,10 @@ const PrivacyPolicy = () => {
                         <p className="text-foreground font-medium">Data Protection Officer</p>
                         <p className="text-sm text-muted-foreground">Find Your King Ltd.</p>
                         <a
-                            href="mailto:dpo@findyourking.com"
+                            href="mailto:dpo@fyking.men"
                             className="text-sm text-primary hover:underline"
                         >
-                            dpo@findyourking.com
+                            dpo@fyking.men
                         </a>
                     </div>
 

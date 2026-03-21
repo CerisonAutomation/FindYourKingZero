@@ -257,8 +257,8 @@ export const DataManagement = () => {
                 <p className="text-xs text-muted-foreground">
                     Your data rights are protected under the EU General Data Protection Regulation (GDPR).
                     For questions about your data, contact our Data Protection Officer at{' '}
-                    <a href="mailto:privacy@findyourking.com" className="text-primary hover:underline">
-                        privacy@findyourking.com
+                    <a href="mailto:privacy@fyking.men" className="text-primary hover:underline">
+                        privacy@fyking.men
                     </a>
                 </p>
             </div>

@@ -186,8 +186,8 @@ const TermsOfService = () => {
                     <h2 className="text-foreground">18. Contact</h2>
                     <p className="text-muted-foreground">
                         For questions about these Terms of Service, contact us at{' '}
-                        <a href="mailto:legal@findyourking.com" className="text-primary hover:underline">
-                            legal@findyourking.com
+                        <a href="mailto:legal@fyking.men" className="text-primary hover:underline">
+                            legal@fyking.men
                         </a>
                     </p>
                 </div>

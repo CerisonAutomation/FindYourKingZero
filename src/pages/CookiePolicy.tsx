@@ -216,8 +216,8 @@ const CookiePolicy = () => {
                     <h2 className="text-foreground">8. Contact Us</h2>
                     <p className="text-muted-foreground">
                         If you have questions about our use of cookies, contact us at{' '}
-                        <a href="mailto:privacy@findyourking.com" className="text-primary hover:underline">
-                            privacy@findyourking.com
+                        <a href="mailto:privacy@fyking.men" className="text-primary hover:underline">
+                            privacy@fyking.men
                         </a>
                     </p>
                 </div>
