@@ -1,5 +1,5 @@
 -- =====================================================
--- ZENITH UPGRADE v∞.Ω — MACHOBB/ROMEO Parity + Leaflet + Voice + QuickShare
+-- ZENITH UPGRADE v∞.Ω — Find Your King + Leaflet + Voice + QuickShare
 -- 12 new/expanded tables + 3 functions + RLS + indexes
 -- =====================================================
 
@@ -57,7 +57,7 @@ CREATE POLICY "templates_owner" ON public.message_templates
   FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 CREATE INDEX idx_templates_user ON public.message_templates(user_id, category);
 
--- ── 4. User Kinks & Limits (MACHOBB/ROMEO Parity) ────────────────────────────
+-- ── 4. User Kinks & Limits (Find Your King) ────────────────────────────
 CREATE TABLE IF NOT EXISTS public.user_kinks (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id uuid REFERENCES public.profiles(user_id) ON DELETE CASCADE,

@@ -2,7 +2,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
    QUANTUM APEX ORACLE LEVEL - ULTIMATE HYBRID P2P DATING ENGINE
    FIND YOUR KING ZERO - Beyond Enterprise Privacy-First Dating Architecture
-   Combines Trystero + Supabase + FIND YOUR KING + ROMEO + Meateor + Advanced Quantum Features
+   Combines Trystero + Supabase + FIND YOUR KING + Find Your King Advanced Features
    ═══════════════════════════════════════════════════════════════════════════════
  */
 
