@@ -42,6 +42,23 @@ jobs:
         run: bunx --bun npm audit --audit-level high
         continue-on-error: true
 
+  # =====================================================
+  # CODEQL (Advanced Security — skipped if unavailable)
+  # =====================================================
+  codeql:
+    runs-on: ubuntu-latest
+    needs: code-quality
+    continue-on-error: true
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: CodeQL Analysis
         uses: github/codeql-action/init@v3
         with:
