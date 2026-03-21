@@ -1,0 +1,96 @@
+<!-- =====================================================
+Find Your King — Branded Email Templates
+Use these in Supabase Dashboard → Authentication → Email Templates
+===================================================== -->
+
+<!-- CONFIRM SIGN UP -->
+<div style="background:#0a0a1a;padding:40px 20px;font-family:'Outfit',Arial,sans-serif;">
+  <div style="max-width:480px;margin:0 auto;background:#111122;border-radius:16px;overflow:hidden;border:1px solid #1a1a3a;">
+    
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#f5a623,#e8940c);padding:32px;text-align:center;">
+      <div style="font-size:32px;margin-bottom:8px;">👑</div>
+      <h1 style="color:#0a0a1a;font-size:24px;font-weight:900;margin:0;letter-spacing:-0.02em;">FIND YOUR KING</h1>
+    </div>
+    
+    <!-- Body -->
+    <div style="padding:32px;">
+      <h2 style="color:#f0f0f0;font-size:20px;font-weight:800;margin:0 0 16px;">Confirm your email</h2>
+      <p style="color:#999;font-size:14px;line-height:1.6;margin:0 0 24px;">
+        Welcome to the kingdom! Click the button below to verify your email and claim your throne.
+      </p>
+      
+      <!-- CTA Button -->
+      <a href="{{ .ConfirmationURL }}" style="display:block;background:linear-gradient(135deg,#f5a623,#e8940c);color:#0a0a1a;text-align:center;padding:14px 24px;border-radius:12px;text-decoration:none;font-weight:800;font-size:14px;letter-spacing:0.025em;">
+        Confirm Email Address
+      </a>
+      
+      <p style="color:#666;font-size:12px;line-height:1.5;margin:24px 0 0;">
+        If the button doesn't work, copy and paste this link:<br>
+        <a href="{{ .ConfirmationURL }}" style="color:#f5a623;word-break:break-all;">{{ .ConfirmationURL }}</a>
+      </p>
+    </div>
+    
+    <!-- Footer -->
+    <div style="padding:16px 32px;border-top:1px solid #1a1a3a;text-align:center;">
+      <p style="color:#444;font-size:11px;margin:0;">
+        Find Your King — Privacy-first dating for kings<br>
+        <a href="https://fyking.men" style="color:#f5a623;text-decoration:none;">fyking.men</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- MAGIC LINK -->
+<div style="background:#0a0a1a;padding:40px 20px;font-family:'Outfit',Arial,sans-serif;">
+  <div style="max-width:480px;margin:0 auto;background:#111122;border-radius:16px;overflow:hidden;border:1px solid #1a1a3a;">
+    <div style="background:linear-gradient(135deg,#f5a623,#e8940c);padding:32px;text-align:center;">
+      <div style="font-size:32px;margin-bottom:8px;">✨</div>
+      <h1 style="color:#0a0a1a;font-size:24px;font-weight:900;margin:0;">FIND YOUR KING</h1>
+    </div>
+    <div style="padding:32px;">
+      <h2 style="color:#f0f0f0;font-size:20px;font-weight:800;margin:0 0 16px;">Your magic link</h2>
+      <p style="color:#999;font-size:14px;line-height:1.6;margin:0 0 24px;">
+        Click below to sign in instantly — no password needed.
+      </p>
+      <a href="{{ .ConfirmationURL }}" style="display:block;background:linear-gradient(135deg,#f5a623,#e8940c);color:#0a0a1a;text-align:center;padding:14px 24px;border-radius:12px;text-decoration:none;font-weight:800;font-size:14px;">
+        Sign In Now
+      </a>
+      <p style="color:#666;font-size:12px;margin:24px 0 0;">
+        This link expires in 24 hours. If you didn't request this, ignore this email.
+      </p>
+    </div>
+    <div style="padding:16px 32px;border-top:1px solid #1a1a3a;text-align:center;">
+      <p style="color:#444;font-size:11px;margin:0;">
+        <a href="https://fyking.men" style="color:#f5a623;text-decoration:none;">fyking.men</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- RESET PASSWORD -->
+<div style="background:#0a0a1a;padding:40px 20px;font-family:'Outfit',Arial,sans-serif;">
+  <div style="max-width:480px;margin:0 auto;background:#111122;border-radius:16px;overflow:hidden;border:1px solid #1a1a3a;">
+    <div style="background:linear-gradient(135deg,#f5a623,#e8940c);padding:32px;text-align:center;">
+      <div style="font-size:32px;margin-bottom:8px;">🔐</div>
+      <h1 style="color:#0a0a1a;font-size:24px;font-weight:900;margin:0;">FIND YOUR KING</h1>
+    </div>
+    <div style="padding:32px;">
+      <h2 style="color:#f0f0f0;font-size:20px;font-weight:800;margin:0 0 16px;">Reset your password</h2>
+      <p style="color:#999;font-size:14px;line-height:1.6;margin:0 0 24px;">
+        Click below to set a new password for your account.
+      </p>
+      <a href="{{ .ConfirmationURL }}" style="display:block;background:linear-gradient(135deg,#f5a623,#e8940c);color:#0a0a1a;text-align:center;padding:14px 24px;border-radius:12px;text-decoration:none;font-weight:800;font-size:14px;">
+        Reset Password
+      </a>
+      <p style="color:#666;font-size:12px;margin:24px 0 0;">
+        If you didn't request a password reset, your account is safe. Ignore this email.
+      </p>
+    </div>
+    <div style="padding:16px 32px;border-top:1px solid #1a1a3a;text-align:center;">
+      <p style="color:#444;font-size:11px;margin:0;">
+        <a href="https://fyking.men" style="color:#f5a623;text-decoration:none;">fyking.men</a>
+      </p>
+    </div>
+  </div>
+</div>
