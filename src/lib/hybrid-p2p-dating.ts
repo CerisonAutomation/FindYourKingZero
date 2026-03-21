@@ -12,7 +12,7 @@ import ngeohash from 'ngeohash';
 import { ZeroKnowledgeEncryption } from './encryption/ZeroKnowledgeEncryption';
 
 // ── ENTERPRISE CONFIGURATION INTERFACES ────────────────────────────────────────
-export type P = 2PDatingConfig {
+export type P2PDatingConfig = {
   readonly appId: string;
   readonly supabaseUrl: string;
   readonly supabaseAnonKey: string;

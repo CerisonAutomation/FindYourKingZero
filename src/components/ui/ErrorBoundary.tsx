@@ -87,7 +87,7 @@ export class ErrorBoundary extends Component<Props, State> {
         `Component Stack: ${this.state.errorInfo?.componentStack ?? ''}`,
       ].join('\n')
     );
-    window.open(`mailto:support@findyourkingzero.com?subject=${subject}&body=${body}`);
+    window.open(`mailto:support@fyking.men?subject=${subject}&body=${body}`);
   };
 
   public override render(): ReactNode {
@@ -171,10 +171,10 @@ export class ErrorBoundary extends Component<Props, State> {
           <p className="text-xs text-muted-foreground">
             Need help?{' '}
             <a
-              href="mailto:support@findyourkingzero.com"
+              href="mailto:support@fyking.men"
               className="underline hover:text-foreground transition-colors"
             >
-              support@findyourkingzero.com
+              support@fyking.men
             </a>
             {this.state.errorId && (
               <span className="block mt-1 font-mono">Ref: {this.state.errorId}</span>

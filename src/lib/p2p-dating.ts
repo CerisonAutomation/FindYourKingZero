@@ -7,7 +7,7 @@ import { Room, Peer } from 'peerjs'
 import { useEffect, useState, useCallback, useRef } from 'react'
 
 // Types
-export type P = 2PProfile {
+export type P2PProfile = {
   id: string
   name: string
   age: number
@@ -26,7 +26,7 @@ export type P = 2PProfile {
   pronouns: string
 }
 
-export type P = 2PMessage {
+export type P2PMessage = {
   id: string
   senderId: string
   receiverId: string
@@ -45,7 +45,7 @@ export type P = 2PMessage {
   }
 }
 
-export type P = 2PCallState {
+export type P2PCallState = {
   status: 'idle' | 'calling' | 'connected' | 'ended'
   peerId?: string
   stream?: MediaStream

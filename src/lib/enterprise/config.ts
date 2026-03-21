@@ -55,10 +55,10 @@ export const APP = {
   author: 'FindYourKingZero Enterprise Team',
 
   // URLs
-  website: 'https://findyourkingzero.com',
-  support: 'support@findyourkingzero.com',
-  privacy: 'https://findyourkingzero.com/privacy',
-  terms: 'https://findyourkingzero.com/terms',
+  website: 'https://fyking.men',
+  support: 'support@fyking.men',
+  privacy: 'https://fyking.men/privacy',
+  terms: 'https://fyking.men/terms',
 
   // Social
   twitter: '@findyourkingzero',

@@ -16,7 +16,7 @@ const PaginationConfigSchema = z.object({
   enableSmartLoading: z.boolean().default(true),
 });
 
-export interface PaginationConfig z.infer<typeof PaginationConfigSchema>;
+export type PaginationConfig = z.infer<typeof PaginationConfigSchema>;
 
 // Enhanced pagination state interface
 export interface EnterprisePaginationState <T = any> {

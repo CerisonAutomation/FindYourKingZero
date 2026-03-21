@@ -14,7 +14,7 @@ import ngeohash from 'ngeohash';
 import { ZeroKnowledgeEncryption } from './encryption/ZeroKnowledgeEncryption';
 
 // ── QUANTUM INTERFACES ────────────────────────────────────────────────────────
-export type QuantumP = 2PDatingConfig {
+export type QuantumP2PDatingConfig = {
   readonly appId: string;
   readonly supabaseUrl: string;
   readonly supabaseAnonKey: string;
@@ -159,7 +159,7 @@ export type SocialLinks  = {
   readonly blockchain?: string;
 }
 
-export type P = 2PMessage {
+export type P2PMessage = {
   readonly id: string;
   readonly fromUserId: string;
   readonly toUserId: string;
@@ -175,7 +175,7 @@ export type P = 2PMessage {
   readonly blockchainHash?: string;
 }
 
-export type P = 2PCall {
+export type P2PCall = {
   readonly id: string;
   readonly fromUserId: string;
   readonly toUserId: string;

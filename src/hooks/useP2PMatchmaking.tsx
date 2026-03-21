@@ -34,7 +34,7 @@ export type PeerConnection  = {
   lastActivity: number
 }
 
-export type P = 2PMessage {
+export type P2PMessage = {
   id: string
   type: 'text' | 'image' | 'video' | 'audio' | 'file'
   content: string
@@ -66,7 +66,7 @@ export type MatchmakingRoom  = {
   }
 }
 
-export type P = 2PState {
+export type P2PState = {
   isConnected: boolean
   isDiscovering: bool
   peers: Map<string, PeerConnection>

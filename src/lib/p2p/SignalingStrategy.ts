@@ -19,7 +19,7 @@ export type SignalingConfig  = {
   compressionEnabled?: boolean
 }
 
-export type P = 2PMessage {
+export type P2PMessage = {
   id: string
   senderId: string
   recipientId: string
@@ -31,7 +31,7 @@ export type P = 2PMessage {
   signature?: string
 }
 
-export type P = 2PCall {
+export type P2PCall = {
   id: string
   initiatorId: string
   recipientId: string
