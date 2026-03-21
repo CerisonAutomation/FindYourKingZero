@@ -8,7 +8,8 @@
     "build": "vite build --mode production",
     "build:analyze": "vite build && npx vite-bundle-analyzer dist",
     "preview": "vite preview",
-    "test": "vitest",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "test:coverage": "vitest run --coverage",
@@ -70,7 +71,7 @@
   "devDependencies": {
     "@capacitor/cli": "^7.0.0",
     "@playwright/test": "^1.52.0",
-    "@tailwindcss/typography": "^0.5.16",
+    "@tailwindcss/vite": "^4.1.0",
     "@types/node": "^22.16.5",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
@@ -100,15 +101,7 @@
     "bun": ">=1.0.0"
   },
   "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "production": [">0.2%", "not dead", "not op_mini all"],
+    "development": ["last 1 chrome version", "last 1 firefox version", "last 1 safari version"]
   }
 }
