@@ -4,7 +4,7 @@
   "description": "Modern dating platform for the LGBTQ+ community with privacy-first architecture",
   "type": "module",
   "scripts": {
-    "dev": "vite --mode development",
+    "dev": "vite --mode development --port 5000 --host 0.0.0.0",
     "build": "vite build --mode production",
     "build:analyze": "vite build && npx vite-bundle-analyzer dist",
     "preview": "vite preview",

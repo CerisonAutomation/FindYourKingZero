@@ -41,8 +41,14 @@ Stored as Replit env vars (shared):
 
 ## Development
 
-- Run: `npm run dev` (starts Vite dev server on port 5000)
+- Run: `npm run dev` (starts Vite dev server on port 5000, bound to 0.0.0.0 for Replit preview)
 - Build: `npm run build`
+
+## Replit Configuration
+
+- Vite dev server runs on port 5000 with host `0.0.0.0` (required for Replit preview pane)
+- `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are set as shared environment variables
+- Workflow: `Start application` runs `npm run dev`
 
 ## Key Features
 
