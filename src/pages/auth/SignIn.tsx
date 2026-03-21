@@ -8,11 +8,12 @@ import {Label} from '@/components/ui/label';
 import {Alert, AlertDescription} from '@/components/ui/alert';
 import {useAuth} from '@/hooks/useAuth';
 import {useToast} from '@/hooks/use-toast';
+import {AuthErrorCode} from '@/integrations/supabase/client';
 
 export default function SignIn() {
     const navigate = useNavigate();
     const {toast} = useToast();
-    const {signIn, isLoading, error, clearError, isInitialized} = useAuth();
+    const {signIn, isLoading, error, errorCode, clearError, isInitialized} = useAuth();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -146,8 +147,14 @@ export default function SignIn() {
                         <Alert variant="destructive">
                             <AlertCircle className="h-4 w-4" />
                             <AlertDescription>
-                                {error.message === 'Invalid login credentials'
+                                {errorCode === AuthErrorCode.INVALID_CREDENTIALS
                                     ? 'Invalid email or password. Please try again.'
+                                    : errorCode === AuthErrorCode.RATE_LIMITED
+                                    ? 'Too many attempts. Please wait a moment and try again.'
+                                    : errorCode === AuthErrorCode.EMAIL_NOT_CONFIRMED
+                                    ? 'Please confirm your email before signing in.'
+                                    : errorCode === AuthErrorCode.NETWORK_ERROR
+                                    ? 'Network error. Please check your connection and try again.'
                                     : error.message
                                 }
                             </AlertDescription>

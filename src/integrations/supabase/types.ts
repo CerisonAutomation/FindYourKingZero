@@ -2195,7 +2195,381 @@ export type Database = {
                 }
                 Relationships: []
             }
-        }
+
+            // =====================================================
+            // MISSING TABLES — Added for full schema coverage
+            // =====================================================
+
+            threads: {
+                Row: {
+                    id: string
+                    title: string | null
+                    created_by: string
+                    is_private: boolean
+                    max_members: number | null
+                    metadata: Json
+                    created_at: string
+                    updated_at: string
+                }
+                Insert: {
+                    id?: string
+                    title?: string | null
+                    created_by: string
+                    is_private?: boolean
+                    max_members?: number | null
+                    metadata?: Json
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: {
+                    id?: string
+                    title?: string | null
+                    created_by?: string
+                    is_private?: boolean
+                    max_members?: number | null
+                    metadata?: Json
+                    created_at?: string
+                    updated_at?: string
+                }
+                Relationships: []
+            }
+
+            thread_members: {
+                Row: {
+                    id: string
+                    thread_id: string
+                    user_id: string
+                    role: string
+                    joined_at: string
+                    last_read_at: string | null
+                    is_muted: boolean
+                    metadata: Json
+                }
+                Insert: {
+                    id?: string
+                    thread_id: string
+                    user_id: string
+                    role?: string
+                    joined_at?: string
+                    last_read_at?: string | null
+                    is_muted?: boolean
+                    metadata?: Json
+                }
+                Update: {
+                    id?: string
+                    thread_id?: string
+                    user_id?: string
+                    role?: string
+                    joined_at?: string
+                    last_read_at?: string | null
+                    is_muted?: boolean
+                    metadata?: Json
+                }
+                Relationships: [{
+                    foreignKeyName: "thread_members_thread_id_fkey"
+                    columns: ["thread_id"]
+                    isOneToOne: false
+                    referencedRelation: "threads"
+                    referencedColumns: ["id"]
+                }]
+            }
+
+            user_favorites: {
+                Row: {
+                    id: string
+                    user_id: string
+                    favorited_user_id: string
+                    created_at: string | null
+                }
+                Insert: {
+                    id?: string
+                    user_id: string
+                    favorited_user_id: string
+                    created_at?: string | null
+                }
+                Update: {
+                    id?: string
+                    user_id?: string
+                    favorited_user_id?: string
+                    created_at?: string | null
+                }
+                Relationships: []
+            }
+
+            user_blocks: {
+                Row: {
+                    id: string
+                    user_id: string
+                    blocked_user_id: string
+                    reason: string | null
+                    created_at: string | null
+                }
+                Insert: {
+                    id?: string
+                    user_id: string
+                    blocked_user_id: string
+                    reason?: string | null
+                    created_at?: string | null
+                }
+                Update: {
+                    id?: string
+                    user_id?: string
+                    blocked_user_id?: string
+                    reason?: string | null
+                    created_at?: string | null
+                }
+                Relationships: []
+            }
+
+            friend_requests: {
+                Row: {
+                    id: string
+                    sender_id: string
+                    receiver_id: string
+                    status: string
+                    message: string | null
+                    created_at: string | null
+                    updated_at: string | null
+                }
+                Insert: {
+                    id?: string
+                    sender_id: string
+                    receiver_id: string
+                    status?: string
+                    message?: string | null
+                    created_at?: string | null
+                    updated_at?: string | null
+                }
+                Update: {
+                    id?: string
+                    sender_id?: string
+                    receiver_id?: string
+                    status?: string
+                    message?: string | null
+                    created_at?: string | null
+                    updated_at?: string | null
+                }
+                Relationships: []
+            }
+
+            friendships: {
+                Row: {
+                    id: string
+                    user_id: string
+                    friend_id: string
+                    status: string
+                    created_at: string | null
+                    updated_at: string | null
+                }
+                Insert: {
+                    id?: string
+                    user_id: string
+                    friend_id: string
+                    status?: string
+                    created_at?: string | null
+                    updated_at?: string | null
+                }
+                Update: {
+                    id?: string
+                    user_id?: string
+                    friend_id?: string
+                    status?: string
+                    created_at?: string | null
+                    updated_at?: string | null
+                }
+                Relationships: []
+            }
+
+            blog_posts: {
+                Row: {
+                    id: string
+                    author_id: string
+                    title: string
+                    slug: string
+                    content: string
+                    excerpt: string | null
+                    cover_image: string | null
+                    tags: string[]
+                    category: string | null
+                    is_published: boolean
+                    published_at: string | null
+                    view_count: number
+                    like_count: number
+                    comment_count: number
+                    metadata: Json
+                    created_at: string
+                    updated_at: string
+                }
+                Insert: {
+                    id?: string
+                    author_id: string
+                    title: string
+                    slug: string
+                    content: string
+                    excerpt?: string | null
+                    cover_image?: string | null
+                    tags?: string[]
+                    category?: string | null
+                    is_published?: boolean
+                    published_at?: string | null
+                    view_count?: number
+                    like_count?: number
+                    comment_count?: number
+                    metadata?: Json
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: {
+                    id?: string
+                    author_id?: string
+                    title?: string
+                    slug?: string
+                    content?: string
+                    excerpt?: string | null
+                    cover_image?: string | null
+                    tags?: string[]
+                    category?: string | null
+                    is_published?: boolean
+                    published_at?: string | null
+                    view_count?: number
+                    like_count?: number
+                    comment_count?: number
+                    metadata?: Json
+                    created_at?: string
+                    updated_at?: string
+                }
+                Relationships: []
+            }
+
+            user_subscriptions: {
+                Row: {
+                    id: string
+                    user_id: string
+                    subscription_id: string
+                    tier: SubscriptionTier
+                    status: string
+                    starts_at: string
+                    ends_at: string | null
+                    auto_renew: boolean
+                    payment_method: string | null
+                    metadata: Json
+                    created_at: string
+                    updated_at: string
+                }
+                Insert: {
+                    id?: string
+                    user_id: string
+                    subscription_id: string
+                    tier: SubscriptionTier
+                    status?: string
+                    starts_at?: string
+                    ends_at?: string | null
+                    auto_renew?: boolean
+                    payment_method?: string | null
+                    metadata?: Json
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: {
+                    id?: string
+                    user_id?: string
+                    subscription_id?: string
+                    tier?: SubscriptionTier
+                    status?: string
+                    starts_at?: string
+                    ends_at?: string | null
+                    auto_renew?: boolean
+                    payment_method?: string | null
+                    metadata?: Json
+                    created_at?: string
+                    updated_at?: string
+                }
+                Relationships: [{
+                    foreignKeyName: "user_subscriptions_subscription_id_fkey"
+                    columns: ["subscription_id"]
+                    isOneToOne: false
+                    referencedRelation: "subscriptions"
+                    referencedColumns: ["id"]
+                }]
+            }
+
+            user_roles: {
+                Row: {
+                    id: string
+                    user_id: string
+                    role: string
+                    granted_by: string | null
+                    granted_at: string
+                    expires_at: string | null
+                    is_active: boolean
+                    metadata: Json
+                }
+                Insert: {
+                    id?: string
+                    user_id: string
+                    role: string
+                    granted_by?: string | null
+                    granted_at?: string
+                    expires_at?: string | null
+                    is_active?: boolean
+                    metadata?: Json
+                }
+                Update: {
+                    id?: string
+                    user_id?: string
+                    role?: string
+                    granted_by?: string | null
+                    granted_at?: string
+                    expires_at?: string | null
+                    is_active?: boolean
+                    metadata?: Json
+                }
+                Relationships: []
+            }
+
+            posts: {
+                Row: {
+                    id: string
+                    author_id: string
+                    content: string
+                    media_urls: string[]
+                    is_public: boolean
+                    like_count: number
+                    comment_count: number
+                    share_count: number
+                    metadata: Json
+                    created_at: string
+                    updated_at: string
+                }
+                Insert: {
+                    id?: string
+                    author_id: string
+                    content: string
+                    media_urls?: string[]
+                    is_public?: boolean
+                    like_count?: number
+                    comment_count?: number
+                    share_count?: number
+                    metadata?: Json
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: {
+                    id?: string
+                    author_id?: string
+                    content?: string
+                    media_urls?: string[]
+                    is_public?: boolean
+                    like_count?: number
+                    comment_count?: number
+                    share_count?: number
+                    metadata?: Json
+                    created_at?: string
+                    updated_at?: string
+                }
+                Relationships: []
+            }
+
         Views: {
             [_ in never]: never
         }
@@ -2209,4 +2583,95 @@ export type Database = {
             [_ in never]: never
         }
     }
+}
+
+// =====================================================
+// CONVENIENCE TYPE ALIASES
+// =====================================================
+type PublicTables = Database['public']['Tables'];
+
+/** Extract the Row type for a given table name */
+export type TableRow<T extends keyof PublicTables> = PublicTables[T]['Row'];
+
+/** Extract the Insert type for a given table name */
+export type TableInsert<T extends keyof PublicTables> = PublicTables[T]['Insert'];
+
+/** Extract the Update type for a given table name */
+export type TableUpdate<T extends keyof PublicTables> = PublicTables[T]['Update'];
+
+// ── Row types ──────────────────────────────────────────────────────────────────
+export type Profile = TableRow<'profiles'>;
+export type ProfilePhoto = TableRow<'profile_photos'>;
+export type ProfileView = TableRow<'profile_views'>;
+export type Match = TableRow<'matches'>;
+export type Favorite = TableRow<'favorites'>;
+export type UserFavorite = TableRow<'user_favorites'>;
+export type Conversation = TableRow<'conversations'>;
+export type Thread = TableRow<'threads'>;
+export type ThreadMember = TableRow<'thread_members'>;
+export type Message = TableRow<'messages'>;
+export type MessageReaction = TableRow<'message_reactions'>;
+export type Event = TableRow<'events'>;
+export type EventAttendee = TableRow<'event_attendees'>;
+export type Party = TableRow<'parties'>;
+export type PartyRsvp = TableRow<'party_rsvps'>;
+export type Album = TableRow<'albums'>;
+export type AlbumPhoto = TableRow<'album_photos'>;
+export type Post = TableRow<'posts'>;
+export type BlogPost = TableRow<'blog_posts'>;
+export type Booking = TableRow<'bookings'>;
+export type Subscription = TableRow<'subscriptions'>;
+export type UserSubscription = TableRow<'user_subscriptions'>;
+export type Block = TableRow<'blocks'>;
+export type UserBlock = TableRow<'user_blocks'>;
+export type Report = TableRow<'reports'>;
+export type FriendRequest = TableRow<'friend_requests'>;
+export type Friendship = TableRow<'friendships'>;
+export type Notification = TableRow<'notifications'>;
+export type PushSubscription = TableRow<'push_subscriptions'>;
+export type GdprConsentRecord = TableRow<'gdpr_consent_records'>;
+export type GdprDataRequest = TableRow<'gdpr_data_requests'>;
+export type VerificationDocument = TableRow<'verification_documents'>;
+export type VerificationRequest = TableRow<'verification_requests'>;
+export type UserRole = TableRow<'user_roles'>;
+export type MeetNow = TableRow<'meet_now'>;
+
+// ── Insert types ───────────────────────────────────────────────────────────────
+export type ProfileInsert = TableInsert<'profiles'>;
+export type MessageInsert = TableInsert<'messages'>;
+export type ConversationInsert = TableInsert<'conversations'>;
+export type MatchInsert = TableInsert<'matches'>;
+export type EventInsert = TableInsert<'events'>;
+export type NotificationInsert = TableInsert<'notifications'>;
+export type ReportInsert = TableInsert<'reports'>;
+export type FriendRequestInsert = TableInsert<'friend_requests'>;
+export type BookingInsert = TableInsert<'bookings'>;
+export type BlogPostInsert = TableInsert<'blog_posts'>;
+
+// ── Update types ───────────────────────────────────────────────────────────────
+export type ProfileUpdate = TableUpdate<'profiles'>;
+export type MessageUpdate = TableUpdate<'messages'>;
+export type ConversationUpdate = TableUpdate<'conversations'>;
+export type MatchUpdate = TableUpdate<'matches'>;
+export type EventUpdate = TableUpdate<'events'>;
+export type NotificationUpdate = TableUpdate<'notifications'>;
+
+// ── Common query result types ──────────────────────────────────────────────────
+export interface PaginatedResult<T> {
+    data: T[];
+    count: number | null;
+    hasMore: boolean;
+    page: number;
+    pageSize: number;
+}
+
+export interface QueryFilters {
+    [key: string]: string | number | boolean | string[] | null | undefined;
+}
+
+export interface PaginationParams {
+    page?: number;
+    pageSize?: number;
+    orderBy?: string;
+    ascending?: boolean;
 }

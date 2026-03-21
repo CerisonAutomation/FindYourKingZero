@@ -8,11 +8,12 @@ import {Label} from '@/components/ui/label';
 import {Alert, AlertDescription} from '@/components/ui/alert';
 import {useAuth} from '@/hooks/useAuth';
 import {useToast} from '@/hooks/use-toast';
+import {AuthErrorCode} from '@/integrations/supabase/client';
 
 export default function SignUp() {
     const navigate = useNavigate();
     const {toast} = useToast();
-    const {signUp, isLoading, error, clearError, isInitialized} = useAuth();
+    const {signUp, isLoading, error, errorCode, clearError, isInitialized} = useAuth();
 
     const [displayName, setDisplayName] = useState('');
     const [email, setEmail] = useState('');
@@ -54,12 +55,10 @@ export default function SignUp() {
         try {
             const {error} = await signUp(email, password, displayName);
 
-            if (error) {
-                // Error is already handled by the auth hook
-                return;
+            if (!error) {
+                setSent(true);
             }
-
-            setSent(true);
+            // Error is displayed via the error state from useAuth
         } catch (err) {
             toast({
                 title: 'Sign up failed',
@@ -193,7 +192,9 @@ export default function SignUp() {
                         <Alert variant="destructive">
                             <AlertCircle className="h-4 w-4" />
                             <AlertDescription>
-                                {error.message.includes('User already registered')
+                                {errorCode === AuthErrorCode.RATE_LIMITED
+                                    ? 'Too many attempts. Please wait a moment and try again.'
+                                    : errorCode === AuthErrorCode.EMAIL_ALREADY_EXISTS
                                     ? 'An account with this email already exists. Try signing in instead.'
                                     : error.message
                                 }

@@ -1,10 +1,23 @@
 // =====================================================
-// ENTERPRISE ERROR BOUNDARY - PRODUCTION READY
-// Comprehensive error handling with Sentry + Logger
+// ENTERPRISE ERROR BOUNDARY — Sentry + Supabase + Logger
 // =====================================================
 import React, { Component, type ErrorInfo, type ReactNode } from 'react';
 import * as Sentry from '@sentry/react';
 import { log } from '@/lib/enterprise/Logger';
+
+// Lazy-import supabase to avoid circular deps and keep boundary lightweight
+let supabaseClient: typeof import('@/integrations/supabase/client').supabase | null = null;
+async function getSupabase() {
+  if (!supabaseClient) {
+    try {
+      const mod = await import('@/integrations/supabase/client');
+      supabaseClient = mod.supabase;
+    } catch {
+      // Supabase not available — degrade gracefully
+    }
+  }
+  return supabaseClient;
+}
 
 interface Props {
   children: ReactNode;
@@ -17,14 +30,15 @@ interface State {
   error: Error | null;
   errorInfo: ErrorInfo | null;
   errorId: string | null;
+  reported: boolean;
 }
 
 /**
  * Enterprise-grade React Error Boundary.
- * - Catches synchronous render errors in the child component tree.
- * - Reports to Sentry in production via captureException.
- * - Logs via the enterprise Logger singleton.
- * - Renders a recovery UI with retry / reload / report actions.
+ * - Catches synchronous render errors.
+ * - Reports to Sentry (production) + Supabase `error_reports` table.
+ * - Logs via enterprise Logger.
+ * - Renders recovery UI with retry / reload / report actions.
  */
 export class ErrorBoundary extends Component<Props, State> {
   public override state: State = {
@@ -32,6 +46,7 @@ export class ErrorBoundary extends Component<Props, State> {
     error: null,
     errorInfo: null,
     errorId: null,
+    reported: false,
   };
 
   public static getDerivedStateFromError(error: Error): Partial<State> {
@@ -49,7 +64,7 @@ export class ErrorBoundary extends Component<Props, State> {
       errorId: this.state.errorId,
     });
 
-    // 2. Sentry — always capture, tag with boundary errorId
+    // 2. Sentry
     Sentry.captureException(error, {
       extra: {
         componentStack: errorInfo.componentStack,
@@ -57,11 +72,36 @@ export class ErrorBoundary extends Component<Props, State> {
       },
     });
 
-    // 3. Store errorInfo for dev display
+    // 3. Supabase error reporting (fire-and-forget)
+    this.reportToSupabase(error, errorInfo);
+
+    // 4. Store errorInfo for dev display
     this.setState({ errorInfo });
 
-    // 4. Propagate to parent if needed
+    // 5. Propagate to parent
     this.props.onError?.(error, errorInfo);
+  }
+
+  private async reportToSupabase(error: Error, errorInfo: ErrorInfo): Promise<void> {
+    try {
+      const supabase = await getSupabase();
+      if (!supabase) return;
+
+      await supabase.from('error_reports').insert({
+        error_id: this.state.errorId,
+        message: error.message,
+        stack: error.stack ?? '',
+        component_stack: errorInfo.componentStack ?? '',
+        url: typeof window !== 'undefined' ? window.location.href : '',
+        user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+        environment: import.meta.env.MODE,
+        created_at: new Date().toISOString(),
+      });
+
+      this.setState({ reported: true });
+    } catch {
+      // Swallow — don't let reporting crash the error boundary
+    }
   }
 
   private handleRetry = (): void => {
@@ -70,12 +110,13 @@ export class ErrorBoundary extends Component<Props, State> {
       error: null,
       errorInfo: null,
       errorId: null,
+      reported: false,
     });
   };
 
   private handleReportIssue = (): void => {
     const subject = encodeURIComponent(
-      `Error Report: ${this.state.error?.message ?? 'Unknown Error'}`
+      `Error Report: ${this.state.error?.message ?? 'Unknown Error'}`,
     );
     const body = encodeURIComponent(
       [
@@ -85,7 +126,7 @@ export class ErrorBoundary extends Component<Props, State> {
         `Time: ${new Date().toISOString()}`,
         `Stack: ${this.state.error?.stack ?? ''}`,
         `Component Stack: ${this.state.errorInfo?.componentStack ?? ''}`,
-      ].join('\n')
+      ].join('\n'),
     );
     window.open(`mailto:support@fyking.men?subject=${subject}&body=${body}`);
   };
@@ -95,14 +136,16 @@ export class ErrorBoundary extends Component<Props, State> {
 
     if (this.props.fallback) return this.props.fallback;
 
+    const isDev = import.meta.env.DEV;
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <div className="max-w-md w-full bg-card border border-border rounded-lg shadow-lg p-8 text-center space-y-6">
-          {/* Icon */}
+        <div className="max-w-md w-full bg-card border border-border rounded-xl shadow-xl p-8 text-center space-y-6">
+          {/* Animated icon */}
           <div className="flex justify-center">
-            <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center">
+            <div className="w-20 h-20 bg-destructive/10 rounded-full flex items-center justify-center animate-pulse">
               <svg
-                className="w-8 h-8 text-destructive"
+                className="w-10 h-10 text-destructive"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -122,46 +165,57 @@ export class ErrorBoundary extends Component<Props, State> {
           <div>
             <h1 className="text-2xl font-bold text-foreground">Something went wrong</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              We encountered an unexpected error. Our team has been notified.
+              We encountered an unexpected error. Our team has been notified automatically.
             </p>
           </div>
 
+          {/* Report status */}
+          {this.state.reported && (
+            <div className="flex items-center gap-2 justify-center text-xs text-green-600 dark:text-green-400">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Error report sent to our team
+            </div>
+          )}
+
           {/* Dev-only details */}
-          {import.meta.env.DEV && this.state.error && (
-            <div className="text-left bg-muted rounded-md p-3 space-y-1">
-              <p className="text-xs font-mono text-destructive break-all">
+          {isDev && this.state.error && (
+            <details className="text-left bg-muted rounded-lg p-4 space-y-2">
+              <summary className="text-xs font-semibold text-muted-foreground cursor-pointer select-none">
+                Debug Details
+              </summary>
+              <p className="text-xs font-mono text-destructive break-all mt-2">
                 {this.state.error.message}
               </p>
               {this.state.errorId && (
-                <p className="text-xs text-muted-foreground font-mono">
-                  ID: {this.state.errorId}
-                </p>
+                <p className="text-xs text-muted-foreground font-mono">ID: {this.state.errorId}</p>
               )}
               {this.state.errorInfo?.componentStack && (
-                <pre className="text-xs text-muted-foreground overflow-auto max-h-32 mt-2">
+                <pre className="text-xs text-muted-foreground overflow-auto max-h-40 mt-2 p-2 bg-background rounded">
                   {this.state.errorInfo.componentStack}
                 </pre>
               )}
-            </div>
+            </details>
           )}
 
           {/* Actions */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
               onClick={this.handleRetry}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-md font-medium hover:bg-primary/90 transition-colors"
+              className="px-5 py-2.5 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors shadow-sm"
             >
               Try Again
             </button>
             <button
               onClick={() => window.location.reload()}
-              className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md font-medium hover:bg-secondary/80 transition-colors"
+              className="px-5 py-2.5 bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/80 transition-colors shadow-sm"
             >
               Reload Page
             </button>
             <button
               onClick={this.handleReportIssue}
-              className="px-4 py-2 bg-outline text-foreground border border-border rounded-md font-medium hover:bg-muted transition-colors"
+              className="px-5 py-2.5 bg-background text-foreground border border-border rounded-lg font-medium hover:bg-muted transition-colors"
             >
               Report Issue
             </button>
@@ -177,7 +231,7 @@ export class ErrorBoundary extends Component<Props, State> {
               support@fyking.men
             </a>
             {this.state.errorId && (
-              <span className="block mt-1 font-mono">Ref: {this.state.errorId}</span>
+              <span className="block mt-1 font-mono text-[10px]">Ref: {this.state.errorId}</span>
             )}
           </p>
         </div>
@@ -192,7 +246,7 @@ export class ErrorBoundary extends Component<Props, State> {
 export function withErrorBoundary<P extends object>(
   WrappedComponent: React.ComponentType<P>,
   fallback?: ReactNode,
-  onError?: (error: Error, errorInfo: ErrorInfo) => void
+  onError?: (error: Error, errorInfo: ErrorInfo) => void,
 ): React.FC<P> {
   const WithBoundary: React.FC<P> = (props) => (
     <ErrorBoundary fallback={fallback} onError={onError}>

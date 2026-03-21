@@ -250,7 +250,9 @@ class EnterpriseConfigManager {
       supabase: {
         url: import.meta.env.VITE_SUPABASE_URL || '',
         anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY || '',
-        serviceRoleKey: import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
+        // NOTE: serviceRoleKey must NEVER be set in client-side code.
+        // Server-side functions use Deno.env.get('SUPABASE_SERVICE_ROLE_KEY').
+        serviceRoleKey: undefined,
         realtime: {
           enabled: import.meta.env.VITE_ENABLE_REALTIME !== 'false',
           reconnectInterval: parseInt(import.meta.env.VITE_REALTIME_RECONNECT_INTERVAL || '5000'),
