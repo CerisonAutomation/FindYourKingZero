@@ -5,6 +5,22 @@
  */
 import * as Sentry from '@sentry/react';
 
+// Safe Sentry wrapper — no-ops if Sentry isn't initialized
+const safeSentry = {
+  captureException: (err: any, ctx?: any) => {
+    try { safeSentry.captureException(err, ctx); } catch {}
+  },
+  captureMessage: (msg: string, level?: any) => {
+    try { safeSentry.captureMessage(msg, level); } catch {}
+  },
+  addBreadcrumb: (crumb: any) => {
+    try { safeSentry.addBreadcrumb(crumb); } catch {}
+  },
+  setUser: (user: any) => {
+    try { safeSentry.setUser(user); } catch {}
+  },
+};
+
 export enum LogLevel {
   TRACE = 0,
   DEBUG = 1,
@@ -116,13 +132,13 @@ class EnterpriseLogger {
 
   private captureToSentry(entry: LogEntry): void {
     if (entry.level >= LogLevel.ERROR && entry.error) {
-      Sentry.captureException(entry.error, {
+      safeSentry.captureException(entry.error, {
         tags: { category: entry.category, action: entry.action ?? '' },
         extra: { data: entry.data, metadata: entry.metadata },
         user: entry.userId ? { id: entry.userId } : undefined,
       });
     } else if (entry.level >= LogLevel.WARN) {
-      Sentry.captureMessage(entry.message, {
+      safeSentry.captureMessage(entry.message, {
         level: entry.level >= LogLevel.ERROR ? 'error' : 'warning',
         tags: { category: entry.category },
         extra: { data: entry.data },
@@ -298,12 +314,12 @@ class EnterpriseLogger {
   }
 
   setUserId(userId: string): void {
-    Sentry.setUser({ id: userId });
+    safeSentry.setUser({ id: userId });
     this.info('SESSION', `User session started`, undefined, { userId });
   }
 
   clearUserId(): void {
-    Sentry.setUser(null);
+    safeSentry.setUser(null);
     this.info('SESSION', 'User session ended');
   }
 

@@ -3,6 +3,11 @@
 // =====================================================
 import React, { Component, type ErrorInfo, type ReactNode } from 'react';
 import * as Sentry from '@sentry/react';
+
+// Safe Sentry wrapper
+const safeCaptureException = (err: any, ctx?: any) => {
+  try { safeCaptureException(err, ctx); } catch {}
+};
 import { log } from '@/lib/enterprise/Logger';
 
 // Lazy-import supabase to avoid circular deps and keep boundary lightweight
@@ -65,7 +70,7 @@ export class ErrorBoundary extends Component<Props, State> {
     });
 
     // 2. Sentry
-    Sentry.captureException(error, {
+    safeCaptureException(error, {
       extra: {
         componentStack: errorInfo.componentStack,
         errorId: this.state.errorId,
