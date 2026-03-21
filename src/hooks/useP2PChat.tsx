@@ -1,14 +1,25 @@
 /**
- * useP2PChat — P2P chat with Trystero 0.22.0
- * Provides decentralized messaging with Supabase fallback
+ * useP2PChat — P2P chat with Trystero 0.22.0 (Supabase strategy)
+ *
+ * Uses trystero/supabase for signalling:
+ *   - appId  = VITE_SUPABASE_URL  (your Supabase project URL)
+ *   - supabaseKey = VITE_SUPABASE_ANON_KEY  (anon public key)
+ *
+ * All actual chat data is sent peer-to-peer, end-to-end encrypted.
+ * Supabase is only used for peer discovery (WebRTC signalling).
+ * Messages are also persisted to Supabase as a fallback/history.
+ *
+ * Official Trystero API reference: https://github.com/dmotz/trystero
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { joinRoom, makeAction, selfId } from 'trystero';
+import { joinRoom, selfId } from 'trystero/supabase';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useToast } from './use-toast';
 
+// ──────────────────────────────────────────────────────────────────────────────
 // Types
+// ──────────────────────────────────────────────────────────────────────────────
 export interface P2PMessage {
   id: string;
   senderId: string;
@@ -35,22 +46,23 @@ export interface P2PChatState {
   connectionQuality: 'excellent' | 'good' | 'poor' | 'disconnected';
 }
 
-// Trystero configuration
+// ──────────────────────────────────────────────────────────────────────────────
+// Trystero Supabase strategy config
+// Per official docs: appId = project URL, supabaseKey = anon public key
+// https://github.com/dmotz/trystero#supabase-setup
+// ──────────────────────────────────────────────────────────────────────────────
 const TRYSTERO_CONFIG = {
-  appId: import.meta.env.VITE_TRYSTERO_APP_ID || 'fykzero-dating-app',
-  // Use multiple relay servers for redundancy
-  relayUrls: [
-    'wss://relay.trystero.io',
-    'wss://relay2.trystero.io',
-    'wss://relay3.trystero.io',
-  ],
-};
+  appId: import.meta.env.VITE_SUPABASE_URL as string,
+  supabaseKey: import.meta.env.VITE_SUPABASE_ANON_KEY as string,
+} as const;
 
+// ──────────────────────────────────────────────────────────────────────────────
+// Hook
+// ──────────────────────────────────────────────────────────────────────────────
 export const useP2PChat = (conversationId: string) => {
   const { user } = useAuth();
   const { toast } = useToast();
-  
-  // State
+
   const [state, setState] = useState<P2PChatState>({
     messages: [],
     peers: [],
@@ -59,211 +71,247 @@ export const useP2PChat = (conversationId: string) => {
     connectionQuality: 'disconnected',
   });
 
-  // Refs
-  const roomRef = useRef<any>(null);
-  const sendMessageRef = useRef<any>(null);
-  const getMessageRef = useRef<any>(null);
-  const sendReactionRef = useRef<any>(null);
-  const getReactionRef = useRef<any>(null);
-  const sendTypingRef = useRef<any>(null);
-  const getTypingRef = useRef<any>(null);
-  const sendFileRef = useRef<any>(null);
-  const getFileRef = useRef<any>(null);
+  // Refs for the room instance and action senders
+  const roomRef = useRef<ReturnType<typeof joinRoom> | null>(null);
+  const sendChatRef = useRef<((data: P2PMessage, targetPeerId?: string) => Promise<void>) | null>(null);
+  const sendReactionRef = useRef<((data: { messageId: string; emoji: string; action: 'add' | 'remove' }) => Promise<void>) | null>(null);
+  const sendTypingRef = useRef<((data: { isTyping: boolean }) => Promise<void>) | null>(null);
+  const sendFileRef = useRef<((data: { fileName: string; fileSize: number; fileType: string; fileData: ArrayBuffer }) => Promise<void>) | null>(null);
   const peersRef = useRef<Map<string, P2PPeer>>(new Map());
   const messageQueueRef = useRef<P2PMessage[]>([]);
-  const connectionCheckIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const connectionCheckRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const mountedRef = useRef(true);
 
-  // Initialize P2P room
-  const initializeRoom = useCallback(async () => {
-    if (!user || !conversationId) return;
+  // ──────────────────────────────────────────────────────────────────────────
+  // Handlers (defined before initializeRoom so they can be referenced)
+  // ──────────────────────────────────────────────────────────────────────────
 
+  const removeMessage = useCallback((messageId: string) => {
+    if (!mountedRef.current) return;
+    setState(prev => ({
+      ...prev,
+      messages: prev.messages.filter(m => m.id !== messageId),
+    }));
+  }, []);
+
+  const storeMessageInSupabase = useCallback(async (message: P2PMessage) => {
+    if (!user) return;
     try {
-      // Create or join room
-      const room = joinRoom(TRYSTERO_CONFIG, conversationId);
-      roomRef.current = room;
-
-      // Create actions for different message types
-      const [sendMessage, getMessage] = makeAction(room, 'chat');
-      const [sendReaction, getReaction] = makeAction(room, 'reaction');
-      const [sendTyping, getTyping] = makeAction(room, 'typing');
-      const [sendFile, getFile] = makeAction(room, 'file');
-
-      sendMessageRef.current = sendMessage;
-      getMessageRef.current = getMessage;
-      sendReactionRef.current = sendReaction;
-      getReactionRef.current = getReaction;
-      sendTypingRef.current = sendTyping;
-      getTypingRef.current = getTyping;
-      sendFileRef.current = sendFile;
-      getFileRef.current = getFile;
-
-      // Set up message handlers
-      getMessage((data: P2PMessage, peerId: string) => {
-        handleIncomingMessage(data, peerId);
+      await supabase.from('messages').insert({
+        conversation_id: conversationId,
+        sender_id: message.senderId,
+        content: message.content,
+        message_type: message.type,
+        media_url: message.metadata?.fileUrl as string | undefined,
+        metadata: message.metadata ?? null,
+        is_p2p: message.isP2P,
+        created_at: new Date(message.timestamp).toISOString(),
       });
-
-      getReaction((data: { messageId: string; emoji: string; action: 'add' | 'remove' }, peerId: string) => {
-        handleIncomingReaction(data, peerId);
-      });
-
-      getTyping((data: { isTyping: boolean }, peerId: string) => {
-        handleTypingIndicator(data, peerId);
-      });
-
-      getFile((data: { fileName: string; fileSize: number; fileType: string; fileData: ArrayBuffer }, peerId: string) => {
-        handleIncomingFile(data, peerId);
-      });
-
-      // Handle peer connections
-      room.onPeerJoin((peerId: string) => {
-        handlePeerJoin(peerId);
-      });
-
-      room.onPeerLeave((peerId: string) => {
-        handlePeerLeave(peerId);
-      });
-
-      // Update connection state
-      setState(prev => ({
-        ...prev,
-        isConnected: true,
-        isP2PEnabled: true,
-        connectionQuality: 'excellent',
-      }));
-
-      // Start connection quality monitoring
-      startConnectionMonitoring();
-
-      // Process queued messages
-      processMessageQueue();
-
     } catch (error) {
-      console.error('Failed to initialize P2P room:', error);
-      setState(prev => ({
-        ...prev,
-        isConnected: false,
-        isP2PEnabled: false,
-        connectionQuality: 'disconnected',
-      }));
-      
-      // Fallback to Supabase
-      fallbackToSupabase();
+      console.error('[P2P] Failed to persist message to Supabase:', error);
     }
   }, [user, conversationId]);
 
-  // Handle incoming P2P message
+  const sendMessageViaSupabase = useCallback(async (message: P2PMessage) => {
+    if (!user) return;
+    try {
+      await supabase.from('messages').insert({
+        conversation_id: conversationId,
+        sender_id: message.senderId,
+        content: message.content,
+        message_type: message.type,
+        media_url: message.metadata?.fileUrl as string | undefined,
+        metadata: message.metadata ?? null,
+        is_p2p: false,
+        created_at: new Date(message.timestamp).toISOString(),
+      });
+    } catch (error) {
+      console.error('[P2P] Supabase fallback send failed:', error);
+      toast({
+        title: 'Message failed',
+        description: 'Could not send message. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  }, [user, conversationId, toast]);
+
   const handleIncomingMessage = useCallback((data: P2PMessage, peerId: string) => {
+    if (!mountedRef.current) return;
     const message: P2PMessage = {
       ...data,
-      id: data.id || `p2p_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: data.id || `p2p_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
       senderId: peerId,
       timestamp: data.timestamp || Date.now(),
       isP2P: true,
     };
-
-    setState(prev => ({
-      ...prev,
-      messages: [...prev.messages, message],
-    }));
-
-    // Handle ephemeral messages
-    if (message.expiresAt) {
-      setTimeout(() => {
-        removeMessage(message.id);
-      }, message.expiresAt - Date.now());
+    setState(prev => ({ ...prev, messages: [...prev.messages, message] }));
+    // Auto-delete ephemeral messages
+    if (message.expiresAt && message.expiresAt > Date.now()) {
+      setTimeout(() => removeMessage(message.id), message.expiresAt - Date.now());
     }
-
-    // Store in Supabase for persistence
+    // Persist for history
     storeMessageInSupabase(message);
-  }, []);
+  }, [removeMessage, storeMessageInSupabase]);
 
-  // Handle incoming reaction
-  const handleIncomingReaction = useCallback((data: { messageId: string; emoji: string; action: 'add' | 'remove' }, peerId: string) => {
-    // Update local reaction state
-    // This would integrate with the existing reaction system
-    console.log('P2P reaction received:', data, 'from:', peerId);
-  }, []);
-
-  // Handle typing indicator
   const handleTypingIndicator = useCallback((data: { isTyping: boolean }, peerId: string) => {
+    if (!mountedRef.current) return;
     setState(prev => ({
       ...prev,
-      peers: prev.peers.map(peer =>
-        peer.id === peerId
-          ? { ...peer, typing: data.isTyping }
-          : peer
-      ),
+      peers: prev.peers.map(p => p.id === peerId ? { ...p, typing: data.isTyping } : p),
     }));
   }, []);
 
-  // Handle incoming file
   const handleIncomingFile = useCallback((data: { fileName: string; fileSize: number; fileType: string; fileData: ArrayBuffer }, peerId: string) => {
-    // Create blob URL for the file
+    if (!mountedRef.current) return;
     const blob = new Blob([data.fileData], { type: data.fileType });
     const url = URL.createObjectURL(blob);
-
     const fileMessage: P2PMessage = {
-      id: `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `file_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
       senderId: peerId,
       content: data.fileName,
       timestamp: Date.now(),
       type: 'file',
-      metadata: {
-        fileName: data.fileName,
-        fileSize: data.fileSize,
-        fileType: data.fileType,
-        fileUrl: url,
-      },
+      metadata: { fileName: data.fileName, fileSize: data.fileSize, fileType: data.fileType, fileUrl: url },
       isP2P: true,
     };
-
-    setState(prev => ({
-      ...prev,
-      messages: [...prev.messages, fileMessage],
-    }));
+    setState(prev => ({ ...prev, messages: [...prev.messages, fileMessage] }));
   }, []);
 
-  // Handle peer join
   const handlePeerJoin = useCallback((peerId: string) => {
-    const peer: P2PPeer = {
-      id: peerId,
-      isOnline: true,
-      lastSeen: Date.now(),
-      typing: false,
-    };
-
+    if (!mountedRef.current) return;
+    const peer: P2PPeer = { id: peerId, isOnline: true, lastSeen: Date.now(), typing: false };
     peersRef.current.set(peerId, peer);
-    setState(prev => ({
-      ...prev,
-      peers: Array.from(peersRef.current.values()),
-    }));
-
-    // Send current user info to new peer
-    if (user) {
-      sendMessageRef.current?.({
-        type: 'presence',
-        userId: user.id,
-        displayName: user.user_metadata?.display_name || 'Anonymous',
-        avatarUrl: user.user_metadata?.avatar_url,
-      }, peerId);
-    }
-  }, [user]);
-
-  // Handle peer leave
-  const handlePeerLeave = useCallback((peerId: string) => {
-    peersRef.current.delete(peerId);
-    setState(prev => ({
-      ...prev,
-      peers: Array.from(peersRef.current.values()),
-    }));
+    setState(prev => ({ ...prev, peers: Array.from(peersRef.current.values()) }));
   }, []);
 
-  // Send message via P2P
-  const sendMessage = useCallback(async (content: string, type: P2PMessage['type'] = 'text', metadata?: Record<string, unknown>) => {
-    if (!user) return;
+  const handlePeerLeave = useCallback((peerId: string) => {
+    if (!mountedRef.current) return;
+    peersRef.current.delete(peerId);
+    setState(prev => ({ ...prev, peers: Array.from(peersRef.current.values()) }));
+  }, []);
 
+  // ──────────────────────────────────────────────────────────────────────────
+  // Initialize Trystero room
+  // Uses room.makeAction() per official Trystero API (NOT makeAction(room, …))
+  // ──────────────────────────────────────────────────────────────────────────
+  const initializeRoom = useCallback(() => {
+    if (!user || !conversationId) return;
+    if (!TRYSTERO_CONFIG.appId || !TRYSTERO_CONFIG.supabaseKey) {
+      console.error('[P2P] Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY env vars');
+      return;
+    }
+
+    try {
+      // joinRoom returns the room object; calling it again with same config+roomId
+      // returns the same instance (Trystero is idempotent)
+      const room = joinRoom(TRYSTERO_CONFIG, conversationId);
+      roomRef.current = room;
+
+      // makeAction is a method on the room object — NOT a standalone export
+      // Returns [sender, receiver, progressHandler]
+      const [sendChat, getChat] = room.makeAction<P2PMessage>('chat');
+      const [sendReaction, getReaction] = room.makeAction<{ messageId: string; emoji: string; action: 'add' | 'remove' }>('reaction');
+      const [sendTyping, getTyping] = room.makeAction<{ isTyping: boolean }>('typing');
+      const [sendFile, getFile] = room.makeAction<{ fileName: string; fileSize: number; fileType: string; fileData: ArrayBuffer }>('file');
+
+      sendChatRef.current = sendChat;
+      sendReactionRef.current = sendReaction;
+      sendTypingRef.current = sendTyping;
+      sendFileRef.current = sendFile;
+
+      // Register receivers
+      getChat(handleIncomingMessage);
+      getReaction((data, peerId) => {
+        console.log('[P2P] reaction from', peerId, data);
+      });
+      getTyping(handleTypingIndicator);
+      getFile(handleIncomingFile);
+
+      // Peer lifecycle
+      room.onPeerJoin(handlePeerJoin);
+      room.onPeerLeave(handlePeerLeave);
+
+      if (mountedRef.current) {
+        setState(prev => ({
+          ...prev,
+          isConnected: true,
+          isP2PEnabled: true,
+          connectionQuality: 'excellent',
+        }));
+      }
+
+      // Connection quality monitor
+      connectionCheckRef.current = setInterval(() => {
+        if (!roomRef.current || !mountedRef.current) return;
+        const peerCount = Object.keys(roomRef.current.getPeers()).length;
+        setState(prev => ({
+          ...prev,
+          connectionQuality: peerCount > 0 ? 'excellent' : 'good',
+        }));
+      }, 5000);
+
+      // Flush any queued messages
+      if (messageQueueRef.current.length > 0) {
+        messageQueueRef.current.forEach(m => sendChatRef.current?.(m));
+        messageQueueRef.current = [];
+      }
+    } catch (error) {
+      console.error('[P2P] Failed to initialize Trystero room:', error);
+      if (mountedRef.current) {
+        setState(prev => ({
+          ...prev,
+          isConnected: false,
+          isP2PEnabled: false,
+          connectionQuality: 'disconnected',
+        }));
+      }
+      toast({
+        title: 'P2P unavailable',
+        description: 'Using server-based messaging instead.',
+      });
+    }
+  }, [user, conversationId, handleIncomingMessage, handleTypingIndicator, handleIncomingFile, handlePeerJoin, handlePeerLeave, toast]);
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // Load message history from Supabase
+  // ──────────────────────────────────────────────────────────────────────────
+  const loadMessages = useCallback(async () => {
+    if (!conversationId) return;
+    try {
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('conversation_id', conversationId)
+        .order('created_at', { ascending: true });
+      if (error) throw error;
+      const messages: P2PMessage[] = (data ?? []).map(msg => ({
+        id: msg.id,
+        senderId: msg.sender_id,
+        content: msg.content,
+        timestamp: new Date(msg.created_at).getTime(),
+        type: msg.message_type as P2PMessage['type'],
+        metadata: msg.metadata as Record<string, unknown>,
+        isP2P: msg.is_p2p ?? false,
+      }));
+      if (mountedRef.current) {
+        setState(prev => ({ ...prev, messages }));
+      }
+    } catch (error) {
+      console.error('[P2P] Failed to load messages:', error);
+    }
+  }, [conversationId]);
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // Public API: sendMessage
+  // ──────────────────────────────────────────────────────────────────────────
+  const sendMessage = useCallback(async (
+    content: string,
+    type: P2PMessage['type'] = 'text',
+    metadata?: Record<string, unknown>,
+  ) => {
+    if (!user) return;
     const message: P2PMessage = {
-      id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `msg_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
       senderId: user.id,
       content,
       timestamp: Date.now(),
@@ -271,76 +319,52 @@ export const useP2PChat = (conversationId: string) => {
       metadata,
       isP2P: state.isP2PEnabled,
     };
+    // Optimistic local update
+    setState(prev => ({ ...prev, messages: [...prev.messages, message] }));
 
-    // Add to local state immediately
-    setState(prev => ({
-      ...prev,
-      messages: [...prev.messages, message],
-    }));
-
-    // Try P2P first
-    if (state.isP2PEnabled && sendMessageRef.current) {
+    if (state.isP2PEnabled && sendChatRef.current) {
       try {
-        await sendMessageRef.current(message);
+        await sendChatRef.current(message);
         return message;
       } catch (error) {
-        console.error('P2P send failed, queuing for fallback:', error);
+        console.error('[P2P] Send failed, queuing for Supabase fallback:', error);
         messageQueueRef.current.push(message);
       }
     }
-
-    // Fallback to Supabase
     await sendMessageViaSupabase(message);
     return message;
-  }, [user, state.isP2PEnabled]);
+  }, [user, state.isP2PEnabled, sendMessageViaSupabase]);
 
-  // Send reaction via P2P
   const sendReaction = useCallback(async (messageId: string, emoji: string, action: 'add' | 'remove') => {
     if (!user || !sendReactionRef.current) return;
-
-    const reactionData = {
-      messageId,
-      emoji,
-      action,
-      userId: user.id,
-    };
-
     try {
-      await sendReactionRef.current(reactionData);
+      await sendReactionRef.current({ messageId, emoji, action });
     } catch (error) {
-      console.error('Failed to send P2P reaction:', error);
+      console.error('[P2P] Failed to send reaction:', error);
     }
   }, [user]);
 
-  // Send typing indicator
   const sendTypingIndicator = useCallback(async (isTyping: boolean) => {
     if (!user || !sendTypingRef.current) return;
-
     try {
-      await sendTypingRef.current({ isTyping, userId: user.id });
+      await sendTypingRef.current({ isTyping });
     } catch (error) {
-      console.error('Failed to send typing indicator:', error);
+      console.error('[P2P] Failed to send typing indicator:', error);
     }
   }, [user]);
 
-  // Send file via P2P
   const sendFile = useCallback(async (file: File) => {
     if (!user || !sendFileRef.current) return;
-
+    const arrayBuffer = await file.arrayBuffer();
     try {
-      const arrayBuffer = await file.arrayBuffer();
-      const fileData = {
+      await sendFileRef.current({
         fileName: file.name,
         fileSize: file.size,
         fileType: file.type,
         fileData: arrayBuffer,
-      };
-
-      await sendFileRef.current(fileData);
-
-      // Add file message to local state
+      });
       const fileMessage: P2PMessage = {
-        id: `file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        id: `file_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
         senderId: user.id,
         content: file.name,
         timestamp: Date.now(),
@@ -353,204 +377,64 @@ export const useP2PChat = (conversationId: string) => {
         },
         isP2P: true,
       };
-
-      setState(prev => ({
-        ...prev,
-        messages: [...prev.messages, fileMessage],
-      }));
-
+      setState(prev => ({ ...prev, messages: [...prev.messages, fileMessage] }));
       return fileMessage;
     } catch (error) {
-      console.error('Failed to send file via P2P:', error);
+      console.error('[P2P] Failed to send file:', error);
       throw error;
     }
   }, [user]);
 
-  // Send ephemeral message
   const sendEphemeralMessage = useCallback(async (content: string, expiresInMs: number) => {
     const message = await sendMessage(content, 'text', {
       ephemeral: true,
       expiresAt: Date.now() + expiresInMs,
     });
-
     if (message) {
-      // Set up auto-deletion
-      setTimeout(() => {
-        removeMessage(message.id);
-      }, expiresInMs);
+      setTimeout(() => removeMessage(message.id), expiresInMs);
     }
-
     return message;
-  }, [sendMessage]);
+  }, [sendMessage, removeMessage]);
 
-  // Remove message from local state
-  const removeMessage = useCallback((messageId: string) => {
-    setState(prev => ({
-      ...prev,
-      messages: prev.messages.filter(msg => msg.id !== messageId),
-    }));
-  }, []);
-
-  // Store message in Supabase for persistence
-  const storeMessageInSupabase = useCallback(async (message: P2PMessage) => {
-    if (!user) return;
-
-    try {
-      await supabase.from('messages').insert({
-        conversation_id: conversationId,
-        sender_id: message.senderId,
-        content: message.content,
-        message_type: message.type,
-        media_url: message.metadata?.fileUrl as string,
-        metadata: message.metadata,
-        is_p2p: message.isP2P,
-        created_at: new Date(message.timestamp).toISOString(),
-      });
-    } catch (error) {
-      console.error('Failed to store message in Supabase:', error);
-    }
-  }, [user, conversationId]);
-
-  // Send message via Supabase fallback
-  const sendMessageViaSupabase = useCallback(async (message: P2PMessage) => {
-    if (!user) return;
-
-    try {
-      await supabase.from('messages').insert({
-        conversation_id: conversationId,
-        sender_id: message.senderId,
-        content: message.content,
-        message_type: message.type,
-        media_url: message.metadata?.fileUrl as string,
-        metadata: message.metadata,
-        is_p2p: false,
-        created_at: new Date(message.timestamp).toISOString(),
-      });
-    } catch (error) {
-      console.error('Failed to send message via Supabase:', error);
-      toast({
-        title: 'Message failed',
-        description: 'Could not send message. Please try again.',
-        variant: 'destructive',
-      });
-    }
-  }, [user, conversationId, toast]);
-
-  // Fallback to Supabase when P2P fails
-  const fallbackToSupabase = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      isP2PEnabled: false,
-      connectionQuality: 'disconnected',
-    }));
-
-    // Process queued messages via Supabase
-    messageQueueRef.current.forEach(message => {
-      sendMessageViaSupabase(message);
-    });
-    messageQueueRef.current = [];
-
-    toast({
-      title: 'P2P unavailable',
-      description: 'Using server-based messaging instead.',
-    });
-  }, [toast, sendMessageViaSupabase]);
-
-  // Process queued messages
-  const processMessageQueue = useCallback(() => {
-    if (messageQueueRef.current.length > 0 && state.isP2PEnabled) {
-      messageQueueRef.current.forEach(message => {
-        sendMessageRef.current?.(message);
-      });
-      messageQueueRef.current = [];
-    }
-  }, [state.isP2PEnabled]);
-
-  // Start connection quality monitoring
-  const startConnectionMonitoring = useCallback(() => {
-    connectionCheckIntervalRef.current = setInterval(() => {
-      if (roomRef.current) {
-        const peerCount = roomRef.current.getPeers().length;
-        const quality = peerCount > 0 ? 'excellent' : 'disconnected';
-        
-        setState(prev => ({
-          ...prev,
-          connectionQuality: quality,
-        }));
-      }
-    }, 5000);
-  }, []);
-
-  // Load existing messages from Supabase
-  const loadMessages = useCallback(async () => {
-    if (!conversationId) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('messages')
-        .select('*')
-        .eq('conversation_id', conversationId)
-        .order('created_at', { ascending: true });
-
-      if (error) throw error;
-
-      const messages: P2PMessage[] = (data || []).map(msg => ({
-        id: msg.id,
-        senderId: msg.sender_id,
-        content: msg.content,
-        timestamp: new Date(msg.created_at).getTime(),
-        type: msg.message_type as P2PMessage['type'],
-        metadata: msg.metadata as Record<string, unknown>,
-        isP2P: msg.is_p2p || false,
-      }));
-
-      setState(prev => ({
-        ...prev,
-        messages,
-      }));
-    } catch (error) {
-      console.error('Failed to load messages:', error);
-    }
-  }, [conversationId]);
-
-  // Initialize on mount
+  // ──────────────────────────────────────────────────────────────────────────
+  // Lifecycle
+  // ──────────────────────────────────────────────────────────────────────────
   useEffect(() => {
+    mountedRef.current = true;
     if (user && conversationId) {
       initializeRoom();
       loadMessages();
     }
-
     return () => {
-      // Cleanup
+      mountedRef.current = false;
+      // Leave room and stop monitoring on cleanup
       if (roomRef.current) {
         roomRef.current.leave();
+        roomRef.current = null;
       }
-      if (connectionCheckIntervalRef.current) {
-        clearInterval(connectionCheckIntervalRef.current);
+      if (connectionCheckRef.current) {
+        clearInterval(connectionCheckRef.current);
+        connectionCheckRef.current = null;
       }
     };
-  }, [user, conversationId, initializeRoom, loadMessages]);
+  // Re-initialize if user or conversationId changes
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, conversationId]);
 
-  // Return hook interface
   return {
-    // State
     messages: state.messages,
     peers: state.peers,
     isConnected: state.isConnected,
     isP2PEnabled: state.isP2PEnabled,
     connectionQuality: state.connectionQuality,
-
-    // Actions
     sendMessage,
     sendReaction,
     sendTypingIndicator,
     sendFile,
     sendEphemeralMessage,
     removeMessage,
-
-    // Utilities
-    selfId,
     loadMessages,
+    selfId,
   };
 };
 
