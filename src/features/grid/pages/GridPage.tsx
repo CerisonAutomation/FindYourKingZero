@@ -83,12 +83,13 @@ const DEFAULT: Filters = {
     sortBy: 'distance', quickChips: [],
 };
 
-/* ── Grid card — tighter, no generic wrapper, sharper corners ── */
+/* ── Grid card — premium 2050 profile card ── */
 const GridCard = memo(({profile, isFav, onFav, onMessage, onView, compact}: {
     profile: any; isFav: boolean; compact: boolean;
     onFav: (id: string) => void; onMessage: (id: string) => void; onView: (id: string) => void;
 }) => {
     const [imgErr, setImgErr] = useState(false);
+    const [favAnim, setFavAnim] = useState(false);
     const initial = (profile.display_name || 'U')[0].toUpperCase();
     const isOnline = profile.is_online;
     const isVerified = profile.is_verified;
@@ -96,128 +97,228 @@ const GridCard = memo(({profile, isFav, onFav, onMessage, onView, compact}: {
     const isRightNow = profile.is_available_now;
     const grad = GRADIENTS[(profile.user_id || '').charCodeAt(0) % GRADIENTS.length];
 
+    const handleFav = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setFavAnim(true);
+        setTimeout(() => setFavAnim(false), 600);
+        onFav(profile.user_id);
+    };
+
+    const distLabel = profile.distance !== undefined
+        ? profile.distance < 1 ? '< 1 km' : `${Math.round(profile.distance)} km`
+        : profile.city || null;
+
     return (
         <motion.div
-            initial={{opacity: 0, scale: 0.93}}
-            animate={{opacity: 1, scale: 1}}
-            whileTap={{scale: 0.97}}
+            initial={{opacity: 0, scale: 0.91, y: 8}}
+            animate={{opacity: 1, scale: 1, y: 0}}
+            transition={{duration: 0.22, ease: [0.16, 1, 0.3, 1]}}
+            whileTap={{scale: 0.96}}
             className="relative overflow-hidden cursor-pointer group select-none"
             style={{
                 aspectRatio: compact ? '1/1.2' : '2/2.9',
-                borderRadius: '6px',
+                borderRadius: 'var(--radius-sm)',
+                boxShadow: 'var(--shadow-md)',
             }}
             onClick={() => onView(profile.user_id)}
         >
-            {/* Photo or gradient placeholder */}
+            {/* ── Photo / placeholder ── */}
             {profile.avatar_url && !imgErr ? (
                 <img
                     src={profile.avatar_url}
                     alt={profile.display_name || 'Profile'}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                     loading="lazy"
+                    decoding="async"
                     onError={() => setImgErr(true)}
                 />
             ) : (
                 <div className="absolute inset-0 flex items-center justify-center" style={{background: grad}}>
-          <span className="font-black text-foreground/[0.08] select-none" style={{fontSize: compact ? '30px' : '42px'}}>
-            {initial}
-          </span>
+                    <span
+                        className="font-black text-white/[0.07] select-none"
+                        style={{fontSize: compact ? '32px' : '44px', letterSpacing: '-0.02em'}}
+                    >
+                        {initial}
+                    </span>
                 </div>
             )}
 
-            {/* Overlays */}
+            {/* ── Gradient overlays ── */}
             <div className="absolute inset-0 photo-overlay-bottom pointer-events-none"/>
             <div className="absolute inset-0 photo-overlay-top pointer-events-none"/>
 
-            {/* Top badges — minimal */}
+            {/* ── Hover overlay ── */}
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/12 transition-colors duration-300 pointer-events-none"/>
+
+            {/* ── Premium border ring (when premium) ── */}
+            {isPremium && (
+                <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                        borderRadius: 'var(--radius-sm)',
+                        border: '1.5px solid hsl(42 98% 56% / 0.4)',
+                        boxShadow: 'inset 0 0 0 1px hsl(42 98% 56% / 0.12)',
+                    }}
+                />
+            )}
+
+            {/* ── Top row: online + badges ── */}
             <div className="absolute top-1.5 left-1.5 right-1.5 flex items-start justify-between z-10">
+                {/* Online badge */}
                 {isOnline ? (
-                    <div className="flex items-center gap-0.5 px-1 py-0.5 rounded-sm bg-black/55 backdrop-blur-sm">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="animate-ping absolute h-full w-full rounded-full bg-emerald-400 opacity-70"/>
-              <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-400"/>
-            </span>
-                        {!compact && <span
-                            className="text-[7.5px] font-black text-emerald-400 tracking-wider ml-0.5 uppercase">Live</span>}
+                    <div
+                        className="flex items-center gap-1 px-1.5 py-0.5 rounded-full"
+                        style={{
+                            background: 'hsl(220 18% 2% / 0.75)',
+                            backdropFilter: 'blur(8px)',
+                            border: '1px solid hsl(142 76% 42% / 0.3)',
+                        }}
+                    >
+                        <span className="relative flex h-[5px] w-[5px] shrink-0">
+                            <span
+                                className="absolute inset-0 rounded-full animate-ping opacity-75"
+                                style={{background: 'hsl(var(--status-online))'}}
+                            />
+                            <span
+                                className="relative rounded-full w-full h-full"
+                                style={{background: 'hsl(var(--status-online))'}}
+                            />
+                        </span>
+                        {!compact && (
+                            <span
+                                className="text-[7px] font-black uppercase tracking-wider"
+                                style={{color: 'hsl(var(--status-online))'}}
+                            >
+                                Live
+                            </span>
+                        )}
                     </div>
                 ) : <div/>}
 
+                {/* Right badges */}
                 <div className="flex gap-0.5">
                     {isRightNow && (
-                        <div className="w-4.5 h-4.5 rounded-sm bg-primary/90 flex items-center justify-center"
-                             style={{width: 17, height: 17}}>
-                            <Zap className="w-2 h-2 text-white fill-white"/>
+                        <div
+                            className="flex items-center justify-center"
+                            style={{
+                                width: 18, height: 18,
+                                borderRadius: 4,
+                                background: 'var(--gradient-gold)',
+                                boxShadow: '0 0 8px hsl(42 98% 56% / 0.5)',
+                            }}
+                        >
+                            <Zap className="w-[9px] h-[9px] text-white fill-white"/>
                         </div>
                     )}
                     {isVerified && (
-                        <div className="w-4.5 h-4.5 rounded-sm bg-blue-500/90 flex items-center justify-center"
-                             style={{width: 17, height: 17}}>
-                            <BadgeCheck className="w-2 h-2 text-white"/>
+                        <div
+                            className="flex items-center justify-center"
+                            style={{
+                                width: 18, height: 18,
+                                borderRadius: 4,
+                                background: 'hsl(214 85% 55% / 0.9)',
+                                backdropFilter: 'blur(4px)',
+                            }}
+                        >
+                            <BadgeCheck className="w-[9px] h-[9px] text-white"/>
                         </div>
                     )}
                     {isPremium && (
-                        <div className="w-4.5 h-4.5 rounded-sm flex items-center justify-center"
-                             style={{width: 17, height: 17, background: 'hsl(var(--gold)/0.9)'}}>
-                            <Crown className="w-2 h-2 text-black"/>
+                        <div
+                            className="flex items-center justify-center"
+                            style={{
+                                width: 18, height: 18,
+                                borderRadius: 4,
+                                background: 'var(--gradient-gold)',
+                                boxShadow: '0 0 10px hsl(42 98% 56% / 0.55)',
+                            }}
+                        >
+                            <Crown className="w-[9px] h-[9px] text-black"/>
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* Fav button */}
-            <button
-                className={cn(
-                    'absolute z-10 flex items-center justify-center shadow transition-all duration-200',
-                    'active:scale-90',
-                    compact ? 'top-6 left-1.5 w-5 h-5 rounded-sm' : 'top-7 left-1.5 w-5.5 h-5.5 rounded-sm',
-                    isFav
-                        ? 'bg-primary scale-100 opacity-100'
-                        : 'bg-black/45 backdrop-blur-sm scale-75 opacity-0 group-hover:scale-100 group-hover:opacity-100',
-                )}
-                style={{width: compact ? 20 : 22, height: compact ? 20 : 22}}
-                onClick={e => {
-                    e.stopPropagation();
-                    onFav(profile.user_id);
+            {/* ── Fav button ── */}
+            <motion.button
+                className="absolute z-10 flex items-center justify-center"
+                style={{
+                    top: compact ? 24 : 28,
+                    left: 6,
+                    width: 22,
+                    height: 22,
+                    borderRadius: 5,
+                    background: isFav ? 'hsl(0 85% 58%)' : 'hsl(220 18% 2% / 0.6)',
+                    backdropFilter: 'blur(8px)',
+                    border: isFav ? '1px solid hsl(0 85% 70% / 0.4)' : '1px solid hsl(0 0% 100% / 0.1)',
+                    opacity: isFav ? 1 : 0,
+                    boxShadow: isFav ? '0 0 12px hsl(0 85% 58% / 0.45)' : 'none',
                 }}
+                animate={favAnim ? {scale: [1, 1.45, 1]} : {}}
+                transition={{duration: 0.4}}
+                whileHover={{opacity: 1}}
+                onClick={handleFav}
                 aria-label={isFav ? 'Remove favorite' : 'Add favorite'}
             >
-                <Heart className={cn('w-2.5 h-2.5', isFav ? 'fill-white text-white' : 'text-white')}/>
-            </button>
+                <Heart
+                    className="w-2.5 h-2.5"
+                    style={{
+                        color: 'white',
+                        fill: isFav ? 'white' : 'none',
+                    }}
+                />
+            </motion.button>
+            {/* Force fav visible on hover */}
+            <div
+                className="absolute z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+                style={{top: compact ? 24 : 28, left: 6, width: 22, height: 22, borderRadius: 5, pointerEvents: 'none', background: isFav ? 'transparent' : 'hsl(220 18% 2% / 0.6)', backdropFilter: 'blur(8px)'}}
+            />
 
-            {/* Info */}
-            <div className="absolute bottom-0 left-0 right-0 px-2 pb-2 z-10">
-                <p className="text-[10.5px] font-black text-white leading-tight truncate">
-                    {profile.display_name || 'Anonymous'}
-                    {profile.age && <span className="font-normal opacity-60">, {profile.age}</span>}
-                </p>
-                {!compact && (profile.city || profile.distance !== undefined) && (
-                    <p className="flex items-center gap-0.5 text-[8.5px] text-white/45 mt-0.5">
-                        <MapPin className="w-1.5 h-1.5 shrink-0"/>
-                        {profile.distance !== undefined
-                            ? profile.distance < 1 ? '< 1 km' : `${Math.round(profile.distance)} km`
-                            : profile.city}
-                    </p>
+            {/* ── Info panel ── */}
+            <div className="absolute bottom-0 left-0 right-0 px-2 pb-2.5 z-10">
+                {/* Name + age */}
+                <div className="flex items-baseline gap-1">
+                    <span className="font-black text-white leading-none truncate" style={{fontSize: compact ? '10px' : '11px', letterSpacing: '-0.01em'}}>
+                        {profile.display_name || 'Anonymous'}
+                    </span>
+                    {profile.age && (
+                        <span className="text-white/55 font-normal shrink-0" style={{fontSize: compact ? '9px' : '10px'}}>
+                            {profile.age}
+                        </span>
+                    )}
+                </div>
+
+                {/* Distance/location */}
+                {!compact && distLabel && (
+                    <div className="flex items-center gap-0.5 mt-0.5">
+                        <MapPin className="w-[8px] h-[8px] text-white/40 shrink-0"/>
+                        <span className="text-[8px] text-white/40 truncate">{distLabel}</span>
+                    </div>
                 )}
 
-                {/* Hover CTA */}
-                <div
-                    className="flex gap-1 mt-1.5 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-200">
+                {/* Action row — slides up on hover */}
+                <div className="flex gap-1 mt-1.5 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-200 ease-out">
                     <button
-                        onClick={e => {
-                            e.stopPropagation();
-                            onMessage(profile.user_id);
+                        onClick={e => { e.stopPropagation(); onMessage(profile.user_id); }}
+                        className="flex-1 flex items-center justify-center gap-0.5 py-1.5 text-[8.5px] font-bold text-white transition-all"
+                        style={{
+                            borderRadius: 4,
+                            background: 'hsl(220 18% 100% / 0.1)',
+                            backdropFilter: 'blur(8px)',
+                            border: '1px solid hsl(0 0% 100% / 0.1)',
                         }}
-                        className="flex-1 flex items-center justify-center gap-0.5 py-1 rounded-sm text-[9px] font-bold border border-white/12 text-white bg-white/8 backdrop-blur-sm hover:bg-white/14 transition-colors"
                     >
-                        <MessageCircle className="w-2 h-2"/> Msg
+                        <MessageCircle className="w-[8px] h-[8px]"/>
+                        {!compact && 'Message'}
                     </button>
                     <button
-                        onClick={e => {
-                            e.stopPropagation();
-                            onView(profile.user_id);
+                        onClick={e => { e.stopPropagation(); onView(profile.user_id); }}
+                        className="flex-1 flex items-center justify-center py-1.5 text-[8.5px] font-black text-white transition-all"
+                        style={{
+                            borderRadius: 4,
+                            background: 'var(--gradient-gold)',
+                            boxShadow: '0 2px 8px hsl(42 98% 56% / 0.4)',
                         }}
-                        className="flex-1 flex items-center justify-center py-1 rounded-sm text-[9px] font-bold text-white transition-all"
-                        style={{background: 'hsl(var(--primary)/0.85)'}}
                     >
                         View
                     </button>
@@ -229,15 +330,24 @@ const GridCard = memo(({profile, isFav, onFav, onMessage, onView, compact}: {
 GridCard.displayName = 'GridCard';
 
 /* ── Skeleton ── */
-const CardSkeleton = ({compact}: { compact: boolean }) => (
+const CardSkeleton = ({compact}: {compact: boolean}) => (
     <div
-        className="overflow-hidden animate-shimmer"
+        className="overflow-hidden relative"
         style={{
             aspectRatio: compact ? '1/1.2' : '2/2.9',
-            borderRadius: '6px',
-            background: 'hsl(var(--secondary))',
+            borderRadius: 'var(--radius-sm)',
+            background: 'hsl(var(--surface-2))',
         }}
-    />
+    >
+        <div
+            className="absolute inset-0"
+            style={{
+                background: 'linear-gradient(90deg, transparent 0%, hsl(0 0% 100% / 0.04) 50%, transparent 100%)',
+                backgroundSize: '400px 100%',
+                animation: 'skeleton-wave 1.6s ease-in-out infinite',
+            }}
+        />
+    </div>
 );
 
 /* ── ChipGroup ── */
