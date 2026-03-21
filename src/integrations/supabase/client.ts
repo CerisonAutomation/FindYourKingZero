@@ -34,7 +34,24 @@ export const supabase = createClient<Database>(
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
-      storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+      storage: typeof window !== 'undefined' ? {
+        getItem: (key: string) => {
+          // Try cookie first, fall back to localStorage
+          const match = document.cookie.match(new RegExp('(^| )' + key + '=([^;]+)'));
+          if (match) return decodeURIComponent(match[2]);
+          return localStorage.getItem(key);
+        },
+        setItem: (key: string, value: string) => {
+          // Store in both cookie (for SSR) and localStorage (for speed)
+          const maxAge = 60 * 60 * 24 * 365; // 1 year
+          document.cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}; SameSite=Lax; Secure`;
+          localStorage.setItem(key, value);
+        },
+        removeItem: (key: string) => {
+          document.cookie = `${key}=; path=/; max-age=0`;
+          localStorage.removeItem(key);
+        },
+      } : undefined,
     },
     realtime: {
       params: { eventsPerSecond: 10 },

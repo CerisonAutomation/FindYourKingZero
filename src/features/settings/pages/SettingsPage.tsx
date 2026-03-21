@@ -1,6 +1,6 @@
 import {useNavigate} from 'react-router-dom';
 import {motion} from 'framer-motion';
-import {Bell, ChevronRight, CreditCard, Crown, HelpCircle, LogOut, Settings, Shield, User,} from 'lucide-react';
+import {Bell, ChevronRight, CreditCard, Crown, Fingerprint, HelpCircle, LogOut, Settings, Shield, User,} from 'lucide-react';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {useAuth} from '@/hooks/useAuth';
 import {useProfile} from '@/hooks/useProfile';
@@ -20,6 +20,14 @@ const NAV_ITEMS = [
         label: 'Privacy & Security',
         desc: 'Visibility, data, blocking',
         path: '/app/settings/privacy'
+    },
+    {
+        id: 'biometric',
+        icon: Fingerprint,
+        label: 'Face ID / Touch ID',
+        desc: 'Use biometrics to unlock the app',
+        path: '/app/settings/security',
+        action: 'biometric' as const,
     },
     {
         id: 'notifications',
@@ -67,10 +75,10 @@ export default function SettingsPage() {
                     onClick={() => navigate(-1)}
                     className="w-7 h-7 rounded-sm flex items-center justify-center bg-secondary/50 active:scale-90 transition-all"
                 >
-                    <ChevronRight className="w-3.5 h-3.5 rotate-180"/>
+                    <ChevronRight className="w-5 h-5 rotate-180"/>
                 </button>
                 <div className="flex items-center gap-1.5 flex-1">
-                    <Settings className="w-3.5 h-3.5 text-primary"/>
+                    <Settings className="w-5 h-5 text-primary"/>
                     <h1 className="font-black text-[14px] tracking-tight">Settings</h1>
                 </div>
             </header>
@@ -126,6 +134,9 @@ export default function SettingsPage() {
                     {/* ── Divider ── */}
                     <div className="h-px bg-border/15 mb-2"/>
 
+                    {/* ── Section Header ── */}
+                    <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground/60 px-4 py-2">Preferences</p>
+
                     {/* ── Nav — row-list, no card wrappers ── */}
                     <div>
                         {NAV_ITEMS.map((item, i) => {
@@ -138,13 +149,13 @@ export default function SettingsPage() {
                                     animate={{opacity: 1, x: 0}}
                                     transition={{delay: i * 0.035, duration: 0.18}}
                                     onClick={() => navigate(item.path)}
-                                    className="w-full flex items-center gap-3 py-3 border-b border-border/12 last:border-0 active:opacity-60 transition-opacity text-left"
+                                    className="w-full flex items-center gap-3 px-4 py-3 border-b border-border/12 last:border-0 active:opacity-60 transition-opacity text-left"
                                 >
                                     <div
-                                        className="w-7 h-7 flex items-center justify-center shrink-0"
+                                        className="w-8 h-8 flex items-center justify-center shrink-0"
                                         style={{borderRadius: '6px', background: 'hsl(var(--primary)/0.09)'}}
                                     >
-                                        <Icon className="w-3.5 h-3.5 text-primary"/>
+                                        <Icon className="w-5 h-5 text-primary"/>
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="font-semibold text-[13px]">{item.label}</p>
@@ -181,10 +192,10 @@ export default function SettingsPage() {
                         className="w-full flex items-center gap-3 py-3 active:opacity-60 transition-opacity text-left"
                     >
                         <div
-                            className="w-7 h-7 flex items-center justify-center shrink-0"
+                            className="w-8 h-8 flex items-center justify-center shrink-0"
                             style={{borderRadius: '6px', background: 'hsl(var(--destructive)/0.1)'}}
                         >
-                            <LogOut className="w-3.5 h-3.5 text-destructive"/>
+                            <LogOut className="w-5 h-5 text-destructive"/>
                         </div>
                         <p className="font-semibold text-[13px] text-destructive flex-1">Sign Out</p>
                     </motion.button>

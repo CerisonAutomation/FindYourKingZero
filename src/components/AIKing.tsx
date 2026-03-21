@@ -1,11 +1,14 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
-import {Bot, ChevronDown, Heart, Mic, MicOff, RefreshCw, Send, Shield, Sparkles, Square, Zap,} from 'lucide-react';
+import {Bot, ChevronDown, Cpu, Heart, Mic, MicOff, RefreshCw, Send, Shield, Sparkles, Square, WifiOff, Zap,} from 'lucide-react';
 import {cn} from '@/lib/utils';
+import {useLocalAI} from '@/lib/ai';
+import type {LocalAIStatus} from '@/lib/ai';
 
 /* ── Types ───────────────────────────────────────────────────── */
 type Message = { id: string; role: 'user' | 'assistant'; content: string };
 type Mode = 'companion' | 'coach' | 'safety' | 'icebreaker';
+type AIMode = 'cloud' | 'local';
 
 /* ── Mode config ─────────────────────────────────────────────── */
 const MODES: {
@@ -41,7 +44,7 @@ const MODES: {
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-/* ── Streaming helper ────────────────────────────────────────── */
+/* ── Streaming helper (Cloud mode) ───────────────────────────── */
 async function streamAI(
     msgs: { role: string; content: string }[],
     systemPrompt: string,
@@ -96,11 +99,15 @@ export default function AIKing({open, onClose}: { open: boolean; onClose: () => 
     const [input, setInput] = useState('');
     const [streaming, setStream] = useState(false);
     const [mode, setMode] = useState<Mode>('companion');
+    const [aiMode, setAiMode] = useState<AIMode>('cloud');
     const [listening, setListening] = useState(false);
     const bottomRef = useRef<HTMLDivElement>(null);
     const abortRef = useRef<AbortController | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const recognRef = useRef<any>(null);
+
+    // Local AI hook
+    const localAI = useLocalAI();
 
     const currentMode = MODES.find(m => m.id === mode)!;
 
@@ -128,17 +135,81 @@ export default function AIKing({open, onClose}: { open: boolean; onClose: () => 
         ta.style.height = `${Math.min(ta.scrollHeight, 120)}px`;
     };
 
-    /* Send message */
-    const send = useCallback(async (text?: string) => {
-        const content = (text ?? input).trim();
-        if (!content || streaming) return;
+    /* ── Local AI send ────────────────────────────────────────── */
+    const sendLocal = useCallback(async (text: string) => {
+        const userMsg: Message = {id: crypto.randomUUID(), role: 'user', content: text};
+        const assistId = crypto.randomUUID();
 
-        setInput('');
-        if (textareaRef.current) {
-            textareaRef.current.style.height = 'auto';
+        setMessages(prev => [
+            ...prev,
+            userMsg,
+            {id: assistId, role: 'assistant', content: ''},
+        ]);
+        setStream(true);
+
+        const controller = new AbortController();
+        abortRef.current = controller;
+
+        try {
+            // Build conversation context from history
+            const historyLines = [...messages, userMsg]
+                .filter(m => m.id !== 'welcome')
+                .map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`)
+                .join('\n');
+
+            let reply: string;
+
+            // Icebreaker mode uses the specialised function
+            if (mode === 'icebreaker') {
+                reply = await localAI.generateIcebreaker(text, {signal: controller.signal});
+            } else {
+                reply = await localAI.generateReply(
+                    historyLines,
+                    currentMode.prompt,
+                    {signal: controller.signal},
+                );
+            }
+
+            // Simulate streaming for smooth UX
+            const chars = reply.split('');
+            let built = '';
+            for (let i = 0; i < chars.length; i++) {
+                if (controller.signal.aborted) break;
+                built += chars[i];
+                setMessages(prev => prev.map(m =>
+                    m.id === assistId ? {...m, content: built} : m
+                ));
+                // ~30 chars per frame
+                if (i % 3 === 0) await new Promise(r => setTimeout(r, 16));
+            }
+        } catch (e: any) {
+            if (e?.name !== 'AbortError') {
+                console.warn('[AIKing] Local AI failed, falling back to cloud…', e);
+                // Fallback to cloud
+                try {
+                    const userMsgs = [...messages, userMsg].map(m => ({role: m.role, content: m.content}));
+                    await streamAI(
+                        userMsgs,
+                        currentMode.prompt,
+                        (token) => setMessages(prev => prev.map(m =>
+                            m.id === assistId ? {...m, content: m.content + token} : m
+                        )),
+                        () => {},
+                        controller.signal,
+                    );
+                } catch {
+                    setMessages(prev => prev.map(m =>
+                        m.id === assistId ? {...m, content: 'Both local and cloud AI failed. Please try again.'} : m
+                    ));
+                }
+            }
         }
+        setStream(false);
+    }, [messages, mode, localAI, currentMode.prompt]);
 
-        const userMsg: Message = {id: crypto.randomUUID(), role: 'user', content};
+    /* ── Cloud AI send (existing logic) ───────────────────────── */
+    const sendCloud = useCallback(async (text: string) => {
+        const userMsg: Message = {id: crypto.randomUUID(), role: 'user', content: text};
         const assistId = crypto.randomUUID();
 
         setMessages(prev => [
@@ -168,7 +239,24 @@ export default function AIKing({open, onClose}: { open: boolean; onClose: () => 
                 setStream(false);
             }
         }
-    }, [input, streaming, messages, currentMode.prompt]);
+    }, [messages, currentMode.prompt]);
+
+    /* Unified send */
+    const send = useCallback(async (text?: string) => {
+        const content = (text ?? input).trim();
+        if (!content || streaming) return;
+
+        setInput('');
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+        }
+
+        if (aiMode === 'local' && localAI.ready) {
+            await sendLocal(content);
+        } else {
+            await sendCloud(content);
+        }
+    }, [input, streaming, aiMode, localAI.ready, sendLocal, sendCloud]);
 
     const stop = () => {
         abortRef.current?.abort();
@@ -217,6 +305,11 @@ export default function AIKing({open, onClose}: { open: boolean; onClose: () => 
             send();
         }
     };
+
+    /* Local AI loading bar colour */
+    const progressColor = localAI.progress < 100
+        ? 'hsl(45 100% 60%)'
+        : 'hsl(155 65% 42%)';
 
     return (
         <AnimatePresence>
@@ -270,13 +363,39 @@ export default function AIKing({open, onClose}: { open: boolean; onClose: () => 
                                         <Bot className="w-4.5 h-4.5 text-white" strokeWidth={2.5}/>
                                     </motion.div>
                                     <div>
-                                        <p className="font-black text-[13px] tracking-tight">AI King</p>
+                                        <p className="font-black text-[13px] tracking-tight">
+                                            AI King
+                                            {aiMode === 'local' && (
+                                                <span className="ml-1.5 text-[9px] font-bold text-green-500 uppercase">Local</span>
+                                            )}
+                                        </p>
                                         <p className="text-[9px] text-muted-foreground font-semibold uppercase tracking-widest">
-                                            {streaming ? 'Thinking...' : 'Your AI companion'}
+                                            {streaming ? 'Thinking...'
+                                                : aiMode === 'local' && localAI.loading
+                                                    ? `Loading model… ${localAI.progress}%`
+                                                    : aiMode === 'local' && localAI.ready
+                                                        ? `On-device · ${localAI.backend}`
+                                                        : 'Your AI companion'}
                                         </p>
                                     </div>
                                 </div>
                                 <div className="flex gap-1.5">
+                                    {/* Local / Cloud toggle */}
+                                    <button
+                                        onClick={() => setAiMode(m => m === 'cloud' ? 'local' : 'cloud')}
+                                        className={cn(
+                                            'w-8 h-8 rounded-full flex items-center justify-center active:scale-90 transition-all border',
+                                            aiMode === 'local'
+                                                ? 'border-green-500/40 bg-green-500/10'
+                                                : 'border-border/30 bg-secondary/40',
+                                        )}
+                                        title={aiMode === 'local' ? 'Switch to Cloud AI' : 'Switch to Local AI'}
+                                    >
+                                        {aiMode === 'local'
+                                            ? <Cpu className="w-3.5 h-3.5 text-green-500"/>
+                                            : <WifiOff className="w-3.5 h-3.5 text-muted-foreground"/>
+                                        }
+                                    </button>
                                     <button
                                         onClick={clear}
                                         className="w-8 h-8 rounded-full flex items-center justify-center active:scale-90 transition-all"
@@ -294,6 +413,33 @@ export default function AIKing({open, onClose}: { open: boolean; onClose: () => 
                                     </button>
                                 </div>
                             </div>
+
+                            {/* Local AI loading bar */}
+                            {aiMode === 'local' && localAI.loading && (
+                                <div className="mb-2">
+                                    <div className="h-1 rounded-full bg-secondary/50 overflow-hidden">
+                                        <motion.div
+                                            className="h-full rounded-full"
+                                            style={{background: progressColor}}
+                                            initial={{width: '0%'}}
+                                            animate={{width: `${localAI.progress}%`}}
+                                            transition={{duration: 0.3}}
+                                        />
+                                    </div>
+                                    <p className="text-[9px] text-muted-foreground mt-1 font-medium">
+                                        Downloading AI model… {localAI.progress}% — stays cached for offline use
+                                    </p>
+                                </div>
+                            )}
+
+                            {/* Local AI error banner */}
+                            {aiMode === 'local' && localAI.error && (
+                                <div className="mb-2 px-3 py-1.5 rounded-lg bg-destructive/10 border border-destructive/20">
+                                    <p className="text-[10px] text-destructive font-semibold">
+                                        Local AI error: {localAI.error} — falling back to cloud.
+                                    </p>
+                                </div>
+                            )}
 
                             {/* Mode pills */}
                             <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
@@ -363,7 +509,7 @@ export default function AIKing({open, onClose}: { open: boolean; onClose: () => 
                                                             style={{background: 'hsl(var(--muted-foreground))'}}
                                                         />
                                                     )}
-                        </span>
+                                                </span>
                                             ) : (
                                                 /* Loading dots */
                                                 <div className="flex gap-1 items-center py-0.5 px-1">
@@ -448,7 +594,11 @@ export default function AIKing({open, onClose}: { open: boolean; onClose: () => 
                                 <textarea
                                     ref={textareaRef}
                                     rows={1}
-                                    placeholder={`Ask ${currentMode.label} AI…`}
+                                    placeholder={
+                                        aiMode === 'local' && !localAI.ready && !localAI.loading
+                                            ? 'Click Local AI toggle to download model…'
+                                            : `Ask ${currentMode.label} AI…`
+                                    }
                                     value={input}
                                     onChange={e => {
                                         setInput(e.target.value);

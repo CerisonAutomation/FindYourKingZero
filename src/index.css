@@ -826,16 +826,30 @@ html, body, #root {
 .section-gap { gap: clamp(16px, 4vw, 32px); }
 .section-pad { padding: clamp(16px, 4vw, 32px); }
 
-/* Touch-friendly tap targets (min 44px) */
+/* Touch-friendly tap targets (min 44px — Apple HIG standard) */
 .tap-target {
     min-height: 44px;
     min-width: 44px;
+}
+
+/* Ensure all interactive elements meet 44px touch target */
+button, a, [role="button"], input[type="checkbox"], input[type="radio"] {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* Inline buttons (icon-only, pill, chip) — allow override */
+button[class*="w-8"], button[class*="w-7"], button[class*="w-6"],
+button[class*="h-8"], button[class*="h-7"], button[class*="h-6"] {
+    min-height: unset;
+    min-width: unset;
 }
 
 /* Smooth scroll for mobile */
 @media (max-width: 768px) {
     html {
         -webkit-overflow-scrolling: touch;
+        -webkit-tap-highlight-color: transparent;
     }
     
     /* Larger text on mobile for readability */
@@ -847,6 +861,16 @@ html, body, #root {
     html {
         -webkit-text-size-adjust: 100%;
         text-size-adjust: 100%;
+    }
+    
+    /* iOS: 16px minimum for inputs prevents auto-zoom on focus */
+    input, textarea, select {
+        font-size: 16px !important;
+    }
+    
+    /* Remove tap highlight on iOS */
+    * {
+        -webkit-tap-highlight-color: transparent;
     }
 }
 
@@ -866,4 +890,85 @@ input, textarea, select {
 input::placeholder, textarea::placeholder {
     color: hsl(var(--muted-foreground)) !important;
     opacity: 0.7;
+}
+
+/* ── Scrollable containers — smooth on iOS ── */
+.scrollbar-hide {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* ── Mobile page padding ── */
+.page-content {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: var(--safe-top, 0px);
+}
+
+@media (min-width: 768px) {
+    .page-content {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   KEYBOARD HANDLING — Mobile virtual keyboard UX
+══════════════════════════════════════════════════════════════════════════ */
+
+/* Use dynamic viewport height on mobile so keyboard pushes content up */
+@supports (height: 100dvh) {
+    .app-shell,
+    .page-content,
+    [data-app-container] {
+        min-height: 100dvh;
+    }
+}
+
+/* Hide bottom nav when virtual keyboard is visible (visualViewport API) */
+@media (max-width: 768px) {
+    /* When the virtual keyboard is open, the visual viewport shrinks.
+       We target nav elements that sit at the bottom. */
+    @supports (height: 100dvh) {
+        .bottom-nav-bar.keyboard-hidden,
+        [data-bottom-nav].keyboard-hidden {
+            display: none !important;
+            visibility: hidden !important;
+        }
+    }
+}
+
+/* Ensure focused inputs scroll into view smoothly */
+input:focus,
+textarea:focus,
+select:focus {
+    scroll-margin-bottom: 100px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SHIMMER ANIMATION — For skeletons and loading states
+══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.shimmer-bg {
+    background: linear-gradient(
+        90deg,
+        hsl(var(--muted)) 25%,
+        hsl(var(--muted-foreground) / 0.08) 37%,
+        hsl(var(--muted)) 63%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
+}
+
+.animate-shimmer {
+    animation: shimmer 1.8s ease-in-out infinite;
 }

@@ -4,9 +4,11 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import {AuthProvider, useAuth} from "./hooks/useAuth";
 import {ErrorBoundary} from "./components/ui/ErrorBoundary";
-import {lazy, Suspense} from "react";
+import {OfflineBanner} from "@/components/ui/OfflineBanner";
+import {lazy, Suspense, useEffect} from "react";
 import {log} from '@/lib/enterprise/Logger';
 import {VoiceAssistantButton} from "@/components/voice/VoiceAssistantButton";
+import {registerDeepLinkListener} from "@/lib/deeplinks";
 
 // Constants for route configuration
 const ROUTES = {
@@ -392,11 +394,18 @@ const AppRoutes = () => {
 const App = () => {
     log.info('APP', 'Application starting');
 
+    // Register deep link listener on mount
+    useEffect(() => {
+        const cleanup = registerDeepLinkListener();
+        return cleanup;
+    }, []);
+
     return (
         <ErrorBoundary>
             <QueryClientProvider client={queryClient}>
                 <Toaster/>
                 <Sonner/>
+                <OfflineBanner/>
                 <BrowserRouter future={{v7_startTransition: true, v7_relativeSplatPath: true}}>
                     <AuthProvider>
                         <AppRoutes/>

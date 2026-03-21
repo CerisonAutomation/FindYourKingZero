@@ -128,12 +128,59 @@ export function useProfileGrid(options: UseProfileGridOptions = {}) {
     fetchProfiles(true);
   }, []);
 
+  // ── Pull-to-refresh support ──────────────────────
+  const [pullDistance, setPullDistance] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const PULL_THRESHOLD = 80;
+  const pullStartY = useRef(0);
+
+  const pullRef = useRef<HTMLDivElement | null>(null);
+
+  const handlePullStart = useCallback((e: React.TouchEvent) => {
+    const el = pullRef.current;
+    if (el && el.scrollTop === 0) {
+      pullStartY.current = e.touches[0].clientY;
+    }
+  }, []);
+
+  const handlePullMove = useCallback((e: React.TouchEvent) => {
+    if (isRefreshing) return;
+    const el = pullRef.current;
+    if (!el || el.scrollTop !== 0) return;
+
+    const diff = Math.max(0, e.touches[0].clientY - pullStartY.current);
+    const damped = Math.min(diff * 0.5, PULL_THRESHOLD * 1.5);
+    setPullDistance(damped);
+  }, [isRefreshing]);
+
+  const handlePullEnd = useCallback(async () => {
+    if (pullDistance >= PULL_THRESHOLD && !isRefreshing) {
+      setIsRefreshing(true);
+      try {
+        await refresh();
+      } finally {
+        setIsRefreshing(false);
+      }
+    }
+    setPullDistance(0);
+  }, [pullDistance, isRefreshing, refresh]);
+
   return {
     profiles,
     loading,
     hasMore,
     loadMore,
     refresh,
+    // Pull-to-refresh state
+    pullDistance,
+    pullProgress: Math.min(pullDistance / PULL_THRESHOLD, 1),
+    isRefreshing,
+    pullRef,
+    pullHandlers: {
+      onTouchStart: handlePullStart,
+      onTouchMove: handlePullMove,
+      onTouchEnd: handlePullEnd,
+    },
   };
 }
 

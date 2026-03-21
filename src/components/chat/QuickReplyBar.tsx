@@ -1,8 +1,15 @@
 import {useState} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
-import {ChevronDown, ChevronUp} from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 import {QUICK_REPLIES, QUICK_REPLY_CATEGORIES} from '@/lib/quickReplies';
 import {cn} from '@/lib/utils';
+
+const {ChevronDown, ChevronUp} = LucideIcons;
+
+function DynamicIcon({name, className}: {name: string; className?: string}) {
+    const Icon = (LucideIcons as any)[name];
+    return Icon ? <Icon className={className} strokeWidth={2}/> : null;
+}
 
 interface QuickReplyBarProps {
     onSend: (message: string) => void;
@@ -50,7 +57,7 @@ export function QuickReplyBar({onSend, disabled}: QuickReplyBarProps) {
                                             : 'bg-secondary text-muted-foreground hover:text-foreground'
                                     )}
                                 >
-                                    {cat.icon} {cat.label}
+                                    <DynamicIcon name={cat.icon} className="w-3.5 h-3.5 inline mr-1" /> {cat.label}
                                 </button>
                             ))}
                         </div>
@@ -68,7 +75,7 @@ export function QuickReplyBar({onSend, disabled}: QuickReplyBarProps) {
                                     disabled={disabled}
                                     className="px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap bg-secondary/80 border border-border/50 text-foreground hover:bg-primary/10 hover:border-primary/30 transition-colors disabled:opacity-50"
                                 >
-                                    {reply.emoji} {reply.text}
+                                    <DynamicIcon name={reply.icon} className="w-3.5 h-3.5 inline mr-1" /> {reply.text}
                                 </motion.button>
                             ))}
                         </div>

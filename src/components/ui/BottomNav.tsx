@@ -100,8 +100,8 @@ export function BottomNav() {
                                 >
                                     <Icon
                                         style={{
-                                            width: 16,
-                                            height: 16,
+                                            width: 24,
+                                            height: 24,
                                             color: isActive ? 'hsl(var(--foreground))' : 'currentColor',
                                         }}
                                         strokeWidth={isActive ? 2.2 : 1.65}
@@ -139,7 +139,7 @@ export function BottomNav() {
                             <motion.span
                                 animate={{opacity: isActive ? 1 : 0, y: isActive ? 0 : 1}}
                                 transition={{duration: 0.12}}
-                                className="text-[8px] font-bold tracking-wide leading-none pointer-events-none"
+                                className="text-[10px] font-bold tracking-wide leading-none pointer-events-none"
                             >
                                 {t(tab.key)}
                             </motion.span>
