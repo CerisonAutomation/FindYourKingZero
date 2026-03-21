@@ -44,7 +44,8 @@ export const supabase = createClient<Database>(
         setItem: (key: string, value: string) => {
           // Store in both cookie (for SSR) and localStorage (for speed)
           const maxAge = 60 * 60 * 24 * 365; // 1 year
-          document.cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}; SameSite=Lax; Secure`;
+          const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+          document.cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}; SameSite=Lax${secure}`;
           localStorage.setItem(key, value);
         },
         removeItem: (key: string) => {

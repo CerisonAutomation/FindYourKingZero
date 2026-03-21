@@ -137,6 +137,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (event === 'SIGNED_IN' && s?.user) {
           await supabaseAuth.ensureProfile(s.user);
         }
+        
+        // Handle token refresh — keep user logged in
+        if (event === 'TOKEN_REFRESHED' && s?.user) {
+          // Session was refreshed, user stays logged in
+        }
+        
+        // Handle sign out
+        if (event === 'SIGNED_OUT') {
+          setUser(null);
+          setSession(null);
+        }
       },
     );
     return () => subscription.unsubscribe();
