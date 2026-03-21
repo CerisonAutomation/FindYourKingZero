@@ -1,7 +1,7 @@
 /**
  * 🚀 P2P DATING HOOK - Production-Ready Privacy-First Dating
  * Trystero 0.22.0 integration with Supabase fallback
- * Complete dating app superset: Grindr/ROMEO/MACHOBB/Meateor features
+ * Complete Find Your King dating features
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react'
