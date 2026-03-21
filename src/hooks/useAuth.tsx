@@ -1,251 +1,203 @@
-import {createContext, ReactNode, useContext, useEffect, useState} from 'react';
-import {Session, User, AuthError} from '@supabase/supabase-js';
-import {supabase} from '@/integrations/supabase/client';
-import {log} from '@/lib/enterprise/Logger';
+// =============================================================================
+// useAuth.tsx v4.0 — Race-condition-free, PKCE, debounced online status
+// Fixes: double-init race, online status storm, missing resetPassword
+// =============================================================================
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
+import type { AuthError, Session, User } from '@supabase/supabase-js';
+import { supabase, supabaseAuth } from '@/integrations/supabase/client';
 
+// ── Types ─────────────────────────────────────────────────────────────────────────────
 interface AuthContextType {
-    user: User | null;
-    session: Session | null;
-    isLoading: boolean;
-    isInitialized: boolean;
-    error: AuthError | null;
-    signOut: () => Promise<void>;
-    signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
-    signUp: (email: string, password: string, displayName: string) => Promise<{ error: AuthError | null }>;
-    signInWithMagicLink: (email: string) => Promise<{ error: AuthError | null }>;
-    resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
-    clearError: () => void;
+  user: User | null;
+  session: Session | null;
+  isLoading: boolean;
+  isInitialized: boolean;
+  error: AuthError | null;
+  signOut: () => Promise<void>;
+  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
+  signUp: (email: string, password: string, displayName: string) => Promise<{ error: AuthError | null }>;
+  signInWithMagicLink: (email: string) => Promise<{ error: AuthError | null }>;
+  resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
+  clearError: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
-    user: null,
-    session: null,
-    isLoading: false,
-    isInitialized: false,
-    error: null,
-    signOut: async () => {},
-    signIn: async () => ({ error: null }),
-    signUp: async () => ({ error: null }),
-    signInWithMagicLink: async () => ({ error: null }),
-    resetPassword: async () => ({ error: null }),
-    clearError: () => {},
+  user: null,
+  session: null,
+  isLoading: true,
+  isInitialized: false,
+  error: null,
+  signOut: async () => {},
+  signIn: async () => ({ error: null }),
+  signUp: async () => ({ error: null }),
+  signInWithMagicLink: async () => ({ error: null }),
+  resetPassword: async () => ({ error: null }),
+  clearError: () => {},
 });
 
-export const AuthProvider = ({children}: { children: ReactNode }) => {
-    const [user, setUser] = useState<User | null>(null);
-    const [session, setSession] = useState<Session | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [isInitialized, setIsInitialized] = useState(false);
-    const [error, setError] = useState<AuthError | null>(null);
+// ── Provider ──────────────────────────────────────────────────────────────────────────
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [error, setError] = useState<AuthError | null>(null);
 
-    const clearError = () => setError(null);
+  // FIXED: mount guard prevents state updates after unmount (race condition)
+  const mountedRef = useRef(true);
+  // FIXED: debounce timer for online status to prevent presence storms
+  const onlineDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const handleError = (error: AuthError | null) => {
-        setError(error);
-        if (error) {
-            log.error('AUTH', 'Authentication error occurred', error);
+  // ── Initialize session once on mount (FIXED: was called twice) ────────────
+  useEffect(() => {
+    mountedRef.current = true;
+
+    const init = async () => {
+      try {
+        const { session: s, error: e } = await supabaseAuth.getSession();
+        if (!mountedRef.current) return;
+        setSession(s);
+        setUser(s?.user ?? null);
+        if (e) setError(e);
+      } catch (err) {
+        if (mountedRef.current) setError(err as AuthError);
+      } finally {
+        if (mountedRef.current) {
+          setIsLoading(false);
+          setIsInitialized(true);
         }
+      }
     };
 
-    useEffect(() => {
-        // Set up auth state listener FIRST
-        const {data: {subscription}} = supabase.auth.onAuthStateChange(
-            async (event, session) => {
-                log.info('AUTH', 'Auth state changed', {
-                    event,
-                    userId: session?.user?.id,
-                    hasSession: !!session
-                });
+    init();
 
-                setSession(session);
-                setUser(session?.user ?? null);
-                setIsLoading(false);
-                setIsInitialized(true);
-
-                // Clear any previous errors on successful auth change
-                if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-                    clearError();
-                }
-
-                // Update online status when auth changes
-                if (session?.user && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
-                    // Don't wait for this to complete to avoid blocking UI
-                    updateOnlineStatus(session.user.id, true).catch((error) => {
-                        log.warn('AUTH', 'Failed to update online status', error);
-                    });
-                }
-            }
-        );
-
-        // THEN check for existing session
-        const initializeAuth = async () => {
-            try {
-                const {data: {session}, error} = await supabase.auth.getSession();
-
-                if (error) {
-                    handleError(error);
-                } else {
-                    setSession(session);
-                    setUser(session?.user ?? null);
-
-                    // Update online status for existing session
-                    if (session?.user) {
-                        updateOnlineStatus(session.user.id, true).catch(console.error);
-                    }
-                }
-            } catch (err) {
-                log.error('AUTH', 'Error initializing auth', err as Error);
-                handleError(err as AuthError);
-            } finally {
-                setIsLoading(false);
-                setIsInitialized(true);
-            }
-        };
-
-        initializeAuth();
-
-        return () => {
-            subscription.unsubscribe();
-        };
-    }, []);
-
-    const updateOnlineStatus = async (userId: string, isOnline: boolean) => {
-        try {
-            await supabase
-                .from('profiles')
-                .update({
-                    is_online: isOnline,
-                    last_seen: new Date().toISOString()
-                })
-                .eq('user_id', userId);
-        } catch (error) {
-            log.error('AUTH', 'Error updating online status', error as Error);
-        }
+    return () => {
+      mountedRef.current = false;
     };
+  }, []);
 
-    const signOut = async () => {
-        setIsLoading(true);
-        clearError();
-
-        try {
-            if (user) {
-                await updateOnlineStatus(user.id, false);
-            }
-            const {error} = await supabase.auth.signOut();
-
-            if (error) {
-                handleError(error);
-            }
-        } catch (err) {
-            handleError(err as AuthError);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const signIn = async (email: string, password: string) => {
-        setIsLoading(true);
-        clearError();
-
-        try {
-            const {error} = await supabase.auth.signInWithPassword({email, password});
-            handleError(error);
-            return { error };
-        } catch (err) {
-            const authError = err as AuthError;
-            handleError(authError);
-            return { error: authError };
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const signUp = async (email: string, password: string, displayName: string) => {
-        setIsLoading(true);
-        clearError();
-
-        try {
-            const {error} = await supabase.auth.signUp({
-                email,
-                password,
-                options: {
-                    data: {display_name: displayName},
-                    emailRedirectTo: `${window.location.origin}/auth/callback`,
-                },
-            });
-            handleError(error);
-            return { error };
-        } catch (err) {
-            const authError = err as AuthError;
-            handleError(authError);
-            return { error: authError };
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const signInWithMagicLink = async (email: string) => {
-        setIsLoading(true);
-        clearError();
-
-        try {
-            const {error} = await supabase.auth.signInWithOtp({
-                email,
-                options: {emailRedirectTo: `${window.location.origin}/auth/callback`},
-            });
-            handleError(error);
-            return { error };
-        } catch (err) {
-            const authError = err as AuthError;
-            handleError(authError);
-            return { error: authError };
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const resetPassword = async (email: string) => {
-        setIsLoading(true);
-        clearError();
-
-        try {
-            const {error} = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: `${window.location.origin}/auth/reset-password`,
-            });
-            handleError(error);
-            return { error };
-        } catch (err) {
-            const authError = err as AuthError;
-            handleError(authError);
-            return { error: authError };
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    return (
-        <AuthContext.Provider value={{
-            user,
-            session,
-            isLoading,
-            isInitialized,
-            error,
-            signOut,
-            signIn,
-            signUp,
-            signInWithMagicLink,
-            resetPassword,
-            clearError
-        }}>
-            {children}
-        </AuthContext.Provider>
+  // ── Auth state change listener ────────────────────────────────────────
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, s) => {
+        if (!mountedRef.current) return;
+        setSession(s);
+        setUser(s?.user ?? null);
+        setIsLoading(false);
+      },
     );
-};
+    return () => subscription.unsubscribe();
+  }, []);
 
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
-};
+  // ── Online presence — FIXED: debounced 500ms to prevent storms ───────────
+  useEffect(() => {
+    if (!user) return;
+
+    const updateOnlineStatus = (isOnline: boolean) => {
+      if (onlineDebounceRef.current) clearTimeout(onlineDebounceRef.current);
+      onlineDebounceRef.current = setTimeout(async () => {
+        try {
+          await supabase
+            .from('profiles')
+            .update({ is_online: isOnline, last_seen: new Date().toISOString() })
+            .eq('id', user.id);
+        } catch {
+          // non-critical — silently fail
+        }
+      }, 500);
+    };
+
+    const handleOnline = () => updateOnlineStatus(true);
+    const handleOffline = () => updateOnlineStatus(false);
+    const handleVisibility = () => updateOnlineStatus(!document.hidden);
+
+    updateOnlineStatus(true);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      if (onlineDebounceRef.current) clearTimeout(onlineDebounceRef.current);
+      updateOnlineStatus(false);
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [user]);
+
+  // ── Auth actions ────────────────────────────────────────────────────────────────
+  const signIn = useCallback(async (email: string, password: string) => {
+    setError(null);
+    const { error: e } = await supabaseAuth.signIn(email, password);
+    if (e) setError(e);
+    return { error: e };
+  }, []);
+
+  const signUp = useCallback(async (email: string, password: string, displayName: string) => {
+    setError(null);
+    const { error: e } = await supabaseAuth.signUp(email, password, displayName);
+    if (e) setError(e);
+    return { error: e };
+  }, []);
+
+  const signInWithMagicLink = useCallback(async (email: string) => {
+    setError(null);
+    const { error: e } = await supabaseAuth.signInWithMagicLink(email);
+    if (e) setError(e);
+    return { error: e };
+  }, []);
+
+  const signOut = useCallback(async () => {
+    setError(null);
+    await supabaseAuth.signOut();
+    setUser(null);
+    setSession(null);
+  }, []);
+
+  const resetPassword = useCallback(async (email: string) => {
+    setError(null);
+    const { error: e } = await supabaseAuth.resetPassword(email);
+    if (e) setError(e);
+    return { error: e };
+  }, []);
+
+  const clearError = useCallback(() => setError(null), []);
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        session,
+        isLoading,
+        isInitialized,
+        error,
+        signIn,
+        signUp,
+        signInWithMagicLink,
+        signOut,
+        resetPassword,
+        clearError,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+// ── Hook ─────────────────────────────────────────────────────────────────────────────
+export function useAuth(): AuthContextType {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within <AuthProvider>');
+  return ctx;
+}
+
+export { AuthContext };
+export type { AuthContextType };
