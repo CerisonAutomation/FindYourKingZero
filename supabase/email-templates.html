@@ -94,3 +94,38 @@ Use these in Supabase Dashboard → Authentication → Email Templates
     </div>
   </div>
 </div>
+
+<!-- EMAIL CHANGED NOTIFICATION -->
+<div style="background:#0a0a1a;padding:40px 20px;font-family:'Outfit',Arial,sans-serif;">
+  <div style="max-width:480px;margin:0 auto;background:#111122;border-radius:16px;overflow:hidden;border:1px solid #1a1a3a;">
+    <div style="background:linear-gradient(135deg,#f5a623,#e8940c);padding:32px;text-align:center;">
+      <div style="font-size:32px;margin-bottom:8px;">📧</div>
+      <h1 style="color:#0a0a1a;font-size:24px;font-weight:900;margin:0;">FIND YOUR KING</h1>
+    </div>
+    <div style="padding:32px;">
+      <h2 style="color:#f0f0f0;font-size:20px;font-weight:800;margin:0 0 16px;">Email address changed</h2>
+      <p style="color:#999;font-size:14px;line-height:1.6;margin:0 0 16px;">
+        Your email was changed from <strong style="color:#f0f0f0;">{{ .OldEmail }}</strong> to <strong style="color:#f0f0f0;">{{ .NewEmail }}</strong>.
+      </p>
+      <p style="color:#666;font-size:12px;margin:0;">
+        If you didn't make this change, contact support immediately.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- PASSWORD CHANGED NOTIFICATION -->
+<div style="background:#0a0a1a;padding:40px 20px;font-family:'Outfit',Arial,sans-serif;">
+  <div style="max-width:480px;margin:0 auto;background:#111122;border-radius:16px;overflow:hidden;border:1px solid #1a1a3a;">
+    <div style="background:linear-gradient(135deg,#f5a623,#e8940c);padding:32px;text-align:center;">
+      <div style="font-size:32px;margin-bottom:8px;">🔑</div>
+      <h1 style="color:#0a0a1a;font-size:24px;font-weight:900;margin:0;">FIND YOUR KING</h1>
+    </div>
+    <div style="padding:32px;">
+      <h2 style="color:#f0f0f0;font-size:20px;font-weight:800;margin:0 0 16px;">Password changed</h2>
+      <p style="color:#999;font-size:14px;line-height:1.6;margin:0;">
+        Your password was successfully changed. If you didn't make this change, reset your password immediately.
+      </p>
+    </div>
+  </div>
+</div>

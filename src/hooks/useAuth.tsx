@@ -26,6 +26,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signUp: (email: string, password: string, displayName: string) => Promise<{ error: AuthError | null }>;
   signInWithMagicLink: (email: string) => Promise<{ error: AuthError | null }>;
+  signInWithOAuth: (provider: 'google' | 'apple' | 'github') => Promise<{ error: AuthError | null }>;
   resetPassword: (email: string) => Promise<{ error: AuthError | null }>;
   clearError: () => void;
 }
@@ -41,6 +42,7 @@ const AuthContext = createContext<AuthContextType>({
   signIn: async () => ({ error: null }),
   signUp: async () => ({ error: null }),
   signInWithMagicLink: async () => ({ error: null }),
+  signInWithOAuth: async () => ({ error: null }),
   resetPassword: async () => ({ error: null }),
   clearError: () => {},
 });
@@ -280,6 +282,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSession(null);
   }, []);
 
+  const signInWithOAuth = useCallback(async (provider: 'google' | 'apple' | 'github') => {
+    setError(null);
+    setErrorCode(null);
+
+    const { error: e } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+
+    if (e) {
+      setError(e);
+      setErrorCode(classifyAuthError(e));
+      return { error: e };
+    }
+    return { error: null };
+  }, []);
+
   const resetPassword = useCallback(async (email: string) => {
     setError(null);
     setErrorCode(null);
@@ -321,6 +342,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signIn,
         signUp,
         signInWithMagicLink,
+        signInWithOAuth,
         signOut,
         resetPassword,
         clearError,
