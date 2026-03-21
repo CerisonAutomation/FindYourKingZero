@@ -16,10 +16,10 @@ const PaginationConfigSchema = z.object({
   enableSmartLoading: z.boolean().default(true),
 });
 
-export type PaginationConfig = z.infer<typeof PaginationConfigSchema>;
+export interface PaginationConfig z.infer<typeof PaginationConfigSchema>;
 
 // Enhanced pagination state interface
-export interface EnterprisePaginationState<T = any> {
+export interface EnterprisePaginationState <T = any> {
   data: T[];
   currentPage: number;
   pageSize: number;
@@ -37,7 +37,7 @@ export interface EnterprisePaginationState<T = any> {
 }
 
 // Pagination result interface
-export interface PaginationResult<T = any> extends EnterprisePaginationState<T> {
+export interface PaginationResult <T = any> extends EnterprisePaginationState<T> {
   nextPage: () => void;
   previousPage: () => void;
   goToPage: (page: number) => void;
@@ -51,7 +51,7 @@ export interface PaginationResult<T = any> extends EnterprisePaginationState<T> 
 }
 
 // Page information interface
-export interface PageInfo {
+export interface PageInfo  {
   currentPage: number;
   totalPages: number;
   totalCount: number;

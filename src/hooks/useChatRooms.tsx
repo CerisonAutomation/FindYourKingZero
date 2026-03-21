@@ -15,7 +15,7 @@ const db = supabase as any;
 export type RoomType = 'direct' | 'event' | 'circle' | 'meetup';
 export type MsgType = 'text' | 'image' | 'voice' | 'video' | 'file' | 'booking_request' | 'system' | 'scheduled';
 
-export interface ChatRoom {
+export type ChatRoom = {
     id: string;
     type: RoomType;
     name: string | null;
@@ -35,7 +35,7 @@ export interface ChatRoom {
     my_role?: string;
 }
 
-export interface RoomMember {
+export type RoomMember = {
     id: string;
     room_id: string;
     user_id: string;
@@ -51,7 +51,7 @@ export interface RoomMember {
     };
 }
 
-export interface ChatMessage {
+export type ChatMessage = {
     id: string;
     room_id: string;
     sender_id: string;
@@ -77,7 +77,7 @@ export interface ChatMessage {
     read_by?: string[];
 }
 
-export interface ReactionSummary {
+export type ReactionSummary = {
     emoji: string;
     count: number;
     has_mine: boolean;

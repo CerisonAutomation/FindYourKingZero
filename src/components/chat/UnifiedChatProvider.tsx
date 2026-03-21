@@ -48,7 +48,7 @@ import {
 } from 'lucide-react';
 
 // Unified Chat Types
-export interface ChatMessage {
+export type ChatMessage =  {
   id: string;
   conversationId: string;
   senderId: string;
@@ -68,7 +68,7 @@ export interface ChatMessage {
   };
 }
 
-export interface ChatConversation {
+export type ChatConversation =  {
   id: string;
   type: 'direct' | 'group' | 'room' | 'event';
   name: string;
@@ -97,7 +97,7 @@ export interface ChatConversation {
   };
 }
 
-export interface ChatUser {
+export type ChatUser =  {
   id: string;
   name: string;
   avatar?: string;
@@ -113,7 +113,7 @@ export interface ChatUser {
   };
 }
 
-export interface ChatActions {
+export type ChatActions =  {
   onSendMessage?: (conversationId: string, content: string, type: ChatMessage['type']) => void;
   onEditMessage?: (messageId: string, content: string) => void;
   onDeleteMessage?: (messageId: string) => void;

@@ -20,7 +20,7 @@ import { useToast } from './use-toast';
 // ──────────────────────────────────────────────────────────────────────────────
 // Types
 // ──────────────────────────────────────────────────────────────────────────────
-export interface P2PMessage {
+export type P = 2PMessage {
   id: string;
   senderId: string;
   content: string;
@@ -31,14 +31,14 @@ export interface P2PMessage {
   isP2P: boolean;
 }
 
-export interface P2PPeer {
+export type P = 2PPeer {
   id: string;
   isOnline: boolean;
   lastSeen: number;
   typing: boolean;
 }
 
-export interface P2PChatState {
+export type P = 2PChatState {
   messages: P2PMessage[];
   peers: P2PPeer[];
   isConnected: boolean;

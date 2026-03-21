@@ -12,12 +12,12 @@
 
 export const OPENROUTER_BASE = 'https://openrouter.ai/api/v1'
 
-export interface OpenRouterMessage {
+export type OpenRouterMessage =  {
   role: 'system' | 'user' | 'assistant'
   content: string
 }
 
-export interface OpenRouterOptions {
+export type OpenRouterOptions =  {
   model?: string
   temperature?: number
   maxTokens?: number

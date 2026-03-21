@@ -37,7 +37,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 
 // Unified Profile Types
-export interface UnifiedProfile {
+export type UnifiedProfile =  {
   id: string;
   user_id?: string;
   name?: string;
@@ -88,7 +88,7 @@ export interface UnifiedProfile {
   };
 }
 
-export interface ProfileActions {
+export type ProfileActions =  {
   onFavorite?: (id: string) => void;
   onUnfavorite?: (id: string) => void;
   onMessage?: (id: string) => void;

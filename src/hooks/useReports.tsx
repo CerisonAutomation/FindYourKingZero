@@ -4,7 +4,7 @@ import {useAuth} from './useAuth';
 import {useToast} from './use-toast';
 import {REPORT_REASONS} from '@/lib/constants';
 
-export interface Report {
+export type Report =  {
     id: string;
     reporter_id: string;
     reported_id: string;

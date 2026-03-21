@@ -20,7 +20,7 @@ export type UserLevel =
     | 'elite_host'
     | 'inner_circle';
 
-export interface UserSubscription {
+export type UserSubscription = {
     id: string;
     user_id: string;
     tier: SubTier;
@@ -34,7 +34,7 @@ export interface UserSubscription {
     host_tier: string | null;
 }
 
-export interface UserLevelData {
+export type UserLevelData = {
     id: string;
     user_id: string;
     level: UserLevel;

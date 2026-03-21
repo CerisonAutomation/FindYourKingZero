@@ -7,7 +7,7 @@ import * as tf from '@tensorflow/tfjs';
 import { pipeline, AutoTokenizer, AutoModel } from '@xenova/transformers';
 import { EventEmitter } from 'events';
 
-export interface UserProfile {
+export type UserProfile =  {
   id: string;
   preferences: any;
   behavior: any;
@@ -15,7 +15,7 @@ export interface UserProfile {
   demographics: any;
 }
 
-export interface AIMatchingResult {
+export type AIMatchingResult =  {
   compatibilityScore: number;
   confidence: number;
   factors: {

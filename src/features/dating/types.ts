@@ -1,5 +1,5 @@
 // 📝 Dating Feature Types
-export interface Profile {
+export type Profile =  {
   id: string;
   name: string;
   age: number;
@@ -17,14 +17,14 @@ export interface Profile {
   distance?: number;
 }
 
-export interface Location {
+export type Location =  {
   lat: number;
   lng: number;
   city: string;
   country: string;
 }
 
-export interface FilterState {
+export type FilterState =  {
   ageRange: [number, number];
   distance: number;
   interests: string[];
@@ -34,7 +34,7 @@ export interface FilterState {
   minCompatibility?: number;
 }
 
-export interface Match {
+export type Match =  {
   id: string;
   profile: Profile;
   matchedAt: string;
@@ -42,7 +42,7 @@ export interface Match {
   unreadCount?: number;
 }
 
-export interface DatingActions {
+export type DatingActions =  {
   loadProfiles: (filters?: Partial<FilterState>) => Promise<void>;
   updateFilters: (filters: Partial<FilterState>) => void;
   likeProfile: (profileId: string) => Promise<void>;
@@ -52,7 +52,7 @@ export interface DatingActions {
   clearError: () => void;
 }
 
-export interface DatingStore {
+export type DatingStore =  {
   profiles: Profile[];
   matches: Profile[];
   filters: FilterState;

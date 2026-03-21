@@ -4,7 +4,7 @@ import {useAuth} from './useAuth';
 import {useToast} from './use-toast';
 import {useEffect} from 'react';
 
-export interface Party {
+export type Party =  {
     id: string;
     host_id: string;
     title: string;

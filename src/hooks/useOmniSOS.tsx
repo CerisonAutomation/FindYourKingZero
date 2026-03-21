@@ -6,7 +6,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 
-export interface SOSAlert {
+export type SOSAlert =  {
   id: string
   userId: string
   userName: string
@@ -20,7 +20,7 @@ export interface SOSAlert {
   estimatedArrival?: Date
 }
 
-export interface SOSConfig {
+export type SOSConfig =  {
   fullScreenMode: boolean
   soundEnabled: boolean
   vibrateEnabled: boolean

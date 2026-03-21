@@ -1,7 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&display=swap');
 
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
 
 /* ═══════════════════════════════════════════════════════════════════════════
    FIND YOUR KING REGAL × LUXURY — OBSIDIAN NEBULA WITH GOLD × CRIMSON × ROYAL BLUES
@@ -444,3 +449,11 @@
         @apply shadow-none !important;
     }
 }
+
+
+
+
+
+
+
+

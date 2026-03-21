@@ -6,7 +6,7 @@ import {useToast} from './use-toast';
 export type VerificationType = 'age' | 'photo' | 'id' | 'video' | 'phone';
 export type VerificationStatus = 'pending' | 'approved' | 'rejected' | 'expired';
 
-export interface VerificationRequest {
+export type VerificationRequest =  {
     id: string;
     user_id: string;
     verification_type: VerificationType;

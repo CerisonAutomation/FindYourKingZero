@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { log } from '@/lib/enterprise/Logger';
 
 // Auto-reply types
-export interface AutoReplyConfig {
+export type AutoReplyConfig = {
   enabled: boolean;
   context: string;
   personality: 'friendly' | 'professional' | 'casual' | 'flirty';
@@ -14,7 +14,7 @@ export interface AutoReplyConfig {
   confidenceThreshold: number;
 }
 
-export interface MessageContext {
+export type MessageContext = {
   conversationId?: string;
   senderName: string;
   senderProfile?: {
@@ -30,7 +30,7 @@ export interface MessageContext {
   }>;
 }
 
-export interface AutoReplySuggestion {
+export type AutoReplySuggestion = {
   content: string;
   confidence: number;
   intent: 'reply' | 'question' | 'compliment' | 'emoji' | 'goodbye';

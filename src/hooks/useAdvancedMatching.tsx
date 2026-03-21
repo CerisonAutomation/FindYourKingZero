@@ -6,7 +6,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 
-export interface GameChangerProfile {
+export type GameChangerProfile =  {
   id: string
   score: number
   compatibility: number
@@ -15,7 +15,7 @@ export interface GameChangerProfile {
   vibe: 'adventurous' | 'romantic' | 'casual' | 'serious'
 }
 
-export interface MatchInsight {
+export type MatchInsight =  {
   userId: string
   compatibilityScore: number
   sharedInterests: string[]

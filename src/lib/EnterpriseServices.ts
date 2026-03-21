@@ -12,7 +12,7 @@ import { AccessibilityManager } from './accessibility/AccessibilityManager';
 import { AIMatchingEngine, AIContentModeration, AIRecommendationEngine } from './ai/MLServices';
 
 // ── ENTERPRISE SERVICE INTERFACES ────────────────────────────────────────
-export interface ServiceConfig {
+export type ServiceConfig =  {
   supabase: {
     url: string;
     anonKey: string;
@@ -44,7 +44,7 @@ export interface ServiceConfig {
   };
 }
 
-export interface ServiceMetrics {
+export type ServiceMetrics =  {
   p2pConnections: number;
   supabaseCalls: number;
   aiRequests: number;
@@ -54,7 +54,7 @@ export interface ServiceMetrics {
   uptime: number;
 }
 
-export interface ServiceHealth {
+export type ServiceHealth =  {
   status: 'healthy' | 'degraded' | 'unhealthy';
   services: Record<string, boolean>;
   lastCheck: Date;

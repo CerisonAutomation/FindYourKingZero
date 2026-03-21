@@ -3,7 +3,7 @@ import {supabase} from '@/integrations/supabase/client';
 import {useAuth} from './useAuth';
 import {useEffect} from 'react';
 
-export interface UserSubscription {
+export type UserSubscription =  {
     id: string;
     user_id: string;
     stripe_customer_id: string | null;

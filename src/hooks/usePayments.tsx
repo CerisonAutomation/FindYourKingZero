@@ -3,7 +3,7 @@ import {supabase} from '@/integrations/supabase/client';
 import {useAuth} from './useAuth';
 import {useToast} from './use-toast';
 
-export interface SubscriptionPlan {
+export type SubscriptionPlan =  {
     id: string;
     name: string;
     price: number;

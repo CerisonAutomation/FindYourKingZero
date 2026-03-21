@@ -15,7 +15,7 @@ import { execSync } from 'child_process'
 import { readFileSync, readdirSync } from 'fs'
 import { join } from 'path'
 
-export interface AuditResult {
+export type AuditResult =  {
   category: string
   score: number // 1-10
   issues: string[]
@@ -23,7 +23,7 @@ export interface AuditResult {
   critical: boolean
 }
 
-export interface CompleteAuditReport {
+export type CompleteAuditReport =  {
   overallScore: number
   auditResults: AuditResult[]
   immediateActions: string[]

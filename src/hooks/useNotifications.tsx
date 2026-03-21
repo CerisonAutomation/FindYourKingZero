@@ -4,7 +4,7 @@ import {useAuth} from './useAuth';
 import {useEffect} from 'react';
 import {useToast} from './use-toast';
 
-export interface Notification {
+export type Notification = {
     id: string;
     user_id: string;
     type: string;

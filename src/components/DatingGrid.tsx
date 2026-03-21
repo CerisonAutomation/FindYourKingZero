@@ -7,7 +7,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, MessageCircle, X, Star, MapPin, Shield, Brain } from 'lucide-react';
 
-export interface UserProfile {
+export type UserProfile =  {
   id: string;
   displayName: string;
   age: number;

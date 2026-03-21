@@ -12,14 +12,14 @@
 
 import EventEmitter from 'events'
 
-export interface SignalingConfig {
+export type SignalingConfig =  {
   timeout?: number
   retryAttempts?: number
   enableEncryption?: boolean
   compressionEnabled?: boolean
 }
 
-export interface P2PMessage {
+export type P = 2PMessage {
   id: string
   senderId: string
   recipientId: string
@@ -31,7 +31,7 @@ export interface P2PMessage {
   signature?: string
 }
 
-export interface P2PCall {
+export type P = 2PCall {
   id: string
   initiatorId: string
   recipientId: string

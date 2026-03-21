@@ -18,7 +18,7 @@ import { AccessibilityManager } from '@/lib/accessibility/AccessibilityManager'
 import { AIMatchingEngine, MatchScore } from '@/lib/ai/AIMatchingEngine'
 import { UserProfile, P2PMessage, P2PCall, LocationData } from '@/types'
 
-export interface UseHybridP2PDatingState {
+export interface UseHybridP 2PDatingState {
   // Authentication State
   user: any | null
   session: any | null
@@ -60,7 +60,7 @@ export interface UseHybridP2PDatingState {
   securityLevel: 'standard' | 'enhanced' | 'maximum'
 }
 
-export interface UseHybridP2PDatingActions {
+export interface UseHybridP 2PDatingActions {
   // Authentication Actions
   signIn: (email: string, password: string) => Promise<{ user: any; session: any }>
   signUp: (email: string, password: string, profileData: Partial<UserProfile>) => Promise<{ user: any; session: any }>
@@ -113,7 +113,7 @@ export interface UseHybridP2PDatingActions {
   deleteAccount: () => Promise<void>
 }
 
-export interface UseHybridP2PDatingReturn extends UseHybridP2PDatingState, UseHybridP2PDatingActions {}
+export interface UseHybridP 2PDatingReturn extends UseHybridP2PDatingState, UseHybridP2PDatingActions {}
 
 /**
  * 🚀 HYBRID P2P DATING HOOK - Complete Enterprise Implementation

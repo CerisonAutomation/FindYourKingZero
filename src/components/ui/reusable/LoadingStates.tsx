@@ -18,7 +18,7 @@ const spinnerVariants = {
 };
 
 // Loading spinner component
-export interface LoadingSpinnerProps extends BaseSkeletonProps {
+export interface LoadingSpinnerProps  extends BaseSkeletonProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   variant?: 'default' | 'secondary' | 'destructive';
   text?: string;
@@ -53,7 +53,7 @@ export function LoadingSpinner({
 }
 
 // Skeleton card component
-export interface SkeletonCardProps extends BaseSkeletonProps {
+export interface SkeletonCardProps  extends BaseSkeletonProps {
   lines?: number;
   showAvatar?: boolean;
   showButton?: boolean;
@@ -109,7 +109,7 @@ export function SkeletonCard({
 }
 
 // Skeleton list component
-export interface SkeletonListProps extends BaseSkeletonProps {
+export interface SkeletonListProps  extends BaseSkeletonProps {
   items?: number;
   showAvatar?: boolean;
   avatarSize?: 'sm' | 'md' | 'lg';
@@ -138,7 +138,7 @@ export function SkeletonList({
 }
 
 // Skeleton table component
-export interface SkeletonTableProps extends BaseSkeletonProps {
+export interface SkeletonTableProps  extends BaseSkeletonProps {
   rows?: number;
   columns?: number;
   showHeader?: boolean;
@@ -183,7 +183,7 @@ export function SkeletonTable({
 }
 
 // Page loading component
-export interface PageLoadingProps extends BaseSkeletonProps {
+export interface PageLoadingProps  extends BaseSkeletonProps {
   text?: string;
   showSpinner?: boolean;
   fullScreen?: boolean;
@@ -225,7 +225,7 @@ export function PageLoading({
 }
 
 // Content loading wrapper
-export interface ContentLoadingProps extends BaseSkeletonProps {
+export interface ContentLoadingProps  extends BaseSkeletonProps {
   isLoading: boolean;
   children: React.ReactNode;
   fallback?: React.ReactNode;
@@ -252,7 +252,7 @@ export function ContentLoading({
 }
 
 // Button loading wrapper
-export interface ButtonLoadingProps extends BaseSkeletonProps {
+export interface ButtonLoadingProps  extends BaseSkeletonProps {
   isLoading: boolean;
   children: React.ReactNode;
   loadingText?: string;
@@ -288,7 +288,7 @@ export function ButtonLoading({
 }
 
 // Image loading component
-export interface ImageLoadingProps extends BaseSkeletonProps {
+export interface ImageLoadingProps  extends BaseSkeletonProps {
   src: string;
   alt: string;
   fallbackSrc?: string;

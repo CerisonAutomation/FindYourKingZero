@@ -6,14 +6,14 @@
 
 import { useCallback, useEffect, useRef } from 'react'
 
-export interface AudioConfig {
+export type AudioConfig =  {
   volume: number
   enabled: boolean
   vibrate: boolean
   customSounds: Record<string, string>
 }
 
-export interface AudioClip {
+export type AudioClip =  {
   name: string
   url?: string
   volume?: number

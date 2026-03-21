@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 
 // Unified Map Types
-export interface MapMarker {
+export type MapMarker =  {
   id: string;
   userId?: string;
   latitude: number;
@@ -45,14 +45,14 @@ export interface MapMarker {
   metadata?: Record<string, any>;
 }
 
-export interface MapBounds {
+export type MapBounds =  {
   north: number;
   south: number;
   east: number;
   west: number;
 }
 
-export interface MapControls {
+export type MapControls =  {
   showZoom?: boolean;
   showLayers?: boolean;
   showSearch?: boolean;

@@ -34,7 +34,7 @@ import { useToast } from '../use-toast';
 // TYPES & INTERFACES
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export interface DatingProfile {
+export type DatingProfile =  {
   id: string;
   userId: string;
   displayName: string;
@@ -62,7 +62,7 @@ export interface DatingProfile {
   compatibility?: number;
 }
 
-export interface DatingMessage {
+export type DatingMessage =  {
   id: string;
   senderId: string;
   receiverId: string;
@@ -82,7 +82,7 @@ export interface DatingMessage {
   isRead: boolean;
 }
 
-export interface DatingCall {
+export type DatingCall =  {
   id: string;
   callerId: string;
   receiverId: string;
@@ -93,7 +93,7 @@ export interface DatingCall {
   duration?: number;
 }
 
-export interface DatingRoom {
+export type DatingRoom =  {
   id: string;
   type: 'nearby' | 'global' | 'tribe' | 'private';
   name: string;
@@ -107,7 +107,7 @@ export interface DatingRoom {
   createdBy: string;
 }
 
-export interface DiscoverySettings {
+export type DiscoverySettings =  {
   maxAge: number;
   minAge: number;
   maxDistance: number;
@@ -115,7 +115,7 @@ export interface DiscoverySettings {
   tribes: string[];
 }
 
-export interface DatingState {
+export type DatingState =  {
   // Connection
   isConnected: boolean;
   isOnline: boolean;

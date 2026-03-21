@@ -22,7 +22,7 @@ export const WEBRTC_CONFIG = {
   iceCandidatePoolSize: 10
 }
 
-export interface PeerConnection {
+export type PeerConnection =  {
   id: string
   userName: string
   userId: string
@@ -34,7 +34,7 @@ export interface PeerConnection {
   lastActivity: number
 }
 
-export interface P2PMessage {
+export type P = 2PMessage {
   id: string
   type: 'text' | 'image' | 'video' | 'audio' | 'file'
   content: string
@@ -50,7 +50,7 @@ export interface P2PMessage {
   }
 }
 
-export interface MatchmakingRoom {
+export type MatchmakingRoom =  {
   id: string
   name: string
   type: 'dating' | 'chat' | 'video' | 'group'
@@ -66,7 +66,7 @@ export interface MatchmakingRoom {
   }
 }
 
-export interface P2PState {
+export type P = 2PState {
   isConnected: boolean
   isDiscovering: bool
   peers: Map<string, PeerConnection>

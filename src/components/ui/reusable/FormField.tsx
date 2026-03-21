@@ -26,7 +26,7 @@ const formFieldVariants = cva(
 );
 
 // Form field props interface
-export interface FormFieldProps extends BaseInputProps {
+export interface FormFieldProps  extends BaseInputProps {
   label?: string;
   description?: string;
   error?: string;
@@ -148,7 +148,7 @@ export function FormField({
 }
 
 // Reusable input field component
-export interface InputFieldProps extends Omit<FormFieldProps, 'children'> {
+export interface InputFieldProps  extends Omit<FormFieldProps, 'children'> {
   type?: string;
   placeholder?: string;
   value?: string | number;
@@ -207,7 +207,7 @@ export function InputField({
 }
 
 // Reusable textarea field component
-export interface TextareaFieldProps extends Omit<FormFieldProps, 'children'> {
+export interface TextareaFieldProps  extends Omit<FormFieldProps, 'children'> {
   placeholder?: string;
   value?: string;
   defaultValue?: string;
@@ -259,7 +259,7 @@ export function TextareaField({
 }
 
 // Reusable select field component
-export interface SelectFieldProps extends Omit<FormFieldProps, 'children'> {
+export interface SelectFieldProps  extends Omit<FormFieldProps, 'children'> {
   options: Array<{
     value: string;
     label: string;
@@ -320,7 +320,7 @@ export function SelectField({
 }
 
 // Reusable checkbox field component
-export interface CheckboxFieldProps extends Omit<FormFieldProps, 'children'> {
+export interface CheckboxFieldProps  extends Omit<FormFieldProps, 'children'> {
   checked?: boolean;
   defaultChecked?: boolean;
   onChange?: (checked: boolean) => void;
@@ -372,7 +372,7 @@ export function CheckboxField({
 }
 
 // Reusable switch field component
-export interface SwitchFieldProps extends Omit<FormFieldProps, 'children'> {
+export interface SwitchFieldProps  extends Omit<FormFieldProps, 'children'> {
   checked?: boolean;
   defaultChecked?: boolean;
   onChange?: (checked: boolean) => void;

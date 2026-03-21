@@ -19,7 +19,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
 })
 
-export interface MapMarker {
+export interface MapMarker  {
   id: string
   userId: string
   userName: string
@@ -39,7 +39,7 @@ export interface MapMarker {
   }
 }
 
-export interface MapCluster {
+export interface MapCluster  {
   id: string
   position: L.LatLng
   markers: MapMarker[]
@@ -47,7 +47,7 @@ export interface MapCluster {
   bounds: L.LatLngBounds
 }
 
-export interface SOSMarker extends MapMarker {
+export interface SOSMarker  extends MapMarker {
   sosData: {
     message: string
     timestamp: number
@@ -55,7 +55,7 @@ export interface SOSMarker extends MapMarker {
   }
 }
 
-export interface RealtimeMapState {
+export interface RealtimeMapState  {
   isLoaded: boolean
   markers: Map<string, MapMarker>
   sosMarkers: Map<string, SOSMarker>

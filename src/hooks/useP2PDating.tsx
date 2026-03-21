@@ -14,7 +14,7 @@ import { useAuth } from './useAuth'
 import { useToast } from './use-toast'
 
 // Types for P2P dating
-export interface P2PProfile {
+export type P = 2PProfile {
   id: string
   name: string
   age: number
@@ -40,7 +40,7 @@ export interface P2PProfile {
   pronouns: string
 }
 
-export interface P2PMessage {
+export type P = 2PMessage {
   id: string
   senderId: string
   receiverId: string
@@ -59,7 +59,7 @@ export interface P2PMessage {
   }
 }
 
-export interface P2PCall {
+export type P = 2PCall {
   id: string
   callerId: string
   receiverId: string
@@ -70,7 +70,7 @@ export interface P2PCall {
   duration?: number
 }
 
-export interface P2PRoom {
+export type P = 2PRoom {
   id: string
   type: 'nearby' | 'global' | 'tribe' | 'private'
   name: string
@@ -82,7 +82,7 @@ export interface P2PRoom {
   createdAt: number
 }
 
-export interface P2PDatingState {
+export type P = 2PDatingState {
   // Connection state
   isConnected: boolean
   currentRoom: string | null

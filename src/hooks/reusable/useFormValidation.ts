@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 
 // Validation rule interface
-export interface ValidationRule<T = any> {
+export interface ValidationRule <T = any> {
   required?: boolean;
   minLength?: number;
   maxLength?: number;
@@ -15,7 +15,7 @@ export interface ValidationRule<T = any> {
 }
 
 // Form field interface
-export interface FormField<T = any> {
+export interface FormField <T = any> {
   value: T;
   error: string | undefined;
   touched: boolean;
@@ -24,7 +24,7 @@ export interface FormField<T = any> {
 }
 
 // Form state interface
-export interface FormState<T extends Record<string, any>> {
+export interface FormState <T extends Record<string, any>> {
   fields: Record<keyof T, FormField<T[keyof T]>>;
   isValid: boolean;
   isDirty: boolean;
@@ -33,7 +33,7 @@ export interface FormState<T extends Record<string, any>> {
 }
 
 // Form validation options
-export interface FormValidationOptions<T extends Record<string, any>> {
+export interface FormValidationOptions <T extends Record<string, any>> {
   initialValues: T;
   validationRules?: Partial<Record<keyof T, ValidationRule<T[keyof T]>>>;
   schema?: z.ZodSchema<T>;

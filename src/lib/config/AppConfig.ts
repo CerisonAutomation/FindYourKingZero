@@ -3,7 +3,7 @@
  * Central configuration management for the dating platform
  */
 
-export interface AppConfig {
+export type AppConfig =  {
   app: {
     name: string
     version: string

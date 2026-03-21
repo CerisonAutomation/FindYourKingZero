@@ -6,7 +6,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 
-export interface MapMarker {
+export type MapMarker =  {
   id: string
   userId: string
   latitude: number
@@ -24,7 +24,7 @@ export interface MapMarker {
   }
 }
 
-export interface LocationEvent {
+export type LocationEvent =  {
   id: string
   name: string
   location: {

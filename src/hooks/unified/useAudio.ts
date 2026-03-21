@@ -27,7 +27,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 // TYPES & INTERFACES
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export interface AudioMessage {
+export type AudioMessage =  {
   id: string;
   url: string;
   duration: number;
@@ -36,7 +36,7 @@ export interface AudioMessage {
   isPlaying: boolean;
 }
 
-export interface VoiceNote {
+export type VoiceNote =  {
   id: string;
   content: string;
   audioUrl?: string;
@@ -45,21 +45,21 @@ export interface VoiceNote {
   timestamp: number;
 }
 
-export interface AudioConfig {
+export type AudioConfig =  {
   volume: number;
   enabled: boolean;
   vibrate: boolean;
   customSounds: Record<string, string>;
 }
 
-export interface AudioClip {
+export type AudioClip =  {
   name: string;
   url?: string;
   volume?: number;
   loop?: boolean;
 }
 
-export interface AudioState {
+export type AudioState =  {
   // Recording state
   isRecording: boolean;
   recordingTime: number;

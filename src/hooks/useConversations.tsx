@@ -3,7 +3,7 @@ import {supabase} from '@/integrations/supabase/client';
 import {useAuth} from './useAuth';
 import {useEffect} from 'react';
 
-export interface ConversationWithDetails {
+export type ConversationWithDetails =  {
     id: string;
     participant_one: string;
     participant_two: string;

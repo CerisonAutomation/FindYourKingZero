@@ -6,7 +6,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 
-export interface DeviceMarker {
+export type DeviceMarker =  {
   id: string
   type: 'mobile' | 'desktop' | 'tablet' | 'unknown'
   status: 'online' | 'away' | 'sos' | 'offline'
@@ -21,7 +21,7 @@ export interface DeviceMarker {
   isMoving?: boolean
 }
 
-export interface MarkerCluster {
+export type MarkerCluster =  {
   id: string
   position: { lat: number; lng: number }
   count: number
@@ -29,7 +29,7 @@ export interface MarkerCluster {
   expansionRadius: number
 }
 
-export interface MapMarkerConfig {
+export type MapMarkerConfig =  {
   showDeviceIcons: boolean
   showBatteryLevel: boolean
   showStatusAnimations: boolean

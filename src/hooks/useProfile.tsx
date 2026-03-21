@@ -4,7 +4,7 @@ import {supabase} from '@/integrations/supabase/client';
 import {useAuth} from './useAuth';
 import {useToast} from './use-toast';
 
-export interface Profile {
+export type Profile =  {
     id: string;
     user_id: string;
     display_name: string | null;
@@ -47,7 +47,7 @@ export interface Profile {
     account_deletion_requested_at: string | null;
 }
 
-export interface ProfileWithDetails {
+export type ProfileWithDetails =  {
     id: string;
     user_id: string;
     display_name: string | null;
@@ -82,7 +82,7 @@ export interface ProfileWithDetails {
     relationship_status?: string | null;
 }
 
-export interface ProfileFilters {
+export type ProfileFilters =  {
     minAge?: number;
     maxAge?: number;
     tribes?: string[];

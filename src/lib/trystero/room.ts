@@ -19,7 +19,7 @@ import type { Room } from 'trystero'
 // TYPES
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export interface ChatMessage {
+export type ChatMessage =  {
   id: string
   senderId: string
   content: string
@@ -30,31 +30,31 @@ export interface ChatMessage {
   selfDestruct?: number // Auto-destruct timestamp
 }
 
-export interface Reaction {
+export type Reaction =  {
   messageId: string
   emoji: string
   senderId: string
   timestamp: number
 }
 
-export interface TypingPayload {
+export type TypingPayload =  {
   userId: string
   isTyping: boolean
 }
 
-export interface ReadReceipt {
+export type ReadReceipt =  {
   messageId: string
   readBy: string
   timestamp: number
 }
 
-export interface PresencePayload {
+export type PresencePayload =  {
   userId: string
   status: 'online' | 'away' | 'busy'
   lastSeen: number
 }
 
-export interface MediaStreamPayload {
+export type MediaStreamPayload =  {
   streamId: string
   type: 'audio' | 'video' | 'screen'
   userId: string

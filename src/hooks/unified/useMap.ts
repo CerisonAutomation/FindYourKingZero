@@ -31,7 +31,7 @@ import { useAuth } from '../useAuth';
 // TYPES & INTERFACES
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export interface MapMarker {
+export type MapMarker =  {
   id: string;
   userId: string;
   latitude: number;
@@ -52,7 +52,7 @@ export interface MapMarker {
   };
 }
 
-export interface DeviceMarker {
+export type DeviceMarker =  {
   id: string;
   type: 'mobile' | 'desktop' | 'tablet' | 'unknown';
   status: 'online' | 'away' | 'sos' | 'offline';
@@ -67,7 +67,7 @@ export interface DeviceMarker {
   isMoving?: boolean;
 }
 
-export interface MarkerCluster {
+export type MarkerCluster =  {
   id: string;
   position: { lat: number; lng: number };
   count: number;
@@ -75,7 +75,7 @@ export interface MarkerCluster {
   expansionRadius: number;
 }
 
-export interface LocationEvent {
+export type LocationEvent =  {
   id: string;
   name: string;
   location: {
@@ -91,7 +91,7 @@ export interface LocationEvent {
   description: string;
 }
 
-export interface MapConfig {
+export type MapConfig =  {
   showDeviceIcons: boolean;
   showBatteryLevel: boolean;
   showStatusAnimations: boolean;
@@ -102,7 +102,7 @@ export interface MapConfig {
   updateInterval: number;
 }
 
-export interface MapState {
+export type MapState =  {
   markers: MapMarker[];
   deviceMarkers: DeviceMarker[];
   clusters: MarkerCluster[];

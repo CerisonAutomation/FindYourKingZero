@@ -14,7 +14,7 @@ import ngeohash from 'ngeohash';
 import { ZeroKnowledgeEncryption } from './encryption/ZeroKnowledgeEncryption';
 
 // ── QUANTUM INTERFACES ────────────────────────────────────────────────────────
-export interface QuantumP2PDatingConfig {
+export type QuantumP = 2PDatingConfig {
   readonly appId: string;
   readonly supabaseUrl: string;
   readonly supabaseAnonKey: string;
@@ -33,7 +33,7 @@ export interface QuantumP2PDatingConfig {
   readonly enableBlockchainIntegration?: boolean;
 }
 
-export interface QuantumUserProfile {
+export type QuantumUserProfile =  {
   readonly id: string;
   readonly userId: string;
   readonly displayName: string;
@@ -63,7 +63,7 @@ export interface QuantumUserProfile {
   readonly blockchainVerified?: boolean;
 }
 
-export interface QuantumPhoto {
+export type QuantumPhoto =  {
   readonly id: string;
   readonly url: string;
   readonly thumbnailUrl: string;
@@ -81,7 +81,7 @@ export interface QuantumPhoto {
   readonly zeroKnowledgeEncrypted?: boolean;
 }
 
-export interface QuantumUserPreferences {
+export type QuantumUserPreferences =  {
   readonly ageRange: { readonly min: number; readonly max: number };
   readonly maxDistance: number;
   readonly lookingFor: string[];
@@ -109,7 +109,7 @@ export interface QuantumUserPreferences {
   };
 }
 
-export interface QuantumPrivacySettings {
+export type QuantumPrivacySettings =  {
   readonly showAge: boolean;
   readonly showDistance: boolean;
   readonly allowProfileVisits: boolean;
@@ -124,7 +124,7 @@ export interface QuantumPrivacySettings {
   readonly aiPrivacyProtection?: boolean;
 }
 
-export interface QuantumVerificationStatus {
+export type QuantumVerificationStatus =  {
   readonly ageVerified: boolean;
   readonly photoVerified: boolean;
   readonly emailVerified: boolean;
@@ -137,7 +137,7 @@ export interface QuantumVerificationStatus {
   readonly verificationScore: number;
 }
 
-export interface QuantumUserStats {
+export type QuantumUserStats =  {
   readonly profileViews: number;
   readonly profileLikes: number;
   readonly matches: number;
@@ -150,7 +150,7 @@ export interface QuantumUserStats {
   readonly blockchainReputation: number;
 }
 
-export interface SocialLinks {
+export type SocialLinks =  {
   readonly instagram?: string;
   readonly twitter?: string;
   readonly linkedin?: string;
@@ -159,7 +159,7 @@ export interface SocialLinks {
   readonly blockchain?: string;
 }
 
-export interface P2PMessage {
+export type P = 2PMessage {
   readonly id: string;
   readonly fromUserId: string;
   readonly toUserId: string;
@@ -175,7 +175,7 @@ export interface P2PMessage {
   readonly blockchainHash?: string;
 }
 
-export interface P2PCall {
+export type P = 2PCall {
   readonly id: string;
   readonly fromUserId: string;
   readonly toUserId: string;
@@ -189,7 +189,7 @@ export interface P2PCall {
   readonly aiModerated?: boolean;
 }
 
-export interface PaymentRequest {
+export type PaymentRequest =  {
   readonly id: string;
   readonly fromUserId: string;
   readonly toUserId: string;
@@ -203,7 +203,7 @@ export interface PaymentRequest {
   readonly quantumSecure?: boolean;
 }
 
-export interface Group {
+export type Group =  {
   readonly id: string;
   readonly name: string;
   readonly description: string;
@@ -222,7 +222,7 @@ export interface Group {
   readonly blockchainVerified?: boolean;
 }
 
-export interface Event {
+export type Event =  {
   readonly id: string;
   readonly name: string;
   readonly description: string;
@@ -258,7 +258,7 @@ export enum SignalingStrategy {
   BLOCKCHAIN = 'blockchain',
 }
 
-export interface SignalingConfig {
+export type SignalingConfig =  {
   readonly strategy: SignalingStrategy;
   readonly priority: number;
   readonly reliability: number;

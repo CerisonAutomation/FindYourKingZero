@@ -4,7 +4,7 @@ import {useAuth} from './useAuth';
 import {useToast} from './use-toast';
 import {Profile} from './useProfile';
 
-export interface Booking {
+export type Booking =  {
     id: string;
     seeker_id: string;
     provider_id: string;

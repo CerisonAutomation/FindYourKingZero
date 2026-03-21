@@ -14,14 +14,14 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
 
-export interface LocationCoordinates {
+export type LocationCoordinates =  {
   latitude: number
   longitude: number
   accuracy?: number
   timestamp: number
 }
 
-export interface NearbyProfile {
+export type NearbyProfile =  {
   id: string
   username: string
   display_name: string
@@ -36,13 +36,13 @@ export interface NearbyProfile {
   created_at: string
 }
 
-export interface LocationUpdateOptions {
+export type LocationUpdateOptions =  {
   enableHighAccuracy?: boolean
   timeout?: number
   maximumAge?: number
 }
 
-export interface UseLocationState {
+export type UseLocationState =  {
   location: LocationCoordinates | null
   nearbyProfiles: NearbyProfile[]
   isLoading: boolean
