@@ -1010,3 +1010,92 @@ select:focus {
 .animate-shimmer {
     animation: shimmer 1.8s ease-in-out infinite;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STATUS DOTS, GLASS NAV, CHAT EXTRAS (merged from zip)
+═══════════════════════════════════════════════════════════════════════════ */
+
+@layer base {
+    :root {
+        --status-online: 142 76% 42%;
+        --status-away: 38 95% 54%;
+        --status-busy: 0 84% 58%;
+        --status-offline: 215 12% 38%;
+        --radius-xs: 4px;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --radius-xl: 20px;
+        --radius-full: 9999px;
+        --nav-h: 56px;
+        --sidebar-w: 224px;
+        --header-h: 52px;
+        --z-nav: 50;
+        --z-modal: 100;
+        --z-toast: 200;
+        --z-overlay: 300;
+    }
+}
+
+@keyframes status-pulse {
+    0% { box-shadow: 0 0 0 0 hsl(var(--status-online) / 0.5); }
+    70% { box-shadow: 0 0 0 6px hsl(var(--status-online) / 0); }
+    100% { box-shadow: 0 0 0 0 hsl(var(--status-online) / 0); }
+}
+
+@layer components {
+    .glass-nav {
+        background: hsl(224 14% 4% / 0.9);
+        backdrop-filter: blur(32px) saturate(180%);
+        -webkit-backdrop-filter: blur(32px) saturate(180%);
+        border-bottom: 1px solid hsl(224 8% 100% / 0.055);
+        box-shadow: 0 1px 0 hsl(224 8% 100% / 0.025);
+    }
+
+    .status-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        border: 2px solid hsl(var(--background));
+        flex-shrink: 0;
+    }
+    .status-dot-online {
+        background: hsl(var(--status-online));
+        box-shadow: 0 0 0 0 hsl(var(--status-online) / 0.5);
+        animation: status-pulse 1.8s ease-out infinite;
+    }
+    .status-dot-away { background: hsl(var(--status-away)); }
+    .status-dot-busy { background: hsl(var(--status-busy)); }
+    .status-dot-offline { background: hsl(var(--status-offline)); }
+
+    .chat-bubble-sent {
+        background: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
+        border-radius: var(--radius-lg) var(--radius-lg) var(--radius-xs) var(--radius-lg);
+    }
+    .chat-bubble-received {
+        background: hsl(var(--surface-2));
+        color: hsl(var(--foreground));
+        border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) var(--radius-xs);
+    }
+
+    .meet-intent-badge {
+        background: linear-gradient(135deg, hsl(142 76% 42%), hsl(142 60% 35%));
+        color: white;
+        font-weight: 700;
+        font-size: 11px;
+        padding: 4px 10px;
+        border-radius: var(--radius-full);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .safety-shield {
+        background: hsl(142 76% 42% / 0.1);
+        border: 1px solid hsl(142 76% 42% / 0.2);
+        border-radius: var(--radius-md);
+        padding: 8px 12px;
+        font-size: 12px;
+        color: hsl(142 76% 60%);
+    }
+}
