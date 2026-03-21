@@ -22,7 +22,7 @@ export const WEBRTC_CONFIG = {
   iceCandidatePoolSize: 10
 }
 
-export type PeerConnection =  {
+export type PeerConnection  = {
   id: string
   userName: string
   userId: string
@@ -50,7 +50,7 @@ export type P = 2PMessage {
   }
 }
 
-export type MatchmakingRoom =  {
+export type MatchmakingRoom  = {
   id: string
   name: string
   type: 'dating' | 'chat' | 'video' | 'group'

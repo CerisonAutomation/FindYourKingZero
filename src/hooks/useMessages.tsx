@@ -4,7 +4,7 @@ import {supabase} from '@/integrations/supabase/client';
 import {useAuth} from './useAuth';
 import {useToast} from './use-toast';
 
-export type Conversation =  {
+export type Conversation  = {
     id: string;
     participant_one: string;
     participant_two: string;
@@ -19,7 +19,7 @@ export type Conversation =  {
     unread_count?: number;
 }
 
-export type Message =  {
+export type Message  = {
     id: string;
     conversation_id: string;
     sender_id: string;

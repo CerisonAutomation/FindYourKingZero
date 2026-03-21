@@ -1,13 +1,13 @@
 import { log } from '@/lib/enterprise/Logger';
 
 // Voice command event types
-export type VoiceCommandEvent =  {
+export type VoiceCommandEvent  = {
   type: 'command_executed' | 'command_failed' | 'speech_detected' | 'speech_ended' | 'error';
   data: any;
   timestamp: Date;
 }
 
-export type VoiceCommand =  {
+export type VoiceCommand  = {
   id: string;
   phrase: string;
   action: VoiceCommandAction;

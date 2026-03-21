@@ -3,7 +3,7 @@ import {supabase} from '@/integrations/supabase/client';
 import {useAuth} from './useAuth';
 import {useToast} from './use-toast';
 
-export type Album =  {
+export type Album  = {
     id: string;
     user_id: string;
     name: string;
@@ -15,7 +15,7 @@ export type Album =  {
     photos?: AlbumPhoto[];
 }
 
-export type AlbumPhoto =  {
+export type AlbumPhoto  = {
     id: string;
     album_id: string;
     user_id: string;

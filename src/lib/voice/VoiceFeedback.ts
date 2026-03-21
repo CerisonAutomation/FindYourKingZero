@@ -1,7 +1,7 @@
 import { log } from '@/lib/enterprise/Logger';
 
 // Voice feedback types
-export type VoiceFeedbackConfig =  {
+export type VoiceFeedbackConfig  = {
   enabled: boolean;
   voice: string | null;
   rate: number;
@@ -10,7 +10,7 @@ export type VoiceFeedbackConfig =  {
   language: string;
 }
 
-export type FeedbackMessage =  {
+export type FeedbackMessage  = {
   id: string;
   text: string;
   priority: 'low' | 'medium' | 'high';

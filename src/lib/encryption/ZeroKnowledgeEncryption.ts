@@ -5,7 +5,7 @@
 
 import { createHash, randomBytes, createCipheriv, createDecipheriv, scrypt } from 'crypto';
 
-export type EncryptionKeyPair =  {
+export type EncryptionKeyPair  = {
   publicKey: string;
   privateKey: string;
   keyId: string;
@@ -13,7 +13,7 @@ export type EncryptionKeyPair =  {
   expiresAt: number;
 }
 
-export type EncryptedMessage =  {
+export type EncryptedMessage  = {
   data: string;
   nonce: string;
   authTag: string;

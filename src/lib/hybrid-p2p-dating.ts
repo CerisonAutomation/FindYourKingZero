@@ -30,7 +30,7 @@ export type P = 2PDatingConfig {
   readonly enableBlockchainIntegration?: boolean;
 }
 
-export type UserProfile =  {
+export type UserProfile  = {
   readonly id: string;
   readonly userId: string;
   readonly displayName: string;
@@ -60,7 +60,7 @@ export type UserProfile =  {
   readonly blockchainVerified?: boolean;
 }
 
-export type Photo =  {
+export type Photo  = {
   readonly id: string;
   readonly url: string;
   readonly thumbnailUrl: string;
@@ -78,7 +78,7 @@ export type Photo =  {
   readonly endToEndEncrypted?: boolean;
 }
 
-export type UserPreferences =  {
+export type UserPreferences  = {
   readonly ageRange: { readonly min: number; readonly max: number };
   readonly maxDistance: number;
   readonly lookingFor: string[];
@@ -106,7 +106,7 @@ export type UserPreferences =  {
   };
 }
 
-export type PrivacySettings =  {
+export type PrivacySettings  = {
   readonly showAge: boolean;
   readonly showDistance: boolean;
   readonly allowProfileVisits: boolean;
@@ -121,7 +121,7 @@ export type PrivacySettings =  {
   readonly aiPrivacyProtection?: boolean;
 }
 
-export type VerificationStatus =  {
+export type VerificationStatus  = {
   readonly ageVerified: boolean;
   readonly photoVerified: boolean;
   readonly emailVerified: boolean;
@@ -134,7 +134,7 @@ export type VerificationStatus =  {
   readonly verificationScore: number;
 }
 
-export type UserStats =  {
+export type UserStats  = {
   readonly profileViews: number;
   readonly profileLikes: number;
   readonly matches: number;
@@ -147,7 +147,7 @@ export type UserStats =  {
   readonly blockchainReputation: number;
 }
 
-export type SocialLinks =  {
+export type SocialLinks  = {
   readonly instagram?: string;
   readonly twitter?: string;
   readonly linkedin?: string;
@@ -156,7 +156,7 @@ export type SocialLinks =  {
   readonly blockchain?: string;
 }
 
-export type Message =  {
+export type Message  = {
   readonly id: string;
   readonly fromUserId: string;
   readonly toUserId: string;
@@ -172,7 +172,7 @@ export type Message =  {
   readonly blockchainHash?: string;
 }
 
-export type Call =  {
+export type Call  = {
   readonly id: string;
   readonly fromUserId: string;
   readonly toUserId: string;
@@ -186,7 +186,7 @@ export type Call =  {
   readonly aiModerated?: boolean;
 }
 
-export type PaymentRequest =  {
+export type PaymentRequest  = {
   readonly id: string;
   readonly fromUserId: string;
   readonly toUserId: string;
@@ -200,7 +200,7 @@ export type PaymentRequest =  {
   readonly endToEndSecure?: boolean;
 }
 
-export type Group =  {
+export type Group  = {
   readonly id: string;
   readonly name: string;
   readonly description: string;
@@ -219,7 +219,7 @@ export type Group =  {
   readonly blockchainVerified?: boolean;
 }
 
-export type Event =  {
+export type Event  = {
   readonly id: string;
   readonly name: string;
   readonly description: string;
@@ -255,7 +255,7 @@ export enum SignalingStrategy {
   BLOCKCHAIN = 'blockchain',
 }
 
-export type SignalingConfig =  {
+export type SignalingConfig  = {
   readonly strategy: SignalingStrategy;
   readonly priority: number;
   readonly reliability: number;

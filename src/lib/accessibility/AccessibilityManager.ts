@@ -3,7 +3,7 @@
  * Enterprise-grade accessibility with comprehensive support
  */
 
-export type AccessibilityConfig =  {
+export type AccessibilityConfig  = {
   enableScreenReaderSupport: boolean;
   enableKeyboardNavigation: boolean;
   enableHighContrastMode: boolean;
@@ -15,14 +15,14 @@ export type AccessibilityConfig =  {
   readingLevel: 'basic' | 'intermediate' | 'advanced';
 }
 
-export type AccessibilityAudit =  {
+export type AccessibilityAudit  = {
   score: number;
   issues: AccessibilityIssue[];
   recommendations: AccessibilityRecommendation[];
   complianceLevel: 'A' | 'AA' | 'AAA' | 'Non-compliant';
 }
 
-export type AccessibilityIssue =  {
+export type AccessibilityIssue  = {
   type: 'error' | 'warning' | 'info';
   category: 'keyboard' | 'screen-reader' | 'color' | 'contrast' | 'focus' | 'language' | 'structure';
   element: string;
@@ -32,7 +32,7 @@ export type AccessibilityIssue =  {
   wcagCriterion: string;
 }
 
-export type AccessibilityRecommendation =  {
+export type AccessibilityRecommendation  = {
   priority: 'high' | 'medium' | 'low';
   category: string;
   description: string;

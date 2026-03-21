@@ -13,7 +13,7 @@
 
 import { UserProfile, LocationData } from '../types'
 
-export type MatchScore =  {
+export type MatchScore  = {
   score: number // 0-100
   confidence: number // 0-1
   factors: {
@@ -29,7 +29,7 @@ export type MatchScore =  {
   potentialIssues: string[]
 }
 
-export type AIConfig =  {
+export type AIConfig  = {
   openaiApiKey?: string
   model?: string
   enableBehavioralAnalysis?: boolean
@@ -39,7 +39,7 @@ export type AIConfig =  {
   enableLocationBasedMatching?: boolean
 }
 
-export type BehavioralPattern =  {
+export type BehavioralPattern  = {
   activityLevel: 'low' | 'medium' | 'high'
   responseRate: number
   averageResponseTime: number // minutes
@@ -49,7 +49,7 @@ export type BehavioralPattern =  {
   onlineSchedule: Record<string, number> // Day -> hours online
 }
 
-export type CompatibilityWeights =  {
+export type CompatibilityWeights  = {
   compatibility: number
   proximity: number
   interests: number

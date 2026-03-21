@@ -14,7 +14,7 @@ export enum LogLevel {
   FATAL = 5,
 }
 
-export type LogEntry =  {
+export type LogEntry  = {
   timestamp: string;
   level: LogLevel;
   category: string;
@@ -30,7 +30,7 @@ export type LogEntry =  {
   metadata?: Record<string, unknown>;
 }
 
-export type LoggerConfig =  {
+export type LoggerConfig  = {
   level: LogLevel;
   enableConsole: boolean;
   enableRemote: boolean;

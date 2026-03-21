@@ -9,7 +9,7 @@ import { useToast } from './use-toast'
 import { useAuth } from './useAuth'
 import { useP2PMatchmaking } from './useP2PMatchmaking'
 
-export type MeateorProfile =  {
+export type MeateorProfile  = {
   displayName: string
   vibe: string
   age: number
@@ -25,7 +25,7 @@ export type MeateorProfile =  {
   connectionId?: string
 }
 
-export type ChatMessage =  {
+export type ChatMessage  = {
   id: string
   peerId: string
   direction: 'in' | 'out'
@@ -38,7 +38,7 @@ export type ChatMessage =  {
   read?: boolean
 }
 
-export type CallSession =  {
+export type CallSession  = {
   status: 'idle' | 'requesting' | 'ringing' | 'connecting' | 'active' | 'ending'
   activePeerId?: string
   requestId?: string
@@ -51,7 +51,7 @@ export type CallSession =  {
   supported?: boolean
 }
 
-export type AgeGateState =  {
+export type AgeGateState  = {
   verified: boolean
   verifying: boolean
   error?: string
@@ -62,7 +62,7 @@ export type AgeGateState =  {
   supported: boolean
 }
 
-export type MeateorState =  {
+export type MeateorState  = {
   profile: Partial<MeateorProfile>
   profileCollapsed: boolean
   gallery: string[]

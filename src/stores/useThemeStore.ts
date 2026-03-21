@@ -4,7 +4,7 @@ import {supabase} from '@/integrations/supabase/client';
 
 export type ThemeId = 'zenith' | 'cobalt' | 'emerald' | 'amethyst' | 'carbon' | 'rose';
 
-export type ThemeConfig =  {
+export type ThemeConfig  = {
     id: ThemeId;
     name: string;
     emoji: string;

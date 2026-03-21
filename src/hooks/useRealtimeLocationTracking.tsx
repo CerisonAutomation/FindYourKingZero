@@ -29,7 +29,7 @@ export const LOCATION_CONFIG = {
   }
 }
 
-export type LocationData =  {
+export type LocationData  = {
   latitude: number
   longitude: number
   accuracy: number
@@ -40,7 +40,7 @@ export type LocationData =  {
   timestamp: number
 }
 
-export type DeviceInfo =  {
+export type DeviceInfo  = {
   userAgent: string
   platform: string
   vendor?: string
@@ -50,7 +50,7 @@ export type DeviceInfo =  {
   isCharging?: boolean
 }
 
-export type SOSAlert =  {
+export type SOSAlert  = {
   id: string
   userId: string
   userName: string
@@ -62,7 +62,7 @@ export type SOSAlert =  {
   room?: string
 }
 
-export type LocationTrackingState =  {
+export type LocationTrackingState  = {
   isEnabled: boolean
   isStationary: boolean
   currentLocation: LocationData | null
@@ -76,7 +76,7 @@ export type LocationTrackingState =  {
   isCharging: boolean | null
 }
 
-export type WebRTCState =  {
+export type WebRTCState  = {
   isConnected: boolean
   isAudioEnabled: boolean
   peers: Array<{

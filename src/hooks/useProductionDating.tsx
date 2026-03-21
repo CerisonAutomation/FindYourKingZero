@@ -10,7 +10,7 @@ import { useAuth } from './useAuth'
 import { useToast } from './use-toast'
 
 // Core types for production dating platform
-export type DatingProfile =  {
+export type DatingProfile  = {
   id: string
   userId: string
   displayName: string
@@ -38,7 +38,7 @@ export type DatingProfile =  {
   compatibility?: number
 }
 
-export type DatingMessage =  {
+export type DatingMessage  = {
   id: string
   senderId: string
   receiverId: string
@@ -58,7 +58,7 @@ export type DatingMessage =  {
   isRead: boolean
 }
 
-export type DatingCall =  {
+export type DatingCall  = {
   id: string
   callerId: string
   receiverId: string
@@ -69,7 +69,7 @@ export type DatingCall =  {
   duration?: number
 }
 
-export type DatingRoom =  {
+export type DatingRoom  = {
   id: string
   type: 'nearby' | 'global' | 'tribe' | 'private'
   name: string
@@ -83,7 +83,7 @@ export type DatingRoom =  {
   createdBy: string
 }
 
-export type DatingState =  {
+export type DatingState  = {
   // Connection state
   isConnected: boolean
   isOnline: boolean

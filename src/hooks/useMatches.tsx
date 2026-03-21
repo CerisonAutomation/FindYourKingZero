@@ -4,7 +4,7 @@ import {useAuth} from './useAuth';
 import {useEffect} from 'react';
 import {Profile} from './useProfile';
 
-export type Match =  {
+export type Match  = {
     id: string;
     user_one: string;
     user_two: string;

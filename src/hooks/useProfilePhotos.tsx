@@ -3,7 +3,7 @@ import {supabase} from '@/integrations/supabase/client';
 import {useAuth} from './useAuth';
 import {useToast} from './use-toast';
 
-export type ProfilePhoto =  {
+export type ProfilePhoto  = {
     id: string;
     user_id: string;
     url: string;

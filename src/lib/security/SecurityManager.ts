@@ -3,7 +3,7 @@
  * Content moderation and safety features
  */
 
-export type SecurityConfig =  {
+export type SecurityConfig  = {
   contentModeration: {
     enabled: boolean
     profanityFilter: boolean

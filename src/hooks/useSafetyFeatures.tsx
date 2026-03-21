@@ -6,7 +6,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 
-export type SOSAlert =  {
+export type SOSAlert  = {
   id: string
   userId: string
   userName: string
@@ -22,7 +22,7 @@ export type SOSAlert =  {
   priority: 'low' | 'medium' | 'high' | 'critical'
 }
 
-export type SafetyContact =  {
+export type SafetyContact  = {
   id: string
   name: string
   phone: string

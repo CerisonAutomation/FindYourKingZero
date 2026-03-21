@@ -5,7 +5,7 @@
 
 import { useState, useRef, useCallback } from 'react'
 
-export type AudioMessage =  {
+export type AudioMessage  = {
   id: string
   url: string
   duration: number
@@ -14,7 +14,7 @@ export type AudioMessage =  {
   isPlaying: boolean
 }
 
-export type VoiceNote =  {
+export type VoiceNote  = {
   id: string
   content: string
   audioUrl?: string

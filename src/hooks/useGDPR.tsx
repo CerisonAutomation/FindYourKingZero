@@ -6,7 +6,7 @@ import {useToast} from './use-toast';
 export type DataRequestType = 'export' | 'deletion' | 'rectification' | 'restriction';
 export type DataRequestStatus = 'pending' | 'processing' | 'completed' | 'rejected' | 'cancelled';
 
-export type DataRequest =  {
+export type DataRequest  = {
     id: string;
     user_id: string;
     request_type: DataRequestType;

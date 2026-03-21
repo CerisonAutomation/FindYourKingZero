@@ -1,4 +1,4 @@
-export type QuickReplyTemplate =  {
+export type QuickReplyTemplate  = {
     id: string;
     category: 'icebreakers' | 'responses' | 'dating' | 'compliments';
     text: string;

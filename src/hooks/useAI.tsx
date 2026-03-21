@@ -13,14 +13,14 @@ import type { Profile, MatchingCandidate } from '@/types';
 // ── Types ──────────────────────────────────────────────────────────────────────────
 export type AIMode = 'chat' | 'auto_reply' | 'icebreaker' | 'bio_suggestions' | 'compatibility';
 
-export type AIMessage =  {
+export type AIMessage  = {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   createdAt?: Date;
 }
 
-export type UseAIReturn =  {
+export type UseAIReturn  = {
   // Chat state (real SSE stream via AI SDK v4)
   messages: Message[];
   input: string;

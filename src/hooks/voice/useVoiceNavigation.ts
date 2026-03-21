@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { log } from '@/lib/enterprise/Logger';
 
 // Voice command types
-export type VoiceCommand =  {
+export type VoiceCommand  = {
   command: string;
   action: () => void | Promise<void>;
   description: string;
   keywords: string[];
 }
 
-export type VoiceNavigationState =  {
+export type VoiceNavigationState  = {
   isListening: boolean;
   isSupported: boolean;
   transcript: string;

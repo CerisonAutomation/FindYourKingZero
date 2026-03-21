@@ -12,7 +12,7 @@ export type ConsentType =
     | 'terms_of_service'
     | 'privacy_policy';
 
-export type ConsentRecord =  {
+export type ConsentRecord  = {
     id: string;
     user_id: string;
     consent_type: ConsentType;
@@ -22,7 +22,7 @@ export type ConsentRecord =  {
     withdrawn_at: string | null;
 }
 
-export type ConsentState =  {
+export type ConsentState  = {
     essential_cookies: boolean;
     analytics_cookies: boolean;
     marketing_cookies: boolean;

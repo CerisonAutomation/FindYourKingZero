@@ -26,7 +26,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: '/marker-shadow.png',
 })
 
-export type MapComponentProps =  {
+export type MapComponentProps  = {
   center: [number, number]
   zoom: number
   markers: Array<{

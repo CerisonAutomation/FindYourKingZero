@@ -33,7 +33,7 @@ export type QuantumP = 2PDatingConfig {
   readonly enableBlockchainIntegration?: boolean;
 }
 
-export type QuantumUserProfile =  {
+export type QuantumUserProfile  = {
   readonly id: string;
   readonly userId: string;
   readonly displayName: string;
@@ -63,7 +63,7 @@ export type QuantumUserProfile =  {
   readonly blockchainVerified?: boolean;
 }
 
-export type QuantumPhoto =  {
+export type QuantumPhoto  = {
   readonly id: string;
   readonly url: string;
   readonly thumbnailUrl: string;
@@ -81,7 +81,7 @@ export type QuantumPhoto =  {
   readonly zeroKnowledgeEncrypted?: boolean;
 }
 
-export type QuantumUserPreferences =  {
+export type QuantumUserPreferences  = {
   readonly ageRange: { readonly min: number; readonly max: number };
   readonly maxDistance: number;
   readonly lookingFor: string[];
@@ -109,7 +109,7 @@ export type QuantumUserPreferences =  {
   };
 }
 
-export type QuantumPrivacySettings =  {
+export type QuantumPrivacySettings  = {
   readonly showAge: boolean;
   readonly showDistance: boolean;
   readonly allowProfileVisits: boolean;
@@ -124,7 +124,7 @@ export type QuantumPrivacySettings =  {
   readonly aiPrivacyProtection?: boolean;
 }
 
-export type QuantumVerificationStatus =  {
+export type QuantumVerificationStatus  = {
   readonly ageVerified: boolean;
   readonly photoVerified: boolean;
   readonly emailVerified: boolean;
@@ -137,7 +137,7 @@ export type QuantumVerificationStatus =  {
   readonly verificationScore: number;
 }
 
-export type QuantumUserStats =  {
+export type QuantumUserStats  = {
   readonly profileViews: number;
   readonly profileLikes: number;
   readonly matches: number;
@@ -150,7 +150,7 @@ export type QuantumUserStats =  {
   readonly blockchainReputation: number;
 }
 
-export type SocialLinks =  {
+export type SocialLinks  = {
   readonly instagram?: string;
   readonly twitter?: string;
   readonly linkedin?: string;
@@ -189,7 +189,7 @@ export type P = 2PCall {
   readonly aiModerated?: boolean;
 }
 
-export type PaymentRequest =  {
+export type PaymentRequest = {
   readonly id: string;
   readonly fromUserId: string;
   readonly toUserId: string;
@@ -203,7 +203,7 @@ export type PaymentRequest =  {
   readonly quantumSecure?: boolean;
 }
 
-export type Group =  {
+export type Group  = {
   readonly id: string;
   readonly name: string;
   readonly description: string;
@@ -222,7 +222,7 @@ export type Group =  {
   readonly blockchainVerified?: boolean;
 }
 
-export type Event =  {
+export type Event  = {
   readonly id: string;
   readonly name: string;
   readonly description: string;
@@ -258,7 +258,7 @@ export enum SignalingStrategy {
   BLOCKCHAIN = 'blockchain',
 }
 
-export type SignalingConfig =  {
+export type SignalingConfig  = {
   readonly strategy: SignalingStrategy;
   readonly priority: number;
   readonly reliability: number;

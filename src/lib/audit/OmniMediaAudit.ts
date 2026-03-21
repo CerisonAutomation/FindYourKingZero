@@ -4,7 +4,7 @@
  * Generated: 2026-03-20
  */
 
-export type MediaAsset =  {
+export type MediaAsset  = {
   path: string
   size: number
   type: 'image' | 'audio' | 'video' | 'icon' | 'manifest'
@@ -14,7 +14,7 @@ export type MediaAsset =  {
   gameChanging: boolean
 }
 
-export type ConsoleData =  {
+export type ConsoleData  = {
   performance: {
     pageLoad: number
     domContentLoaded: number
@@ -26,7 +26,7 @@ export type ConsoleData =  {
   missingFeatures: string[]
 }
 
-export type GameChangerOpportunity =  {
+export type GameChangerOpportunity  = {
   title: string
   category: 'media' | 'console' | 'integration' | 'performance'
   impact: 'high' | 'medium' | 'low'

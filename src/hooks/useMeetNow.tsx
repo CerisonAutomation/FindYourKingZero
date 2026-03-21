@@ -4,7 +4,7 @@ import {useAuth} from './useAuth';
 import {useToast} from './use-toast';
 import {useEffect} from 'react';
 
-export type MeetNowUser =  {
+export type MeetNowUser  = {
     id: string;
     user_id: string;
     latitude: number;

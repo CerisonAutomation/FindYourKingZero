@@ -315,7 +315,7 @@ logstash_data/
 kibana_data/
 
 # Analytics and tracking
-analytics/
+/analytics/
 tracking/
 metrics/
 
@@ -535,3 +535,4 @@ vite.config.optimized.ts
 
 # Dead code directories
 src/graphql/
+audit-zero.mjs

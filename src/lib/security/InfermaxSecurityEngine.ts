@@ -6,7 +6,7 @@
 import crypto from 'crypto';
 import { EventEmitter } from 'events';
 
-export type SecurityMetrics =  {
+export type SecurityMetrics  = {
   threatLevel: number;
   attackAttempts: number;
   blockedAttacks: number;
@@ -15,7 +15,7 @@ export type SecurityMetrics =  {
   accuracy: number;
 }
 
-export type BiometricProfile =  {
+export type BiometricProfile  = {
   userId: string;
   typingPattern: number[];
   mouseMovements: number[];
@@ -24,7 +24,7 @@ export type BiometricProfile =  {
   lastUpdated: Date;
 }
 
-export type SecurityAlert =  {
+export type SecurityAlert  = {
   id: string;
   type: 'THREAT' | 'ANOMALY' | 'BREACH' | 'SUSPICIOUS';
   severity: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';

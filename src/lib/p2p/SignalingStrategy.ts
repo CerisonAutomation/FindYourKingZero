@@ -12,7 +12,7 @@
 
 import EventEmitter from 'events'
 
-export type SignalingConfig =  {
+export type SignalingConfig  = {
   timeout?: number
   retryAttempts?: number
   enableEncryption?: boolean

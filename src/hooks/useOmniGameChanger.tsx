@@ -12,7 +12,7 @@ import { useRealtimeLocationTracking } from './useRealtimeLocationTracking'
 import { useP2PMatchmaking } from './useP2PMatchmaking'
 import { useMeateorPatterns } from './useMeateorPatterns'
 
-export type OmniGameChangerState =  {
+export type OmniGameChangerState  = {
   // Audio System
   audioEnabled: boolean
   lastPlayedSound: string
@@ -48,7 +48,7 @@ export type OmniGameChangerState =  {
   dataUsage: number
 }
 
-export type OmniGameChangerConfig =  {
+export type OmniGameChangerConfig  = {
   // Audio Preferences
   enableAudio: boolean
   enableVibration: boolean

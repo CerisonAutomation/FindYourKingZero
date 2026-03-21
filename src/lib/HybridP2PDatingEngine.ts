@@ -28,7 +28,7 @@ import { SignalingStrategy, BitTorrentStrategy, NostrStrategy, MQTTStrategy, IPF
 import { UserProfile, P2PConfig, P2PMessage, P2PCall, LocationData } from '../types'
 import ngeohash from 'ngeohash'
 
-export type HybridEngineConfig =  {
+export type HybridEngineConfig  = {
   supabaseUrl: string
   supabaseAnonKey: string
   p2pConfig: P2PConfig
@@ -52,7 +52,7 @@ export type HybridEngineConfig =  {
   enableBlockchain?: boolean
 }
 
-export type EngineEvents =  {
+export type EngineEvents  = {
   'signIn': { user: User; session: Session }
   'signUp': { user: User; session: Session }
   'signOut': { user: User }

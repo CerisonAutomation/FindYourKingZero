@@ -3,7 +3,7 @@ import {supabase} from '@/integrations/supabase/client';
 import {useAuth} from './useAuth';
 import {useEffect} from 'react';
 
-export type Reaction =  {
+export type Reaction  = {
     id: string;
     message_id: string;
     user_id: string;

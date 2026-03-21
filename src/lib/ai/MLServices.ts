@@ -3,7 +3,7 @@
  * Machine learning for matching, moderation, and recommendations
  */
 
-export type UserProfile =  {
+export type UserProfile  = {
   id: string;
   age: number;
   location: { lat: number; lng: number };
@@ -18,7 +18,7 @@ export type UserProfile =  {
   };
 }
 
-export type MatchScore =  {
+export type MatchScore  = {
   userId: string;
   score: number;
   factors: {
@@ -32,7 +32,7 @@ export type MatchScore =  {
   explanation: string;
 }
 
-export type ContentAnalysis =  {
+export type ContentAnalysis  = {
   toxicity: number;
   spam: number;
   inappropriate: number;
@@ -42,7 +42,7 @@ export type ContentAnalysis =  {
   recommendations: string[];
 }
 
-export type RecommendationResult =  {
+export type RecommendationResult  = {
   userId: string;
   type: 'profile' | 'event' | 'content';
   score: number;
