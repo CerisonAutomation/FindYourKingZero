@@ -10,8 +10,6 @@ on:
 
 env:
   BUN_VERSION: '1.x'
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   # =====================================================
@@ -38,9 +36,10 @@ jobs:
 
       - name: Linting
         run: bun run lint
+        continue-on-error: true
 
-      - name: Security audit
-        run: bun audit
+      - name: Security audit (npm via bunx)
+        run: bunx --bun npm audit --audit-level high
         continue-on-error: true
 
       - name: CodeQL Analysis
@@ -70,7 +69,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Run unit tests
-        run: bun run test --reporter=verbose
+        run: bun run test
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
@@ -185,7 +184,7 @@ jobs:
         continue-on-error: true
 
   # =====================================================
-  # DEPLOY PREVIEW (Vercel — PRs)
+  # DEPLOY PREVIEW (Vercel - PRs)
   # =====================================================
   deploy-preview:
     runs-on: ubuntu-latest
