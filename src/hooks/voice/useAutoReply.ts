@@ -331,6 +331,7 @@ export const useVoiceAutoReply = (config: AutoReplyConfig) => {
 
   return {
     ...autoReply,
+    config,
     isVoiceEnabled,
     setIsVoiceEnabled,
     generateVoiceReply
