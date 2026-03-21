@@ -220,7 +220,7 @@ export default function SignUp() {
                             <Input
                                 value={displayName}
                                 onChange={(e) => setDisplayName(e.target.value)}
-                                placeholder="Your name"
+                                placeholder="Your name" autoComplete="name"
                                 className="pl-10 h-12 bg-surface-1 border-border/30 focus:border-primary/50 text-[14px]"
                                 required
                                 data-testid="input-display-name"
@@ -237,7 +237,7 @@ export default function SignUp() {
                             <Mail
                                 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50"/>
                             <Input
-                                type="email"
+                                type="email" autoComplete="email" autoCapitalize="none" autoCorrect="off" spellCheck={false}
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="you@example.com"
@@ -261,7 +261,7 @@ export default function SignUp() {
                             <Lock
                                 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50"/>
                             <Input
-                                type={showPw ? 'text' : 'password'}
+                                type={showPw ? "text" : "password"} autoComplete="new-password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"

@@ -85,7 +85,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const init = async () => {
       try {
-        const { session: s, error: e } = await supabaseAuth.getSession();
+        // Add timeout to prevent infinite loading
+        const timeoutPromise = new Promise<{ session: Session | null; error: AuthError | null }>((_, reject) => {
+          setTimeout(() => reject(new Error('Auth initialization timed out')), 10000);
+        });
+        
+        const { session: s, error: e } = await Promise.race([
+          supabaseAuth.getSession(),
+          timeoutPromise
+        ]);
         if (!mountedRef.current) return;
         setSession(s);
         setUser(s?.user ?? null);
@@ -97,6 +105,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (mountedRef.current) {
           setError(err as AuthError);
           setErrorCode(classifyAuthError(err as AuthError));
+          // Force loading to stop even on error
+          setIsLoading(false);
+          setIsInitialized(true);
         }
       } finally {
         if (mountedRef.current) {
