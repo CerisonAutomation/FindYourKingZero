@@ -12,7 +12,7 @@ import {
   type ReactNode,
 } from 'react';
 import type { AuthError, Session, User } from '@supabase/supabase-js';
-import { supabase, supabaseAuth, classifyAuthError, AuthErrorCode } from '@/integrations/supabase/client';
+import { supabase, supabaseAuth, classifyAuthError, AuthErrorCode, healthCheck } from '@/integrations/supabase/client';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface AuthContextType {

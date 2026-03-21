@@ -70,7 +70,52 @@ export interface AuthResponse {
 }
 
 // ── Auth service ───────────────────────────────────────────────────────────────
+// ── Health check ──────────────────────────────────────────────────────────────
+export async function healthCheck(): Promise<{ ok: boolean; latencyMs: number; error?: string }> {
+  const start = Date.now();
+  try {
+    const { error } = await supabase.from('profiles').select('id').limit(1).maybeSingle();
+    if (error) throw error;
+    return { ok: true, latencyMs: Date.now() - start };
+  } catch (err) {
+    return { ok: false, latencyMs: Date.now() - start, error: (err as Error).message };
+  }
+}
+
+// ── Profile helpers ───────────────────────────────────────────────────────────
 export const supabaseAuth = {
+  /** Ensure a profiles row exists for the given user (upsert). */
+  ensureProfile: async (user: { id: string; email?: string; user_metadata?: Record<string, unknown> }) => {
+    try {
+      const { error } = await supabase.from('profiles').upsert(
+        {
+          user_id: user.id,
+          display_name:
+            (user.user_metadata?.display_name as string) ||
+            (user.user_metadata?.full_name as string) ||
+            user.email?.split('@')[0] ||
+            'New User',
+          is_active: true,
+          last_active_at: new Date().toISOString(),
+        },
+        { onConflict: 'user_id', ignoreDuplicates: false },
+      );
+      if (error) console.warn('[Auth] ensureProfile error:', error.message);
+    } catch (err) {
+      console.warn('[Auth] ensureProfile exception:', err);
+    }
+  },
+
+  /** PKCE code exchange — wraps supabase.auth.exchangeCodeForSession */
+  exchangeCodeForSession: async (code: string): Promise<{ session: Session | null; error: AuthError | null }> => {
+    try {
+      const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+      return { session: data?.session ?? null, error };
+    } catch (err) {
+      return { session: null, error: err as AuthError };
+    }
+  },
+
   getSession: async (): Promise<AuthResponse> => {
     try {
       const { data: { session }, error } = await supabase.auth.getSession();
