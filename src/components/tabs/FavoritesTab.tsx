@@ -1,7 +1,7 @@
 import {motion} from 'framer-motion';
 import {Heart, Sparkles} from 'lucide-react';
 import {useFavorites} from '@/hooks/useFavorites';
-import {ProfileCard} from '@/components/ProfileCard';
+import {ProfileCard} from '@/components/ui/ProfileCard';
 import {ProfileGridSkeleton} from '@/components/ui/ProfileSkeleton';
 import {EmptyState} from '@/components/ui/EmptyState';
 import {Badge} from '@/components/ui/badge';

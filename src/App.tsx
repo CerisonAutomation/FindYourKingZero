@@ -217,18 +217,16 @@ const ProtectedRoute = ({children, requiredRole = "user"}: {
     return <>{children}</>;
 };
 
-// PublicRoute component (currently unused but available for future use)
-// const PublicRoute = ({children}: {children: React.ReactNode}) => {
-//     const {user, isLoading} = useAuth();
-//
-//     if (isLoading) return <LoadingSpinner message="Loading"/>;
-//     if (user) {
-//         log.info('ROUTE', 'Redirecting authenticated user to app');
-//         return <Navigate to={ROUTES.APP + "/grid"} replace/>;
-//     }
-//
-//     return <>{children}</>;
-// };
+const PublicRoute = ({children}: {children: React.ReactNode}) => {
+    const {user, isLoading} = useAuth();
+
+    if (isLoading) return <LoadingSpinner message="Loading"/>;
+    if (user) {
+        return <Navigate to={ROUTES.APP + "/grid"} replace/>;
+    }
+
+    return <>{children}</>;
+};
 
 // Route configuration helper (currently unused but available for future use)
 // const createRoute = (path: string, Component: React.ComponentType, options?: {
@@ -276,22 +274,22 @@ const AppRoutes = () => {
                 {/* Public Routes */}
                 <Route
                     path={ROUTES.PUBLIC.HOME}
-                    element={user ? <Navigate to={ROUTES.APP + "/grid"} replace/> : <HomePage/>}
+                    element={<PublicRoute><HomePage/></PublicRoute>}
                 />
                 <Route path={ROUTES.PUBLIC.INSTALL} element={<InstallPage/>}/>
                 <Route
                     path={ROUTES.PUBLIC.CONNECT}
-                    element={user ? <Navigate to={ROUTES.APP + "/grid"} replace/> : <ConnectPage/>}
+                    element={<PublicRoute><ConnectPage/></PublicRoute>}
                 />
 
                 {/* Authentication Routes */}
                 <Route
                     path={ROUTES.PUBLIC.AUTH.SIGN_IN}
-                    element={user ? <Navigate to={ROUTES.APP + "/grid"} replace/> : <LazyComponents.SignIn/>}
+                    element={<PublicRoute><LazyComponents.SignIn/></PublicRoute>}
                 />
                 <Route
                     path={ROUTES.PUBLIC.AUTH.SIGN_UP}
-                    element={user ? <Navigate to={ROUTES.APP + "/grid"} replace/> : <LazyComponents.SignUp/>}
+                    element={<PublicRoute><LazyComponents.SignUp/></PublicRoute>}
                 />
                 <Route path={ROUTES.PUBLIC.AUTH.MAGIC_LINK} element={<LazyComponents.MagicLink/>}/>
                 <Route path={ROUTES.PUBLIC.AUTH.RESET_PASSWORD} element={<LazyComponents.ResetPassword/>}/>

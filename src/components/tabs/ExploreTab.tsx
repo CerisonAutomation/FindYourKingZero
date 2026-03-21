@@ -1,7 +1,7 @@
 import {useCallback, useMemo, useState} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
 import {RefreshCw, Search, SlidersHorizontal, Sparkles, Users} from 'lucide-react';
-import {ProfileCard} from '@/components/ProfileCard';
+import {ProfileCard} from '@/components/ui/ProfileCard';
 import {FilterDialog} from '@/components/FilterDialog';
 import {ProfileDetail} from '@/components/ProfileDetail';
 import {ProfileGridSkeleton} from '@/components/ui/ProfileSkeleton';
