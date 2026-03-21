@@ -643,7 +643,80 @@ export function classifyAuthError(error: AuthError | Error | null): {
   if (msg.includes('network') || msg.includes('fetch'))
     return { code: AuthErrorCode.NETWORK_ERROR, message: 'Network error. Check your connection', retryable: true };
 
-  return { code: AuthErrorCode.UNKNOWN, message: error.message || 'An unexpected error occurred', retryable: false };
+return { code: AuthErrorCode.UNKNOWN, message: error.message || 'An unexpected error occurred', retryable: false };
 }
+
+  // ── Storage service — file upload/download per official docs ────────────────
+export const supabaseStorage = {
+  upload: async (bucket: string, path: string, file: File, options?: { upsert?: boolean }) => {
+    const { data, error } = await supabase.storage.from(bucket).upload(path, file, {
+      upsert: options?.upsert ?? false,
+      cacheControl: '3600',
+    });
+    if (error) throw error;
+    return data;
+  },
+
+  download: async (bucket: string, path: string) => {
+    const { data, error } = await supabase.storage.from(bucket).download(path);
+    if (error) throw error;
+    return data;
+  },
+
+  getPublicUrl: (bucket: string, path: string) => {
+    const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+    return data.publicUrl;
+  },
+
+  createSignedUrl: async (bucket: string, path: string, expiresIn = 3600) => {
+    const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, expiresIn);
+    if (error) throw error;
+    return data.signedUrl;
+  },
+
+  remove: async (bucket: string, paths: string[]) => {
+    const { error } = await supabase.storage.from(bucket).remove(paths);
+    if (error) throw error;
+  },
+
+  list: async (bucket: string, path = '', options?: { limit?: number; offset?: number }) => {
+    const { data, error } = await supabase.storage.from(bucket).list(path, {
+      limit: options?.limit ?? 100,
+      offset: options?.offset ?? 0,
+    });
+    if (error) throw error;
+    return data;
+  },
+};
+
+// ── Edge Functions service — invoke with auth per official docs ─────────────
+export const supabaseFunctions = {
+  invoke: async <T = unknown>(functionName: string, body?: Record<string, unknown>): Promise<T> => {
+    const { data, error } = await supabase.functions.invoke(functionName, { body });
+    if (error) throw error;
+    return data as T;
+  },
+
+  invokeStream: async (functionName: string, body: Record<string, unknown>, onChunk: (chunk: string) => void) => {
+    const { data, error } = await supabase.functions.invoke(functionName, {
+      body,
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (error) throw error;
+
+    // Handle streaming response
+    const reader = (data as any)?.getReader?.();
+    if (reader) {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        onChunk(new TextDecoder().decode(value));
+      }
+    }
+    return data;
+  },
+};
+
+
 
 export default supabase;

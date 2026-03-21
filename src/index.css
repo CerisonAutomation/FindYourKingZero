@@ -1245,3 +1245,152 @@ header, nav, [class*="header"], [class*="Header"] {
 .text-responsive-xl { font-size: clamp(22px, 5vw, 28px); }
 .text-responsive-2xl { font-size: clamp(28px, 6vw, 36px); }
 .text-responsive-3xl { font-size: clamp(36px, 8vw, 48px); }
+
+/* ═══════════════════════════════════════════════════════════════
+   APP SHELL UTILITY CLASSES — Consistent page structure
+   ═══════════════════════════════════════════════════════════════ */
+
+@layer components {
+    .page-shell {
+        min-height: 100dvh;
+        min-height: -webkit-fill-available;
+        display: flex;
+        flex-direction: column;
+        background: hsl(var(--background));
+        overflow: hidden;
+    }
+
+    .page-header {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        height: 3.5rem; /* h-14 */
+        display: flex;
+        align-items: center;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        padding-top: env(safe-area-inset-top, 0px);
+        background: hsl(224 14% 4% / 0.9);
+        backdrop-filter: blur(32px) saturate(180%);
+        -webkit-backdrop-filter: blur(32px) saturate(180%);
+        border-bottom: 1px solid hsl(224 8% 100% / 0.055);
+    }
+
+    .page-body {
+        flex: 1 1 0%;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        padding-bottom: calc(var(--nav-h, 56px) + env(safe-area-inset-bottom, 0px) + 0.5rem);
+    }
+
+    .page-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+    }
+
+    .search-input {
+        height: 2.75rem; /* h-11 */
+        background: hsl(var(--surface-2));
+        border: 1px solid hsl(var(--border));
+        border-radius: 0.75rem; /* rounded-xl */
+        padding: 0 1rem;
+        color: hsl(var(--foreground));
+        font-size: 0.875rem;
+        transition: border-color 0.12s, box-shadow 0.12s;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: hsl(var(--primary) / 0.5);
+        box-shadow: 0 0 0 3px hsl(var(--primary) / 0.15);
+    }
+
+    .search-input::placeholder {
+        color: hsl(var(--muted-foreground));
+    }
+
+    .filter-chip {
+        height: 2rem; /* h-8 */
+        padding: 0 0.875rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.15s;
+        user-select: none;
+    }
+
+    .filter-chip:active {
+        transform: scale(0.95);
+    }
+
+    .filter-chip-active,
+    .filter-chip[data-active="true"] {
+        background: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
+    }
+
+    .filter-chip:not(.filter-chip-active):not([data-active="true"]) {
+        background: hsl(var(--surface-2));
+        color: hsl(var(--muted-foreground));
+    }
+
+    .filter-chip:not(.filter-chip-active):not([data-active="true"]):hover {
+        background: hsl(var(--surface-3));
+        color: hsl(var(--foreground));
+    }
+
+    .cta-primary {
+        height: 2.75rem; /* h-11 */
+        width: 100%;
+        border-radius: 0.75rem; /* rounded-xl */
+        font-weight: 700;
+        letter-spacing: 0.025em;
+        color: hsl(var(--primary-foreground));
+        background: var(--gradient-primary);
+        border: none;
+        cursor: pointer;
+        transition: all 0.12s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .cta-primary:hover {
+        opacity: 0.9;
+    }
+
+    .cta-primary:active {
+        transform: scale(0.97);
+    }
+
+    .cta-primary:disabled {
+        opacity: 0.4;
+        pointer-events: none;
+    }
+
+    /* Hide scrollbar on filter/search chip containers */
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Nav height variable for consistency */
+    :root {
+        --nav-h: 56px;
+    }
+
+    /* Bottom nav safe area — content shouldn't hide behind nav */
+    .pb-nav {
+        padding-bottom: calc(var(--nav-h, 56px) + env(safe-area-inset-bottom, 0px) + 1rem);
+    }
+}
