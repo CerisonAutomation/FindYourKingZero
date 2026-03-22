@@ -289,7 +289,7 @@ export function clearCache(): void {
 type TableName = keyof Database['public']['Tables'];
 
 export const supabaseDb = {
-  getById: async <T>(table: TableName, id: string): Promise<SupabaseResponse<T>> => {
+  getById: async <T,>(table: TableName, id: string): Promise<SupabaseResponse<T>> => {
     try {
       const { data, error } = await supabase.from(table).select('*').eq('id', id).single();
       if (error) throw error;
@@ -300,7 +300,7 @@ export const supabaseDb = {
   },
 
   /** Get a single row by id with cache support */
-  getByIdCached: async <T extends { id: string }>(
+  getByIdCached: async <T extends { id: string },>(
     table: TableName,
     id: string,
     staleTime?: number,
@@ -314,7 +314,7 @@ export const supabaseDb = {
     return result;
   },
 
-  insert: async <T>(table: TableName, payload: Record<string, unknown>): Promise<SupabaseResponse<T>> => {
+  insert: async <T,>(table: TableName, payload: Record<string, unknown>): Promise<SupabaseResponse<T>> => {
     try {
       const { data, error } = await supabase.from(table).insert(payload).select('*').single();
       if (error) throw error;
@@ -325,7 +325,7 @@ export const supabaseDb = {
     }
   },
 
-  update: async <T>(
+  update: async <T,>(
     table: TableName,
     payload: Record<string, unknown>,
     match: Record<string, unknown>,
@@ -340,7 +340,7 @@ export const supabaseDb = {
     }
   },
 
-  delete: async <T>(table: TableName, match: Record<string, unknown>): Promise<SupabaseResponse<T>> => {
+  delete: async <T,>(table: TableName, match: Record<string, unknown>): Promise<SupabaseResponse<T>> => {
     try {
       const { data, error } = await supabase.from(table).delete().match(match).select('*').single();
       if (error) throw error;
@@ -352,7 +352,7 @@ export const supabaseDb = {
   },
 
   /** Generic paginated query with optional filters */
-  query: async <T>(
+  query: async <T,>(
     table: TableName,
     options: {
       select?: string;
@@ -720,7 +720,7 @@ export const supabaseStorage = {
 
 // ── Edge Functions service — invoke with auth per official docs ─────────────
 export const supabaseFunctions = {
-  invoke: async <T = unknown>(functionName: string, body?: Record<string, unknown>): Promise<T> => {
+  invoke: async <T = unknown,>(functionName: string, body?: Record<string, unknown>): Promise<T> => {
     const { data, error } = await supabase.functions.invoke(functionName, { body });
     if (error) throw error;
     return data as T;
