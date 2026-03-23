@@ -1,15 +1,15 @@
 // ═══════════════════════════════════════════════════════════════
-// VERCEL DEPLOYMENT CONFIG
-// Self-hosted → Vercel-compatible (Vercel Postgres + KV + Blob)
+// VITE CONFIG — Latest Vite 6 + PWA + Vercel + responsive
 // ═══════════════════════════════════════════════════════════════
 
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
-import vercel from 'vite-plugin-vercel';
 
 export default defineConfig({
-  plugins: [react(), vercel()],
+  plugins: [
+    react(),
+  ],
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
@@ -17,6 +17,7 @@ export default defineConfig({
   },
   build: {
     target: 'esnext',
+    cssMinify: 'lightningcss',
     rollupOptions: {
       output: {
         manualChunks: {
@@ -24,13 +25,25 @@ export default defineConfig({
           'query-vendor': ['@tanstack/react-query'],
           'map-vendor': ['maplibre-gl'],
           'h3-vendor': ['h3-js'],
+          'motion-vendor': ['framer-motion'],
         },
       },
     },
   },
   worker: { format: 'es' },
-  optimizeDeps: { exclude: ['@huggingface/transformers'] },
+  optimizeDeps: {
+    exclude: ['@huggingface/transformers'],
+    include: ['react', 'react-dom', 'zustand'],
+  },
   server: {
-    proxy: { '/api': 'http://localhost:3000' },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+    },
+  },
+  css: {
+    transformer: 'lightningcss',
   },
 });

@@ -8,9 +8,10 @@ import { useAI } from '@/hooks/useAI';
 import { p2p, chatRoomId } from '@/services/p2p';
 import { encrypt, decrypt, deriveSharedKey, importPublicKey } from '@/services/crypto';
 import { getQuickReplies, getWordCompletions } from '@/services/autocomplete';
+import { haptic } from '@/services/haptics';
 import { TopBar } from '@/components/ui/index';
 import { Avatar } from '@/components/ui/index';
-import { Spinner } from '@/components/ui/index';
+import { AIButton } from '@/components/ui/AIButton';
 import { COLORS } from '@/types';
 import type { Message, P2PMessage } from '@/types';
 
@@ -280,15 +281,15 @@ export default function ChatScreen() {
               resize: 'none', maxHeight: 90, overflow: 'auto', lineHeight: 1.5,
             }}
           />
-          <button onClick={loadAISuggestions} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, opacity: aiReady ? 1 : 0.4 }}>
-            {aiLoading ? <Spinner size={16} /> : '✨'}
-          </button>
-          <button onClick={() => send()} disabled={!draft.trim()}
+          <AIButton onClick={loadAISuggestions} loading={aiLoading} active={aiSuggestions.length > 0} size="md" />
+          <button onClick={() => { send(); haptic.sendMessage(); }} disabled={!draft.trim()}
             style={{
-              width: 40, height: 40,
-              background: `linear-gradient(135deg,${COLORS.red},#FF4020)`, border: 'none',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: 44, height: 44, borderRadius: '50%',
+              background: draft.trim() ? `linear-gradient(135deg,${COLORS.red},#FF4020)` : 'rgba(255,255,255,.05)',
+              border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', opacity: draft.trim() ? 1 : 0.4,
+              boxShadow: draft.trim() ? '0 4px 16px rgba(229,25,46,.3)' : 'none',
+              transition: 'all .2s',
             }}>
             ➤
           </button>

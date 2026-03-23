@@ -116,10 +116,28 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div style={{ maxWidth: 430, margin: '0 auto', height: '100dvh', display: 'flex', flexDirection: 'column', background: '#060610', overflow: 'hidden', position: 'relative' }}>
+      <div style={{
+        maxWidth: 430,
+        margin: '0 auto',
+        width: '100%',
+        height: '100dvh',
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        background: '#060610',
+        overflow: 'hidden',
+        position: 'relative',
+      }}>
         <CosmicBg />
         <CommandPalette />
-        <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }}>
+        <div style={{
+          flex: 1,
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'relative',
+          zIndex: 1,
+        }}>
           <ScreenRouter />
         </div>
         {showNav && <BottomNav />}
