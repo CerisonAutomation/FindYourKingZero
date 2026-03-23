@@ -8,9 +8,9 @@ import { useAI } from '@/hooks/useAI';
 import { p2p, chatRoomId } from '@/services/p2p';
 import { encrypt, decrypt, deriveSharedKey, importPublicKey } from '@/services/crypto';
 import { getQuickReplies, getWordCompletions } from '@/services/autocomplete';
-import { TopBar } from '@/components/layout/TopBar';
-import { Avatar } from '@/components/ui/Avatar';
-import { Spinner } from '@/components/ui/Spinner';
+import { TopBar } from '@/components/ui/index';
+import { Avatar } from '@/components/ui/index';
+import { Spinner } from '@/components/ui/index';
 import { COLORS } from '@/types';
 import type { Message, P2PMessage } from '@/types';
 

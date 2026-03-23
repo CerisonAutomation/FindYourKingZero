@@ -2,8 +2,8 @@
 import { useState } from 'react';
 import { useNavStore, useAuthStore } from '@/store';
 import { api } from '@/services/api';
-import { TopBar } from '@/components/layout/TopBar';
-import { Spinner } from '@/components/ui/Spinner';
+import { TopBar } from '@/components/ui/index';
+import { Spinner } from '@/components/ui/index';
 import { COLORS } from '@/types';
 
 export default function SignInScreen() {

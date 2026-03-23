@@ -4,8 +4,8 @@
 
 import { useState } from 'react';
 import { useNavStore, useAuthStore } from '@/store';
-import { TopBar } from '@/components/layout/TopBar';
-import { Avatar } from '@/components/ui/Avatar';
+import { TopBar } from '@/components/ui/index';
+import { Avatar } from '@/components/ui/index';
 import { COLORS } from '@/types';
 
 export default function ProfileScreen() {

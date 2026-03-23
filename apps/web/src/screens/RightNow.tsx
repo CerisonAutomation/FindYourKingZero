@@ -7,10 +7,10 @@ import { useNavStore, useAuthStore, useDiscoveryStore } from '@/store';
 import { useProximity } from '@/hooks/useProximity';
 import { p2p, proximityRoomId } from '@/services/p2p';
 import { api } from '@/services/api';
-import { TopBar } from '@/components/layout/TopBar';
-import { Avatar } from '@/components/ui/Avatar';
-import { Spinner } from '@/components/ui/Spinner';
-import { LiveDot } from '@/components/ui/LiveDot';
+import { TopBar } from '@/components/ui/index';
+import { Avatar } from '@/components/ui/index';
+import { Spinner } from '@/components/ui/index';
+import { LiveDot } from '@/components/ui/index';
 import { COLORS } from '@/types';
 import type { UserProfile } from '@/types';
 

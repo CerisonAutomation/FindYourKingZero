@@ -1,8 +1,10 @@
 // ═══════════════════════════════════════════════════════════════
-// COMPONENTS: UI Primitives — Production-grade, no circular deps
+// COMPONENTS: UI — Production-grade primitives
+// Includes: Avatar, Spinner, LiveDot, Chip, Toast, SectionHeader, TopBar, BottomNav
 // ═══════════════════════════════════════════════════════════════
 
 import React, { memo, type FC, type ReactNode } from 'react';
+import { useNavStore, useNotifStore } from '@/store';
 import { COLORS } from '@/types';
 
 // ── Avatar ────────────────────────────────────────────────────
@@ -91,3 +93,83 @@ export const SectionHeader: FC<{ title: string; action?: string; onAction?: () =
     {action && <button onClick={onAction} style={{ background: 'none', border: 'none', color: COLORS.red, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>{action}</button>}
   </div>
 );
+
+// ── Top Bar ───────────────────────────────────────────────────
+export const TopBar: FC<{
+  title?: ReactNode; onBack?: () => void; right?: ReactNode; children?: ReactNode;
+}> = ({ title, onBack, right, children }) => (
+  <div style={{
+    display: 'flex', flexDirection: 'column', flexShrink: 0,
+    background: 'rgba(6,6,16,0.97)', backdropFilter: 'blur(24px)',
+    borderBottom: `1px solid ${COLORS.w07}`,
+  }}>
+    <div style={{ display: 'flex', alignItems: 'center', padding: '0 14px', height: 52, position: 'relative' }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: `linear-gradient(90deg,transparent,${COLORS.red},rgba(37,99,235,.5),transparent)` }} />
+      {onBack && (
+        <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, marginRight: 6, color: COLORS.w60, fontSize: 16 }}>←</button>
+      )}
+      {typeof title === 'string' ? <div style={{ flex: 1, fontSize: 16, fontWeight: 700 }}>{title}</div> : <div style={{ flex: 1 }}>{title}</div>}
+      {right}
+    </div>
+    {children}
+  </div>
+);
+
+// ── Bottom Navigation ────────────────────────────────────────
+export const BottomNav: FC = memo(() => {
+  const screen = useNavStore((s) => s.screen);
+  const go = useNavStore((s) => s.go);
+  const unread = useNotifStore((s) => s.unreadCount());
+
+  const tabs = [
+    { id: 'discover' as const, icon: '🧭', label: 'Discover' },
+    { id: 'right-now' as const, icon: '📡', label: 'Now' },
+    { id: 'messages' as const, icon: '💬', label: 'Messages' },
+    { id: 'events' as const, icon: '📅', label: 'Events' },
+    { id: 'profile' as const, icon: '👤', label: 'Profile' },
+  ];
+
+  return (
+    <nav style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'space-around',
+      background: 'rgba(6,6,16,0.98)', backdropFilter: 'blur(32px)',
+      borderTop: `1px solid ${COLORS.w07}`, height: 60, flexShrink: 0,
+      paddingBottom: 'env(safe-area-inset-bottom)', position: 'relative',
+    }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg,transparent,rgba(229,25,46,.3),rgba(37,99,235,.25),transparent)' }} />
+      {tabs.map((t) => {
+        const on = screen === t.id;
+        return (
+          <button key={t.id} onClick={() => go(t.id)}
+            style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
+              background: 'none', border: 'none', cursor: 'pointer', padding: '6px 10px',
+              position: 'relative', minWidth: 52,
+            }}>
+            {on && <div style={{
+              position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
+              width: 24, height: 2, background: `linear-gradient(90deg,${COLORS.red},${COLORS.blue})`,
+              boxShadow: `0 0 8px ${COLORS.red}`, borderRadius: 1,
+            }} />}
+            {t.id === 'messages' && unread > 0 && (
+              <div style={{
+                position: 'absolute', top: 2, right: 8, minWidth: 15, height: 15,
+                background: COLORS.red, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 8, fontWeight: 900, padding: '0 3px', boxShadow: `0 0 6px ${COLORS.red}`,
+              }}>
+                {unread > 9 ? '9+' : unread}
+              </div>
+            )}
+            <span style={{ fontSize: 20, opacity: on ? 1 : 0.45, transition: 'opacity .15s' }}>{t.icon}</span>
+            <span style={{
+              fontSize: 8, fontWeight: 700,
+              color: on ? 'rgba(255,255,255,.85)' : 'rgba(255,255,255,.35)',
+              letterSpacing: '0.14em', textTransform: 'uppercase' as const,
+              transition: 'color .15s',
+            }}>{t.label}</span>
+          </button>
+        );
+      })}
+    </nav>
+  );
+});

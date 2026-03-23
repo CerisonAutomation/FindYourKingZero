@@ -5,8 +5,8 @@
 import { useState, useEffect } from 'react';
 import { useNavStore, useAuthStore, useChatStore } from '@/store';
 import { api } from '@/services/api';
-import { TopBar } from '@/components/layout/TopBar';
-import { Avatar } from '@/components/ui/Avatar';
+import { TopBar } from '@/components/ui/index';
+import { Avatar } from '@/components/ui/index';
 import { COLORS } from '@/types';
 
 export default function MessagesScreen() {

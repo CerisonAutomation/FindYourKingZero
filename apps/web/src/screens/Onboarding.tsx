@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useNavStore, useAuthStore } from '@/store';
 import { api } from '@/services/api';
-import { Spinner } from '@/components/ui/Spinner';
+import { Spinner } from '@/components/ui/index';
 import { COLORS } from '@/types';
 
 const TRIBES = ['Bear', 'Muscle', 'Jock', 'Daddy', 'Otter', 'Twink', 'Leather', 'Masc', 'Geek', 'Alt'];
