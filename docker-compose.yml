@@ -1,0 +1,71 @@
+# docker-compose.yml — Self-hosted Find Your King
+# Zero vendor lock-in. Zero API keys for core features.
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: king
+      POSTGRES_USER: king
+      POSTGRES_PASSWORD: king_secret_change_me
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U king"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.6
+    ports:
+      - "7700:7700"
+    volumes:
+      - meilidata:/meili_data
+    environment:
+      MEILI_MASTER_KEY: ""  # Optional for dev
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+
+  server:
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      meilisearch:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgresql://king:king_secret_change_me@postgres:5432/king
+      REDIS_URL: redis://redis:6379
+      MEILI_URL: http://meilisearch:7700
+      JWT_SECRET: change_this_to_a_real_secret
+      PORT: "3000"
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - "5173:80"
+    depends_on:
+      - server
+    environment:
+      VITE_API_URL: http://localhost:3000
+
+volumes:
+  pgdata:
+  meilidata:
+  redisdata:

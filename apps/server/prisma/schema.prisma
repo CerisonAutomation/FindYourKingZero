@@ -1,0 +1,167 @@
+// ═══════════════════════════════════════════════════════════════
+// PRISMA SCHEMA — PostgreSQL with pgvector
+// ═══════════════════════════════════════════════════════════════
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enable pgvector extension
+// Run: CREATE EXTENSION IF NOT EXISTS vector;
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  age          Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  profile      Profile?
+  swipesMade   Swipe[]  @relation("Swiper")
+  swipesRecvd  Swipe[]  @relation("Target")
+  matchesA     Match[]  @relation("UserA")
+  matchesB     Match[]  @relation("UserB")
+  messages     Message[]
+  eventsHosted Event[]
+  presence     Presence?
+  blocks       Block[]  @relation("Blocker")
+  blockedBy    Block[]  @relation("Blocked")
+  reports      Report[] @relation("Reporter")
+  reportedBy   Report[] @relation("Reported")
+}
+
+model Profile {
+  id                  String   @id @default(uuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio                 String   @default("")
+  avatar              String   @default("")
+  photos              String[] @default([])
+  city                String   @default("")
+  lat                 Float    @default(0)
+  lng                 Float    @default(0)
+  h3Hex               String   @default("") @db.VarChar(16)
+  tribes              String[] @default([])
+  lookingFor          String[] @default([])
+  height              String   @default("")
+  position            String   @default("")
+  relationshipStatus  String   @default("Single")
+  hivStatus           String   @default("")
+  onPrEP              Boolean  @default(false)
+  verified            Boolean  @default(false)
+  premium             Boolean  @default(false)
+  online              Boolean  @default(false)
+  lastSeen            BigInt   @default(0)
+  publicKey           Json?    // For E2EE key exchange
+  bioEmbedding        Unsupported("vector(384)")? // pgvector for AI matching
+
+  updatedAt DateTime @updatedAt
+}
+
+model Swipe {
+  id        String   @id @default(uuid())
+  swiperId  String
+  swiper    User     @relation("Swiper", fields: [swiperId], references: [id])
+  targetId  String
+  target    User     @relation("Target", fields: [targetId], references: [id])
+  action    String   // "like", "pass", "superlike"
+  createdAt DateTime @default(now())
+
+  @@unique([swiperId, targetId])
+}
+
+model Match {
+  id            String    @id @default(uuid())
+  userIdA       String
+  userA         User      @relation("UserA", fields: [userIdA], references: [id])
+  userIdB       String
+  userB         User      @relation("UserB", fields: [userIdB], references: [id])
+  lastMessageAt BigInt    @default(0)
+  lastMessage   String    @default("")
+  unreadCount   Int       @default(0)
+  createdAt     DateTime  @default(now())
+
+  messages Message[]
+
+  @@unique([userIdA, userIdB])
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  matchId   String
+  match     Match    @relation(fields: [matchId], references: [id])
+  senderId  String
+  sender    User     @relation(fields: [senderId], references: [id])
+  type      String   @default("text") // text, image, file, voice, location
+  content   String   // Encrypted content
+  metadata  Json?
+  read      Boolean  @default(false)
+  delivered Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([matchId, createdAt])
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  title       String
+  type        String   // Party, Gym, Drinks, etc.
+  description String   @default("")
+  date        BigInt
+  time        String
+  location    String
+  lat         Float    @default(0)
+  lng         Float    @default(0)
+  capacity    Int      @default(50)
+  attendees   String[] @default([])
+  hostId      String
+  host        User     @relation(fields: [hostId], references: [id])
+  tags        String[] @default([])
+  createdAt   DateTime @default(now())
+
+  @@index([date])
+  @@index([type])
+}
+
+model Presence {
+  id       String @id @default(uuid())
+  userId   String @unique
+  h3Hex    String @db.VarChar(16)
+  lat      Float
+  lng      Float
+  online   Boolean @default(false)
+  intent   String  @default("")
+  lastSeen BigInt  @default(0)
+
+  @@index([h3Hex])
+  @@index([online])
+}
+
+model Block {
+  id        String   @id @default(uuid())
+  blockerId String
+  blocker   User     @relation("Blocker", fields: [blockerId], references: [id])
+  blockedId String
+  blocked   User     @relation("Blocked", fields: [blockedId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([blockerId, blockedId])
+}
+
+model Report {
+  id         String   @id @default(uuid())
+  reporterId String
+  reporter   User     @relation("Reporter", fields: [reporterId], references: [id])
+  reportedId String
+  reported   User     @relation("Reported", fields: [reportedId], references: [id])
+  reason     String   // spam, harassment, fake, underage, other
+  details    String   @default("")
+  createdAt  DateTime @default(now())
+}

@@ -1,0 +1,44 @@
+{
+  "name": "@king/web",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "^4.0.0",
+    "@huggingface/tokenizers": "^1.0.0",
+    "@tanstack/react-query": "^5.0.0",
+    "h3-js": "^4.1.0",
+    "maplibre-gl": "^4.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.50.0",
+    "trystero": "^0.22.0",
+    "yjs": "^13.6.0",
+    "y-indexeddb": "^9.0.0",
+    "y-webrtc": "^10.3.0",
+    "zod": "^3.22.0",
+    "zustand": "^5.0.0",
+    "@hookform/resolvers": "^3.3.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^2.2.0",
+    "framer-motion": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.5.0",
+    "vite": "^6.0.0"
+  }
+}
