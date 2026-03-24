@@ -1,4 +1,4 @@
-// Onboarding stub
+// Onboarding flow — tribes, looking for, about you, done
 import { useState } from 'react';
 import { useNavStore, useAuthStore } from '@/store';
 import { api } from '@/services/api';

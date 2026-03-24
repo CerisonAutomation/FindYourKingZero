@@ -47,6 +47,6 @@ test.describe('Security Headers', () => {
     // At minimum one should be present in prod — soft assertion for local
     const hasCsp = !!cspHeader || cspMeta > 0;
     // Not enforced in dev — just log
-    console.log('CSP present:', hasCsp);
+    console.info('CSP present:', hasCsp);
   });
 });

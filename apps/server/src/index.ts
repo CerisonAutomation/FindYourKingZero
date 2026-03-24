@@ -14,18 +14,18 @@ const prisma = new PrismaClient();
 const app = createApp(prisma, JWT_SECRET);
 
 serve({ fetch: app.fetch, port: PORT }, (info) => {
-  console.log(`[King Server] Listening on http://localhost:${info.port}`);
+  console.info(`[King Server] Listening on http://localhost:${info.port}`);
 });
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
-  console.log('[King Server] Shutting down...');
+  console.info('[King Server] Shutting down...');
   await prisma.$disconnect();
   process.exit(0);
 });
 
 process.on('SIGINT', async () => {
-  console.log('[King Server] Interrupted');
+  console.info('[King Server] Interrupted');
   await prisma.$disconnect();
   process.exit(0);
 });

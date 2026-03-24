@@ -47,7 +47,7 @@ export default function SignInScreen() {
         verified: u.email_confirmed_at != null,
         premium: false,
         distance: 0,
-        lastSeen: new Date().toISOString(),
+        lastSeen: Date.now(),
       };
       login(profile, data.session!.access_token);
       go('discover');

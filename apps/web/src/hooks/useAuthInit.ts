@@ -39,7 +39,7 @@ export function useAuthInit() {
         verified: u.email_confirmed_at != null,
         premium: false,
         distance: 0,
-        lastSeen: new Date().toISOString(),
+        lastSeen: Date.now(),
       };
       login(profile, session.access_token);
     });
