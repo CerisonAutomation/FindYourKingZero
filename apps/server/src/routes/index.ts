@@ -5,7 +5,7 @@
 
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { jwt } from 'hono/jwt';
+import { sign } from 'hono/jwt';
 import { zValidator } from '@hono/zod-validator';
 import { LoginSchema, RegisterSchema, UpdateProfileSchema, SendMessageSchema, CreateEventSchema } from '../../packages/shared/schemas';
 import type { PrismaClient } from '@prisma/client';
@@ -244,7 +244,6 @@ export function createApp(prisma: PrismaClient, JWT_SECRET: string) {
 
 // Helpers
 async function signJwt(payload: any, secret: string): Promise<string> {
-  const { sign } = await import('hono/jwt');
   return sign(payload, secret);
 }
 

@@ -1,0 +1,6 @@
+{
+  "buildCommand": "npx turbo build --filter=@king/web",
+  "outputDirectory": "apps/web/dist",
+  "framework": "vite",
+  "installCommand": "npm install"
+}
