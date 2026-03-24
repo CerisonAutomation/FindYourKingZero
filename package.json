@@ -1,13 +1,13 @@
 {
   "name": "find-your-king",
   "private": true,
+  "packageManager": "npm@10.9.4",
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
     "lint": "turbo lint",
-    "typecheck": "turbo typecheck",
-    "vercel-build": "cd apps/web && npm run build"
+    "typecheck": "turbo typecheck"
   },
   "devDependencies": {
     "turbo": "^2.0.0",
