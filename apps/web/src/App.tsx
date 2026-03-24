@@ -4,6 +4,8 @@
 
 import React, { Suspense, lazy, useEffect, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { useNavStore, useAuthStore } from './store';
 import { CommandPalette } from './components/ui/CommandPalette';
 import { BottomNav } from './components/ui/index';
@@ -141,6 +143,8 @@ export default function App() {
           <ScreenRouter />
         </div>
         {showNav && <BottomNav />}
+        <Analytics />
+        <SpeedInsights />
       </div>
     </QueryClientProvider>
   );

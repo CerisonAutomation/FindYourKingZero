@@ -1,7 +1,7 @@
 {
   "name": "@king/web",
   "private": true,
-  "version": "4.3.3",
+  "version": "5.0.0",
   "type": "module",
   "scripts": {
     "dev":       "vite",
@@ -16,6 +16,8 @@
     "@tanstack/react-query":     "^5.66.0",
     "@upstash/ratelimit":        "^2.0.5",
     "@upstash/redis":            "^1.34.4",
+    "@vercel/analytics":         "^1.5.0",
+    "@vercel/speed-insights":    "^1.2.0",
     "h3-js":                     "^4.2.1",
     "hono":                      "^4.7.4",
     "maplibre-gl":               "^4.3.2",
