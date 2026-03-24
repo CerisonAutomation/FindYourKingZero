@@ -46,11 +46,11 @@ class P2PManager {
     this.rooms.set(roomId, actions);
 
     room.onPeerJoin((peerId) => {
-      console.log(`[P2P] Peer joined ${roomId}: ${peerId}`);
+      console.debug(`[P2P] Peer joined ${roomId}: ${peerId}`);
     });
 
     room.onPeerLeave((peerId) => {
-      console.log(`[P2P] Peer left ${roomId}: ${peerId}`);
+      console.debug(`[P2P] Peer left ${roomId}: ${peerId}`);
     });
 
     return actions;

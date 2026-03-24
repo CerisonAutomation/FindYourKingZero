@@ -1,3 +1,4 @@
+import type { UserProfile, Message, KingEvent } from '@/types';
 // ═══════════════════════════════════════════════════════════════
 // SERVICES: API Client — Hono backend
 // JWT auth, Zod validation, TanStack Query integration
@@ -43,24 +44,24 @@ export const api = {
   // Auth
   auth: {
     login: (data: { email: string; password: string }) =>
-      request<{ user: any; token: string }>('/auth/login', {
+      request<{ user: { id: string; email: string; name: string }; token: string }>('/auth/login', {
         method: 'POST',
         body: JSON.stringify(data),
       }),
     register: (data: { email: string; password: string; name: string; age: number }) =>
-      request<{ user: any; token: string }>('/auth/register', {
+      request<{ user: { id: string; email: string; name: string }; token: string }>('/auth/register', {
         method: 'POST',
         body: JSON.stringify(data),
       }),
-    verify: () => request<{ user: any }>('/auth/verify'),
+    verify: () => request<{ user: { id: string; email: string; name: string }; token?: string }>('/auth/verify'),
     logout: () => request<void>('/auth/logout', { method: 'POST' }),
   },
 
   // Users
   users: {
-    getProfile: (id: string) => request<any>(`/users/${id}`),
-    updateProfile: (data: any) =>
-      request<any>('/users/me', { method: 'PATCH', body: JSON.stringify(data) }),
+    getProfile: (id: string) => request<UserProfile>(`/users/${id}`),
+    updateProfile: (data: Record<string, unknown>) =>
+      request<Partial<UserProfile>>('/users/me', { method: 'PATCH', body: JSON.stringify(data) }),
     getNearby: (h3Hexes: string[], limit = 20) =>
       request<any[]>(`/users/nearby?hexes=${h3Hexes.join(',')}&limit=${limit}`),
     search: (query: string) => request<any[]>(`/users/search?q=${encodeURIComponent(query)}`),
@@ -107,7 +108,7 @@ export const api = {
       if (filters?.attending) params.set('attending', 'true');
       return request<any[]>(`/events?${params}`);
     },
-    create: (data: any) =>
+    create: (data: Record<string, unknown>) =>
       request<any>('/events', { method: 'POST', body: JSON.stringify(data) }),
     rsvp: (eventId: string, going: boolean) =>
       request<void>(`/events/${eventId}/rsvp`, {

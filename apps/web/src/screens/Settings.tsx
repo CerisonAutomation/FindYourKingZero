@@ -33,9 +33,11 @@ export default function SettingsScreen() {
   const [vibrationEnabled, setVibrationEnabled] = useState(true);
 
   const handleLogout = async () => {
+    try {
     haptic.heavy();
     await logout();
     go('landing');
+    } catch(e) { console.error('Logout failed:', e); }
   };
 
   const handlePreloadAI = async () => {

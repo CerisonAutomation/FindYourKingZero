@@ -22,8 +22,8 @@ export default function SignInScreen() {
       const { user, token } = await api.auth.login({ email: email.trim(), password });
       login(user, token);
       go('discover');
-    } catch (e: any) {
-      setError(e.message || 'Invalid credentials');
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Invalid credentials');
     } finally { setLoading(false); }
   };
 

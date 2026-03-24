@@ -28,7 +28,7 @@ export default function SignUpScreen() {
       const { user, token } = await api.auth.register({ email: email.trim(), password, name: name.trim(), age: parseInt(age) });
       login(user, token);
       go('onboarding');
-    } catch (e: any) { setError(e.message || 'Signup failed'); } finally { setLoading(false); }
+    } catch (e: unknown) { setError(e instanceof Error ? e.message : 'Signup failed'); } finally { setLoading(false); }
   };
 
   return (

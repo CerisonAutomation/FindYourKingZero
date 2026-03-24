@@ -61,7 +61,7 @@ export default function ProfileScreen() {
 
           {/* Tabs */}
           <div style={{ display: 'flex', borderBottom: `1px solid ${COLORS.w07}`, marginBottom: 18 }}>
-            {['about', 'stats'].map((t) => (
+            {['about', 'stats'].map((t, _i) => (
               <button key={t} onClick={() => setTab(t as any)}
                 style={{
                   flex: 1, padding: '9px 0', background: 'transparent', border: 'none', cursor: 'pointer',

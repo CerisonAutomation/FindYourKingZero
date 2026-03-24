@@ -13,7 +13,7 @@ import { TopBar } from '@/components/ui/index';
 import { Avatar } from '@/components/ui/index';
 import { AIButton } from '@/components/ui/AIButton';
 import { COLORS } from '@/types';
-import type { Message, P2PMessage } from '@/types';
+import type { Message, P2PMessage, UserProfile } from '@/types';
 
 export default function ChatScreen() {
   const go = useNavStore((s) => s.go);
@@ -299,7 +299,7 @@ export default function ChatScreen() {
   );
 }
 
-const MessageBubble = memo(({ message, isMine, peer }: { message: Message; isMine: boolean; peer: any }) => (
+const MessageBubble = memo(({ message, isMine, peer }: { message: Message; isMine: boolean; peer: UserProfile }) => (
   <div style={{ display: 'flex', justifyContent: isMine ? 'flex-end' : 'flex-start', marginBottom: 8, animation: 'fadeUp .2s ease' }}>
     {!isMine && <Avatar src={peer.avatar} size={28} />}
     <div style={{ maxWidth: '75%', marginLeft: isMine ? 0 : 8 }}>

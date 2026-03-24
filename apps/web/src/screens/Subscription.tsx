@@ -111,7 +111,7 @@ export default function SubscriptionScreen() {
 
         {/* Billing toggle */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: 4, marginBottom: 20 }}>
-          {(['monthly', 'yearly'] as const).map(b => (
+          {(['monthly', 'yearly'] as const).map((b, i) => (
             <button key={b} onClick={() => setBilling(b)}
               style={{
                 padding: '8px 20px', border: `1px solid ${billing === b ? COLORS.red : COLORS.w12}`,
@@ -125,7 +125,7 @@ export default function SubscriptionScreen() {
         </div>
 
         {/* Tiers */}
-        {TIERS.map((tier) => {
+        {TIERS.map((tier, _i) => {
           const price = billing === 'yearly' && tier.id !== 'free'
             ? `€${(parseFloat(tier.price.replace('€', '')) * 0.8 * 12).toFixed(0)}`
             : tier.price;
@@ -156,7 +156,7 @@ export default function SubscriptionScreen() {
                   <div style={{ fontSize: 10, color: COLORS.w35 }}>{period}</div>
                 </div>
               </div>
-              {tier.features.map((f) => (
+              {tier.features.map((f, _i) => (
                 <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 4 }}>
                   <span style={{ color: tier.c, fontSize: 12 }}>✓</span>
                   <span style={{ fontSize: 12, color: COLORS.w60 }}>{f}</span>

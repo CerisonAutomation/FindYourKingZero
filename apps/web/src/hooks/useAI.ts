@@ -10,7 +10,7 @@ type AIType =
   | 'sentiment' | 'embed' | 'whisper' | 'tts' | 'preload' | 'unload';
 
 interface PendingRequest {
-  resolve: (value: any) => void;
+  resolve: (value: unknown) => void;
   reject: (error: Error) => void;
 }
 
@@ -49,7 +49,7 @@ export function useAI() {
     };
   }, []);
 
-  const request = useCallback(<T = any>(type: AIType, payload: any = {}): Promise<T> => {
+  const request = useCallback(<T = unknown>(type: AIType, payload: Record<string, unknown> = {}): Promise<T> => {
     return new Promise<T>((resolve, reject) => {
       if (!workerRef.current) {
         reject(new Error('AI worker not ready'));

@@ -64,7 +64,7 @@ export const AIChatPanel: FC<AIChatPanelProps> = ({ contextMessage, onReplySelec
       }
       setState('complete');
     } catch (err: any) {
-      const msg = err.message?.toLowerCase() ?? '';
+      const msg = err instanceof Error ? err.message.toLowerCase() : '' ?? '';
       if (msg.includes('rate') || msg.includes('429')) setErrorType('rate_limit');
       else if (msg.includes('network') || msg.includes('fetch')) setErrorType('network');
       else if (msg.includes('context') || msg.includes('limit')) setErrorType('context_limit');
