@@ -19,8 +19,9 @@ export function useAuthInit() {
       if (!session) return;
       const u    = session.user;
       const meta = u.user_metadata ?? {};
-      const profile: UserProfile = {
+      const profile = {
         id:     u.id,
+        authId: u.id,
         email:  u.email ?? '',
         name:   (meta.name as string) || u.email?.split('@')[0] || 'King',
         avatar: (meta.avatar_url as string) || '',
@@ -40,7 +41,12 @@ export function useAuthInit() {
         premium: false,
         distance: 0,
         lastSeen: Date.now(),
-      };
+        lat: 0,
+        lng: 0,
+        h3Hex: '',
+        publicKey: {} as JsonWebKey,
+        createdAt: Date.now(),
+      } as UserProfile;
       login(profile, session.access_token);
     });
 

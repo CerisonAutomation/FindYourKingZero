@@ -37,8 +37,9 @@ export default function SignUpScreen() {
       }
 
       const u = data.user!;
-      const profile: UserProfile = {
+      const profile = {
         id:     u.id,
+        authId: u.id,
         email:  u.email ?? '',
         name:   name.trim(),
         avatar: '',
@@ -58,8 +59,13 @@ export default function SignUpScreen() {
         premium: false,
         distance: 0,
         lastSeen: Date.now(),
-      };
-      login(profile, data.session.access_token);
+        lat: 0,
+        lng: 0,
+        h3Hex: '',
+        publicKey: {} as JsonWebKey,
+        createdAt: Date.now(),
+      } as UserProfile;
+      login(profile, data.session!.access_token);
       go('onboarding');
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Registration failed';

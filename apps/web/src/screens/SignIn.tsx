@@ -27,7 +27,7 @@ export default function SignInScreen() {
       if (err) throw err;
       const u = data.user!;
       const meta = u.user_metadata ?? {};
-      const profile: UserProfile = {
+      const profile = {
         id:     u.id,
         email:  u.email ?? '',
         name:   (meta.name as string) || u.email?.split('@')[0] || 'King',
@@ -48,7 +48,13 @@ export default function SignInScreen() {
         premium: false,
         distance: 0,
         lastSeen: Date.now(),
-      };
+        authId: u.id,
+        lat: 0,
+        lng: 0,
+        h3Hex: "",
+        publicKey: {} as JsonWebKey,
+        createdAt: Date.now(),
+      } as UserProfile;
       login(profile, data.session!.access_token);
       go('discover');
     } catch (e: unknown) {

@@ -21,7 +21,7 @@ import React, {
   useCallback,
   type KeyboardEvent,
 } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion, type Variants } from 'framer-motion';
 import {
   CalendarDays,
   Dumbbell,
@@ -86,7 +86,7 @@ const RIGHT_QUICK_TABS: DockTabId[] = ['gym', 'diet', 'news'];
 
 // ── Helpers ───────────────────────────────────────────────────
 
-function useClickOutside<T extends HTMLElement>(
+function useClickOutside<T extends HTMLElement | null>(
   ref: React.RefObject<T>,
   handler: () => void,
 ) {
@@ -369,7 +369,7 @@ function RadialHUD({
     return Array.from({ length: n }, (_, i) => start + i * step);
   }, [tabs.length]);
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     closed: (_i: number) => ({
       opacity: 0,
       scale: 0.6,
@@ -389,7 +389,7 @@ function RadialHUD({
         transition: reduceMotion
           ? { duration: 0 }
           : {
-              type: 'spring',
+              type: 'spring' as const,
               stiffness: 520,
               damping: 30,
               mass: 0.7,
@@ -397,7 +397,7 @@ function RadialHUD({
             },
       };
     },
-  } as const;
+  };
 
   // Keyboard nav inside HUD
   const handleKey = (e: KeyboardEvent<HTMLButtonElement>, id: DockTabId) => {

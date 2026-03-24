@@ -53,6 +53,8 @@ export interface UserProfile {
   id: string;
   authId: string;
   name: string;
+  display_name?: string;
+  email?: string;
   age: number;
   bio: string;
   avatar: string;
@@ -72,6 +74,7 @@ export interface UserProfile {
   onPrEP: boolean;
   verified: boolean;
   premium: boolean;
+  subscription_tier?: 'free' | 'king' | 'emperor';
   online: boolean;
   lastSeen: number;
   publicKey: JsonWebKey;
