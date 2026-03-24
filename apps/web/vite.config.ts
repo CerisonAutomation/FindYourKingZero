@@ -46,9 +46,9 @@ const plugins: PluginOption[] = [
 ];
 
 if (isProd && process.env.ANALYZE === 'true') {
-  plugins.push(
-    visualizer({ filename: 'dist/stats.html', open: true, gzipSize: true, brotliSize: true }),
-  );
+  // visualizer ships older Rollup types incompatible with Vite 6's bundled Rollup 4.
+  // Safe at runtime — only the TS signature differs, not the actual plugin shape.
+  plugins.push(visualizer({ filename: 'dist/stats.html', open: true, gzipSize: true, brotliSize: true }) as unknown as PluginOption);
 }
 
 export default defineConfig({
