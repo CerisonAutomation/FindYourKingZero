@@ -60,10 +60,12 @@ export interface UserProfile {
   city: string;
   lat: number;
   lng: number;
-  h3Hex: string;               // H3 cell for proximity
+  distance?: number;            // km — optional, computed client-side
+  h3Hex: string;
   tribes: Tribe[];
   lookingFor: LookingFor[];
   height: string;
+  weight?: string;
   position: Position;
   relationshipStatus: RelationshipStatus;
   hivStatus: HIVStatus;
@@ -72,9 +74,22 @@ export interface UserProfile {
   premium: boolean;
   online: boolean;
   lastSeen: number;
-  // P2P
-  publicKey: JsonWebKey;        // For E2EE key exchange
+  publicKey: JsonWebKey;
   createdAt: number;
+}
+
+// Partial profile used during sign-in/sign-up before full data loads
+export type PartialUserProfile = Pick<UserProfile, 'id'> &
+  Partial<Omit<UserProfile, 'id'>> & {
+    email?: string;
+    name: string;
+  };
+
+export interface GeoPosition {
+  lat: number;
+  lng: number;
+  accuracy?: number;
+  h3Hex?: string;
 }
 
 export interface UserPresence {
@@ -84,7 +99,7 @@ export interface UserPresence {
   lng: number;
   online: boolean;
   lastSeen: number;
-  intent?: string;              // Right Now intent
+  intent?: string;
 }
 
 // ── Match ─────────────────────────────────────────────────────
@@ -92,7 +107,7 @@ export interface Match {
   id: string;
   userIdA: string;
   userIdB: string;
-  compatibility: number;        // 0-100 AI score
+  compatibility: number;
   matchedAt: number;
   lastMessageAt: number;
   lastMessage: string;
@@ -107,14 +122,14 @@ export interface Message {
   matchId: string;
   senderId: string;
   type: MessageType;
-  content: string;              // Encrypted text or URL
-  encryptedContent?: string;    // E2EE payload
-  iv?: string;                  // Encryption IV
+  content: string;
+  encryptedContent?: string;
+  iv?: string;
   metadata?: {
     fileName?: string;
     fileSize?: number;
     mimeType?: string;
-    duration?: number;          // Voice note duration
+    duration?: number;
     lat?: number;
     lng?: number;
   };
@@ -124,8 +139,9 @@ export interface Message {
 }
 
 export interface P2PMessage {
+  [key: string]: unknown;       // Index signature satisfies DataPayload constraint
   type: 'text' | 'typing' | 'read' | 'reaction' | 'file-start' | 'file-chunk' | 'file-end';
-  payload: any;
+  payload: unknown;
   msgId: string;
   ts: number;
   senderId: string;
@@ -148,7 +164,7 @@ export interface KingEvent {
   lat: number;
   lng: number;
   capacity: number;
-  attendees: string[];          // user IDs
+  attendees: string[];
   hostId: string;
   tags: string[];
   createdAt: number;
@@ -169,13 +185,13 @@ export interface Notification {
 // ── AI ────────────────────────────────────────────────────────
 export interface AIRequest {
   type: 'smart-reply' | 'toxicity' | 'translate' | 'icebreaker' | 'profile-tip';
-  payload: any;
+  payload: unknown;
   id: string;
 }
 
 export interface AIResponse {
   id: string;
-  result: any;
+  result: unknown;
   error?: string;
 }
 
