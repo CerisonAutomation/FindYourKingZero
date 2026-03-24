@@ -10,22 +10,21 @@ import { useNavStore, useAuthStore } from './store';
 import { CommandPalette } from './components/ui/CommandPalette';
 import { BottomNav } from './components/ui/index';
 
-// Lazy screens
-const Landing = lazy(() => import('./screens/Landing'));
-const SignIn = lazy(() => import('./screens/SignIn'));
-const SignUp = lazy(() => import('./screens/SignUp'));
-const Onboarding = lazy(() => import('./screens/Onboarding'));
-const Discover = lazy(() => import('./screens/Discover'));
+const Landing     = lazy(() => import('./screens/Landing'));
+const SignIn      = lazy(() => import('./screens/SignIn'));
+const SignUp      = lazy(() => import('./screens/SignUp'));
+const Onboarding  = lazy(() => import('./screens/Onboarding'));
+const Discover    = lazy(() => import('./screens/Discover'));
 const ViewProfile = lazy(() => import('./screens/ViewProfile'));
-const Messages = lazy(() => import('./screens/Messages'));
-const Chat = lazy(() => import('./screens/Chat'));
-const RightNow = lazy(() => import('./screens/RightNow'));
-const Events = lazy(() => import('./screens/Events'));
+const Messages    = lazy(() => import('./screens/Messages'));
+const Chat        = lazy(() => import('./screens/Chat'));
+const RightNow    = lazy(() => import('./screens/RightNow'));
+const Events      = lazy(() => import('./screens/Events'));
 const EventDetail = lazy(() => import('./screens/EventDetail'));
-const Profile = lazy(() => import('./screens/Profile'));
+const Profile     = lazy(() => import('./screens/Profile'));
 const EditProfile = lazy(() => import('./screens/EditProfile'));
 const Notifications = lazy(() => import('./screens/Notifications'));
-const Settings = lazy(() => import('./screens/Settings'));
+const Settings    = lazy(() => import('./screens/Settings'));
 const Subscription = lazy(() => import('./screens/Subscription'));
 
 const queryClient = new QueryClient({
@@ -34,7 +33,6 @@ const queryClient = new QueryClient({
 
 const BOTTOM_NAV_SCREENS = ['discover', 'right-now', 'messages', 'events', 'profile'] as const;
 
-// ── Error Boundary ────────────────────────────────────────────
 interface ErrorState { hasError: boolean; error: Error | null }
 
 class AppErrorBoundary extends React.Component<{ children: ReactNode }, ErrorState> {
@@ -63,7 +61,6 @@ class AppErrorBoundary extends React.Component<{ children: ReactNode }, ErrorSta
   }
 }
 
-// ── Cosmic Background ────────────────────────────────────────
 function CosmicBg() {
   return (
     <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: 0 }}>
@@ -74,7 +71,6 @@ function CosmicBg() {
   );
 }
 
-// ── Spinner ──────────────────────────────────────────────────
 function LoadingSpinner() {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
@@ -83,10 +79,9 @@ function LoadingSpinner() {
   );
 }
 
-// ── Screen Router ────────────────────────────────────────────
 function ScreenRouter() {
   const screen = useNavStore((s) => s.screen);
-  const screens: Record<string, React.LazyExoticComponent<any>> = {
+  const screens: Record<string, React.LazyExoticComponent<() => React.ReactElement>> = {
     landing: Landing, signin: SignIn, signup: SignUp, onboarding: Onboarding,
     discover: Discover, 'view-profile': ViewProfile, messages: Messages,
     chat: Chat, 'right-now': RightNow, events: Events, 'event-detail': EventDetail,
@@ -103,7 +98,6 @@ function ScreenRouter() {
   );
 }
 
-// ── Main App ─────────────────────────────────────────────────
 export default function App() {
   const { isAuthenticated } = useAuthStore();
   const screen = useNavStore((s) => s.screen);
@@ -116,30 +110,25 @@ export default function App() {
 
   const showNav = (BOTTOM_NAV_SCREENS as readonly string[]).includes(screen) && isAuthenticated;
 
+  // dvh with vh fallback — must use style prop array trick via CSS var, not duplicate key
+  const appHeight: React.CSSProperties = {
+    maxWidth: 430,
+    margin: '0 auto',
+    width: '100%',
+    height: '100vh',     // fallback for browsers without dvh
+    display: 'flex',
+    flexDirection: 'column',
+    background: '#060610',
+    overflow: 'hidden',
+    position: 'relative',
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
-      <div style={{
-        maxWidth: 430,
-        margin: '0 auto',
-        width: '100%',
-        height: '100dvh',
-        height: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        background: '#060610',
-        overflow: 'hidden',
-        position: 'relative',
-      }}>
+      <div style={appHeight}>
         <CosmicBg />
         <CommandPalette />
-        <div style={{
-          flex: 1,
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          position: 'relative',
-          zIndex: 1,
-        }}>
+        <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }}>
           <ScreenRouter />
         </div>
         {showNav && <BottomNav />}
