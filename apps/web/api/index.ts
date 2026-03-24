@@ -196,6 +196,16 @@ app.post('/events', async (c) => {
   }
 });
 
+app.patch('/events/:id', async (c) => {
+  try {
+    const id = c.req.param('id');
+    const data = await c.req.json();
+    const ev = events.find(e => e.id === id);
+    if (ev) Object.assign(ev, data);
+    return c.json(ev ?? { ok: false });
+  } catch { return c.json({ ok: false }); }
+});
+
 app.post('/events/:id/rsvp', async (c) => c.json({ ok: true }));
 
 // ── Presence ──────────────────────────────────────────────────

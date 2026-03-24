@@ -118,6 +118,8 @@ export const api = {
     },
     create: (data: Record<string, unknown>) =>
       request<any>('/events', { method: 'POST', body: JSON.stringify(data) }),
+    update: (eventId: string, data: Record<string, unknown>) =>
+      request<any>(`/events/${eventId}`, { method: 'PATCH', body: JSON.stringify(data) }),
     rsvp: (eventId: string, going: boolean) =>
       request<void>(`/events/${eventId}/rsvp`, {
         method: 'POST',

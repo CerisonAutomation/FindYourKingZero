@@ -40,10 +40,20 @@ export function CommandPalette() {
     { id: 'right-now', label: 'Right Now', icon: '📡', action: () => go('right-now'), group: 'Navigate', keywords: ['live', 'radar', 'nearby'] },
     { id: 'events', label: 'Events', icon: '📅', action: () => go('events'), group: 'Navigate', keywords: ['parties', 'meetups'] },
     { id: 'profile', label: 'My Profile', icon: '👤', action: () => go('profile'), group: 'Navigate', keywords: ['me', 'account'] },
+    { id: 'albums', label: 'Photo Albums', icon: '📷', action: () => go('albums'), group: 'Navigate', keywords: ['photos', 'gallery', 'images'] },
     { id: 'edit', label: 'Edit Profile', icon: '✏️', action: () => go('edit-profile'), group: 'Profile', keywords: ['settings', 'bio'] },
+    { id: 'analytics', label: 'My Analytics', icon: '📊', action: () => go('analytics'), group: 'Profile', keywords: ['stats', 'views', 'matches'] },
     { id: 'settings', label: 'Settings', icon: '⚙️', action: () => go('settings'), group: 'Settings', keywords: ['config', 'preferences'] },
     { id: 'sub', label: 'Subscription', icon: '👑', action: () => go('subscription'), group: 'Settings', keywords: ['premium', 'pro', 'upgrade'] },
     { id: 'notifs', label: 'Notifications', icon: '🔔', action: () => go('notifications'), group: 'Settings', keywords: ['activity', 'alerts'] },
+    { id: 'travel', label: 'Travel Mode', icon: '✈️', action: () => go('travel-mode'), group: 'Settings', keywords: ['location', 'city', 'fake'] },
+    { id: 'voice', label: 'Voice Commands', icon: '🎤', action: () => go('voice'), group: 'Settings', keywords: ['speech', 'audio'] },
+    { id: 'safety', label: 'Safety Center', icon: '🛡️', action: () => go('safety'), group: 'Settings', keywords: ['block', 'report', 'tips'] },
+    { id: 'admin', label: 'Admin Dashboard', icon: '⚙️', action: () => go('admin'), group: 'Admin', keywords: ['moderation', 'users', 'manage'] },
+    { id: 'gdpr', label: 'GDPR & Privacy', icon: '🔒', action: () => go('gdpr'), group: 'Legal', keywords: ['data', 'cookie', 'consent'] },
+    { id: 'privacy', label: 'Privacy Policy', icon: '📜', action: () => go('privacy-policy'), group: 'Legal', keywords: ['policy', 'data'] },
+    { id: 'terms', label: 'Terms of Service', icon: '📋', action: () => go('terms-of-service'), group: 'Legal', keywords: ['tos', 'agreement'] },
+    { id: 'guidelines', label: 'Community Guidelines', icon: '📋', action: () => go('community-guidelines'), group: 'Legal', keywords: ['rules', 'conduct'] },
   ];
 
   const filtered = query

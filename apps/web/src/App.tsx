@@ -6,6 +6,7 @@ import { SpeedInsights } from '@vercel/speed-insights/react';
 import { useNavStore, useAuthStore } from './store';
 import { CommandPalette } from './components/ui/CommandPalette';
 import { BottomNav } from './components/ui/index';
+import { CookieConsent } from './components/ui/CookieConsent';
 import { useAuthInit } from './hooks/useAuthInit';
 
 // Lazy screens — typed as FC (never returns null at screen level)
@@ -25,6 +26,17 @@ const EditProfile  = lazy(() => import('./screens/EditProfile'));
 const Notifications = lazy(() => import('./screens/Notifications'));
 const Settings     = lazy(() => import('./screens/Settings'));
 const Subscription = lazy(() => import('./screens/Subscription'));
+// ── Enterprise screens (from old codebase merge) ──────────
+const Safety       = lazy(() => import('./screens/Safety'));
+const Admin        = lazy(() => import('./screens/Admin'));
+const GDPR         = lazy(() => import('./screens/GDPR'));
+const Analytics    = lazy(() => import('./screens/Analytics'));
+const Albums       = lazy(() => import('./screens/Albums'));
+const Voice        = lazy(() => import('./screens/Voice'));
+const TravelMode   = lazy(() => import('./screens/TravelMode'));
+const PrivacyPolicy = lazy(() => import('./screens/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('./screens/TermsOfService'));
+const CommunityGuidelines = lazy(() => import('./screens/CommunityGuidelines'));
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30_000, refetchOnWindowFocus: false } },
@@ -90,6 +102,14 @@ function ScreenRouter() {
     profile: Profile as AnyScreen, 'edit-profile': EditProfile as AnyScreen,
     notifications: Notifications as AnyScreen, settings: Settings as AnyScreen,
     subscription: Subscription as AnyScreen,
+    // Enterprise screens
+    safety: Safety as AnyScreen, admin: Admin as AnyScreen,
+    gdpr: GDPR as AnyScreen, analytics: Analytics as AnyScreen,
+    albums: Albums as AnyScreen, voice: Voice as AnyScreen,
+    'travel-mode': TravelMode as AnyScreen,
+    'privacy-policy': PrivacyPolicy as AnyScreen,
+    'terms-of-service': TermsOfService as AnyScreen,
+    'community-guidelines': CommunityGuidelines as AnyScreen,
   };
   const Screen = screens[screen] ?? Landing as AnyScreen;
   return (
@@ -124,6 +144,7 @@ function AppShell() {
         <ScreenRouter />
       </div>
       {showNav && <BottomNav />}
+      <CookieConsent />
       <Analytics />
       <SpeedInsights />
     </div>

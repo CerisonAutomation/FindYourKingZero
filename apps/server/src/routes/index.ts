@@ -198,6 +198,26 @@ export function createApp(prisma: PrismaClient, JWT_SECRET: string) {
     return c.json(ev);
   });
 
+  events.patch('/:id', zValidator('json', UpdateEventSchema), async (c) => {
+    const userId = c.get('jwtPayload').userId;
+    const eventId = c.req.param('id');
+    const data = c.req.valid('json');
+
+    // Only allow editing if user is host
+    const ev = await prisma.event.findUnique({
+      where: { id: eventId },
+      include: { hostId: true },
+    });
+    if (!ev) return c.json({ message: 'Event not found' }, 404);
+    if (ev.hostId !== userId) return c.json({ message: 'Unauthorized' }, 403);
+
+    const updated = await prisma.event.update({
+      where: { id: eventId },
+      data: data,
+    });
+    return c.json(updated);
+  });
+
   events.post('/:id/rsvp', async (c) => {
     const userId = c.get('jwtPayload').userId;
     const eventId = c.req.param('id');

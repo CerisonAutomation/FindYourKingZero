@@ -73,6 +73,13 @@ export const CreateEventSchema = z.object({
   tags: z.array(z.string()).max(10).optional(),
 });
 
+export const UpdateEventSchema = z.object({
+  title: z.string().min(3).max(100).optional(),
+  description: z.string().max(1000).optional(),
+  location: z.string().max(200).optional(),
+  capacity: z.number().min(1).max(1000).optional(),
+});
+
 // ── Presence schemas ──────────────────────────────────────────
 export const UpdatePresenceSchema = z.object({
   h3Hex: z.string(),

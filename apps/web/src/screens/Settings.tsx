@@ -35,9 +35,12 @@ export default function SettingsScreen() {
 
   const handleLogout = async () => {
     try {
-    haptic.heavy();
-    await logout();
-    go('landing');
+      haptic.heavy();
+      // Sign out from Supabase Auth (triggers onAuthStateChange → SIGNED_OUT → store clears)
+      const { supabase } = await import('@/lib/supabase');
+      if (supabase) await supabase.auth.signOut();
+      logout();
+      go('landing');
     } catch(e) { console.error('Logout failed:', e); }
   };
 
@@ -52,7 +55,7 @@ export default function SettingsScreen() {
       label: 'ACCOUNT',
       items: [
         { icon: '👤', label: 'Edit Profile', sub: 'Name, bio, photos, stats, tribes', action: () => go('edit-profile') },
-        { icon: '📷', label: 'Photo Albums', sub: 'Manage private & public albums', action: () => {} },
+        { icon: '📷', label: 'Photo Albums', sub: 'Manage private & public albums', action: () => go('albums') },
         { icon: '✓', label: 'Verification', sub: user?.verified ? 'Verified ✓' : 'Photo ID verify', action: () => {} },
         { icon: '🔗', label: 'Connected Accounts', sub: 'Google, Apple, Facebook', action: () => {} },
       ],
@@ -60,7 +63,7 @@ export default function SettingsScreen() {
     {
       label: 'DISCOVERY',
       items: [
-        { icon: '📍', label: 'Travel Mode', sub: travelMode ? '🟢 Active — browse another city' : 'Set a different location', action: () => setTravelMode(!travelMode), toggle: travelMode },
+        { icon: '📍', label: 'Travel Mode', sub: travelMode ? '🟢 Active — browse another city' : 'Set a different location', action: () => go('travel-mode') },
         { icon: '🔍', label: 'Search Radius', sub: 'Default distance filter', action: () => {} },
         { icon: '🧭', label: 'Default View', sub: 'Grid / Swipe / List', action: () => {} },
         { icon: '📊', label: 'Sort Preference', sub: 'Distance / Recent / Compatibility', action: () => {} },
@@ -100,19 +103,21 @@ export default function SettingsScreen() {
     {
       label: 'SAFETY',
       items: [
-        { icon: '🚫', label: 'Blocked Users', sub: 'Manage blocked accounts', action: () => {} },
-        { icon: '🚩', label: 'Report History', sub: 'View past reports', action: () => {} },
-        { icon: '🛡️', label: 'Safety Tips', sub: 'Stay safe meeting people', action: () => {} },
-        { icon: '📞', label: 'Emergency Contacts', sub: 'Share location with trusted contacts', action: () => {} },
+        { icon: '🚫', label: 'Blocked Users', sub: 'Manage blocked accounts', action: () => go('safety') },
+        { icon: '🚩', label: 'Report History', sub: 'View past reports', action: () => go('safety') },
+        { icon: '🛡️', label: 'Safety Tips', sub: 'Stay safe meeting people', action: () => go('safety') },
+        { icon: '📞', label: 'Emergency Contacts', sub: 'Share location with trusted contacts', action: () => go('safety') },
       ],
     },
     {
       label: 'DATA & PRIVACY',
       items: [
-        { icon: '📥', label: 'Export My Data', sub: 'Download all your data (GDPR)', action: () => {} },
-        { icon: '🍪', label: 'Cookie Preferences', sub: 'Manage tracking consent', action: () => {} },
-        { icon: '📜', label: 'Privacy Policy', sub: 'Read our privacy policy', action: () => {} },
-        { icon: '📋', label: 'Terms of Service', sub: 'Read our terms', action: () => {} },
+        { icon: '📥', label: 'Export My Data', sub: 'Download all your data (GDPR)', action: () => go('gdpr') },
+        { icon: '🍪', label: 'Cookie Preferences', sub: 'Manage tracking consent', action: () => go('gdpr') },
+        { icon: '📜', label: 'Privacy Policy', sub: 'Read our privacy policy', action: () => go('privacy-policy') },
+        { icon: '📋', label: 'Terms of Service', sub: 'Read our terms', action: () => go('terms-of-service') },
+        { icon: '🌐', label: 'Language', sub: 'Change app language', action: () => go('gdpr') },
+        { icon: '📊', label: 'My Analytics', sub: 'View your profile stats', action: () => go('analytics') },
       ],
     },
     {
@@ -123,9 +128,17 @@ export default function SettingsScreen() {
           sub: aiReady ? (aiModelsLoaded ? '✅ Toxicity + Sentiment loaded' : 'Click to load') : 'Worker loading…',
           action: handlePreloadAI,
         },
+        { icon: '🎤', label: 'Voice Commands', sub: 'Control app with voice', action: () => go('voice') },
         { icon: '🔒', label: 'E2EE Encryption', sub: 'Web Crypto API · P-256 · AES-256-GCM', action: () => {} },
         { icon: '📡', label: 'P2P Network', sub: 'Trystero v0.22 · Nostr signaling', action: () => {} },
         { icon: '🗺️', label: 'Proximity Engine', sub: 'H3 hex grid · MapLibre GL · 0 API keys', action: () => {} },
+      ],
+    },
+    {
+      label: 'ADMIN',
+      items: [
+        { icon: '⚙️', label: 'Admin Dashboard', sub: 'Moderation & analytics', action: () => go('admin') },
+        { icon: '📊', label: 'Platform Analytics', sub: 'System-wide statistics', action: () => go('analytics') },
       ],
     },
     {
@@ -133,7 +146,7 @@ export default function SettingsScreen() {
       items: [
         { icon: '❓', label: 'Help Center', sub: 'FAQs and guides', action: () => {} },
         { icon: '🐛', label: 'Report a Bug', sub: 'Something broken? Let us know', action: () => {} },
-        { icon: '💡', label: 'Feature Request', sub: 'Suggest new features', action: () => {} },
+        { icon: '📋', label: 'Community Guidelines', sub: 'Our community standards', action: () => go('community-guidelines') },
         { icon: '⭐', label: 'Rate the App', sub: 'Leave a review on the App Store', action: () => {} },
       ],
     },

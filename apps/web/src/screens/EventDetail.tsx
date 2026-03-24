@@ -19,11 +19,22 @@ export default function EventDetailScreen() {
   const [going, setGoing] = useState(false);
   const [attendees, setAttendees] = useState<UserProfile[]>([]);
   const [attendeeCount, setAttendeeCount] = useState(0);
+  const [editing, setEditing] = useState(false);
+  const [editForm, setEditForm] = useState({ title: '', description: '', location: '', capacity: '' });
+  const [saving, setSaving] = useState(false);
+
+  const isHost = event?.hostId === me?.id;
 
   useEffect(() => {
     if (!event) return;
     setAttendeeCount(event.attendees?.length ?? 0);
     setGoing(event.attendees?.includes(me?.id ?? '') ?? false);
+    setEditForm({
+      title: event.title ?? '',
+      description: event.description ?? '',
+      location: event.location ?? '',
+      capacity: String(event.capacity ?? 50),
+    });
   }, [event, me]);
 
   const rsvp = useCallback(async (g: boolean) => {
@@ -37,6 +48,20 @@ export default function EventDetailScreen() {
       }
     } catch {}
   }, [event, me, addNotif]);
+
+  const saveEdit = useCallback(async () => {
+    if (!event?.id || !editForm.title) return;
+    setSaving(true);
+    try {
+      await api.events.update(event.id, {
+        title: editForm.title,
+        description: editForm.description,
+        location: editForm.location,
+        capacity: parseInt(editForm.capacity) || 50,
+      });
+      setEditing(false);
+    } catch {} finally { setSaving(false); }
+  }, [event, editForm]);
 
   if (!event) {
     return (
@@ -108,9 +133,47 @@ export default function EventDetailScreen() {
           </div>
 
           {/* Description */}
-          {event.description && (
+          {event.description && !editing && (
             <div style={{ background: COLORS.bg1, border: '1px solid rgba(255,255,255,.07)', padding: '13px 14px', marginBottom: 14 }}>
               <p style={{ color: COLORS.w60, fontSize: 13, lineHeight: 1.6 }}>{event.description}</p>
+            </div>
+          )}
+
+          {/* Edit button (host only) */}
+          {isHost && !editing && (
+            <button onClick={() => setEditing(true)}
+              style={{
+                width: '100%', padding: '12px', marginBottom: 14,
+                background: COLORS.w08, border: `1px solid ${COLORS.w12}`,
+                color: COLORS.w60, fontSize: 13, fontWeight: 700, cursor: 'pointer',
+              }}>
+              ✏️ Edit Event
+            </button>
+          )}
+
+          {/* Edit form (host only) */}
+          {editing && (
+            <div style={{ background: COLORS.bg1, border: '1px solid rgba(255,255,255,.07)', padding: 14, marginBottom: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <input value={editForm.title} onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))} placeholder="Title"
+                style={{ width: '100%', background: COLORS.w04, border: `1px solid ${COLORS.w12}`, padding: '10px 14px', color: '#fff', fontSize: 13, outline: 'none' }} />
+              <textarea value={editForm.description} onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))} placeholder="Description" rows={3}
+                style={{ width: '100%', background: COLORS.w04, border: `1px solid ${COLORS.w12}`, padding: '10px 14px', color: '#fff', fontSize: 13, outline: 'none', resize: 'none' }} />
+              <div style={{ display: 'flex', gap: 8 }}>
+                <input value={editForm.location} onChange={e => setEditForm(f => ({ ...f, location: e.target.value }))} placeholder="Location"
+                  style={{ flex: 2, background: COLORS.w04, border: `1px solid ${COLORS.w12}`, padding: '10px 14px', color: '#fff', fontSize: 13, outline: 'none' }} />
+                <input value={editForm.capacity} onChange={e => setEditForm(f => ({ ...f, capacity: e.target.value }))} placeholder="Capacity" type="number"
+                  style={{ flex: 1, background: COLORS.w04, border: `1px solid ${COLORS.w12}`, padding: '10px 14px', color: '#fff', fontSize: 13, outline: 'none' }} />
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => setEditing(false)}
+                  style={{ flex: 1, padding: '12px', background: COLORS.w08, border: `1px solid ${COLORS.w12}`, color: COLORS.w60, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+                  Cancel
+                </button>
+                <button onClick={saveEdit} disabled={saving}
+                  style={{ flex: 1, padding: '12px', background: `linear-gradient(135deg,${COLORS.green},#16A34A)`, border: 'none', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: saving ? 0.6 : 1 }}>
+                  {saving ? 'Saving…' : '✓ Save'}
+                </button>
+              </div>
             </div>
           )}
         </div>

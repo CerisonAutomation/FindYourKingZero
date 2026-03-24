@@ -214,7 +214,10 @@ export type Screen =
   | 'right-now'
   | 'events' | 'event-detail'
   | 'profile' | 'edit-profile'
-  | 'notifications' | 'settings' | 'subscription';
+  | 'notifications' | 'settings' | 'subscription'
+  | 'safety' | 'admin' | 'gdpr' | 'analytics'
+  | 'travel-mode' | 'albums' | 'voice'
+  | 'privacy-policy' | 'terms-of-service' | 'community-guidelines';
 
 // ── Theme ─────────────────────────────────────────────────────
 export const COLORS = {
