@@ -1,13 +1,12 @@
 {
   "name": "find-your-king",
   "private": true,
-  "packageManager": "pnpm@9.15.4",
+  "packageManager": "pnpm@8.15.9",
   "scripts": {
     "dev":       "turbo dev",
     "build":     "turbo build",
     "lint":      "turbo lint",
-    "typecheck": "turbo typecheck",
-    "clean":     "turbo clean && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +"
+    "typecheck": "turbo typecheck"
   },
   "devDependencies": {
     "turbo":      "^2.3.3",
