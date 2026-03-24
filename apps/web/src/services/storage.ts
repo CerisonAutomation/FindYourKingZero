@@ -153,7 +153,7 @@ export async function listUserFiles(
       name: file.name,
       url: urlData.publicUrl,
       size: file.metadata?.size ?? 0,
-      createdAt: file.created_at,
+      createdAt: file.created_at ?? '',
     };
   });
 }
