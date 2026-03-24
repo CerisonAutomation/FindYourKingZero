@@ -1,6 +1,8 @@
 // p2p.ts — Trystero P2P (Nostr relay strategy) + backwards-compat shim
+// DataPayload from trystero = { [key: string]: JsonValue } | JsonValue[]
+// We avoid makeAction<T> generics entirely and cast at callback sites.
 import { joinRoom } from 'trystero/nostr';
-import type { Room } from 'trystero';
+import type { Room, DataPayload } from 'trystero';
 import type { P2PMessage } from '@/types';
 
 const APP_ID = 'find-your-king-v1';
@@ -24,21 +26,21 @@ function joinChatRoom(roomId: string): P2PRoom {
 
   const room = joinRoom({ appId: APP_ID }, roomId);
 
-  // makeAction returns [ActionSender, ActionReceiver]
-  // We wrap ActionSender so void[] collapses to void
-  const [rawSendChat,     rawGetChat]     = room.makeAction<{ [k: string]: unknown }>('msg');
-  const [rawSendTyping,   rawGetTyping]   = room.makeAction<{ peerId: string; isTyping: boolean }>('typ');
-  const [rawSendPresence, rawGetPresence] = room.makeAction<{ name: string; avatar: string; online: boolean }>('prs');
-  const [,                rawGetFile]     = room.makeAction<unknown>('file');
+  // No generic on makeAction — avoids DataPayload constraint mismatch entirely.
+  // Types are asserted at the callback call sites instead.
+  const [rawSendChat,     rawGetChat]     = room.makeAction('msg');
+  const [rawSendTyping,   rawGetTyping]   = room.makeAction('typ');
+  const [rawSendPresence, rawGetPresence] = room.makeAction('prs');
+  const [,                rawGetFile]     = room.makeAction('file');
 
   const p2pRoom: P2PRoom = {
     room,
-    sendChat:     (data, peerId?) => { void rawSendChat(data as Record<string, unknown>, peerId); },
-    sendTyping:   (data, peerId?) => { void rawSendTyping(data, peerId); },
-    sendPresence: (data, peerId?) => { void rawSendPresence(data, peerId); },
+    sendChat:     (data, peerId?) => { void rawSendChat(data as DataPayload, peerId); },
+    sendTyping:   (data, peerId?) => { void rawSendTyping(data as DataPayload, peerId); },
+    sendPresence: (data, peerId?) => { void rawSendPresence(data as DataPayload, peerId); },
     getChat:      (cb) => { rawGetChat((d, pid) => cb(d as P2PMessage, pid)); },
-    getTyping:    (cb) => { rawGetTyping(cb); },
-    getPresence:  (cb) => { rawGetPresence(cb); },
+    getTyping:    (cb) => { rawGetTyping((d, pid) => cb(d as { peerId: string; isTyping: boolean }, pid)); },
+    getPresence:  (cb) => { rawGetPresence((d, pid) => cb(d as { name: string; avatar: string; online: boolean }, pid)); },
     getFile:      (cb) => {
       rawGetFile((d, pid, meta) => {
         if (d instanceof ArrayBuffer) cb(d, pid, meta as { name: string; type: string });
@@ -55,24 +57,22 @@ function leaveRoom(roomId: string): void {
   if (r) { r.room.leave(); rooms.delete(roomId); }
 }
 
-function leaveAll(): void {
+export function leaveAll(): void {
   rooms.forEach((r) => r.room.leave());
   rooms.clear();
 }
 
-// ── Backwards-compat shim (Chat.tsx / Discover.tsx / RightNow.tsx) ───────────
-// These screens import: { p2p, chatRoomId, proximityRoomId }
+// ── Backwards-compat shim ───────────────────────────────────────────
 export const p2p = {
   join:  (roomId: string) => joinChatRoom(roomId),
   leave: (roomId: string) => leaveRoom(roomId),
   leaveAll,
 };
 
-export const chatRoomId      = (uid1: string, uid2: string): string =>
+export const chatRoomId = (uid1: string, uid2: string): string =>
   [uid1, uid2].sort().join(':');
 
 export const proximityRoomId = (h3Hex: string): string =>
   `proximity:${h3Hex}`;
 
-// Named exports for direct use
-export { joinChatRoom, leaveAll };
+export { joinChatRoom };

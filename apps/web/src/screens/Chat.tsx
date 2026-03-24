@@ -1,15 +1,12 @@
-// ═══════════════════════════════════════════════════════════════
 // SCREEN: Chat — P2P + E2EE + AI smart replies + autocomplete
-// ═══════════════════════════════════════════════════════════════
-
 import { useEffect, useRef, useState, useCallback, memo } from 'react';
 import { useNavStore, useAuthStore, useChatStore } from '@/store';
 import { useAI } from '@/hooks/useAI';
 import { p2p, chatRoomId } from '@/services/p2p';
-import { encrypt, decrypt, deriveSharedKey, importPublicKey } from '@/services/crypto';
+import { decrypt, importPublicKey } from '@/services/crypto';
+import type { EncryptedPayload } from '@/services/crypto';
 import { getQuickReplies, getWordCompletions } from '@/services/autocomplete';
 import { haptic } from '@/services/haptics';
-import { useRateLimit } from '@/services/rateLimit';
 import { TopBar } from '@/components/ui/index';
 import { Avatar } from '@/components/ui/index';
 import { AIButton } from '@/components/ui/AIButton';
@@ -39,26 +36,20 @@ export default function ChatScreen() {
   const chatMessages = messages[matchId] ?? [];
   const typing = typingUsers[matchId] ?? [];
 
-  // Connect P2P + derive E2EE key
   useEffect(() => {
     if (!matchId || !peer?.publicKey || !me?.publicKey) return;
 
     (async () => {
       try {
-        // Derive shared encryption key
-        const theirKey = await importPublicKey(peer.publicKey);
-        // In real app: import my private key from secure storage
-        // sharedKeyRef.current = await deriveSharedKey(myPrivateKey, theirKey);
-
-        // Join P2P room
+        await importPublicKey(peer.publicKey);
         const actions = p2p.join(matchId);
         setP2pStatus('connected');
 
-        // Listen for messages
         actions.getChat(async (data: P2PMessage, peerId: string) => {
           if (data.type === 'text' && sharedKeyRef.current) {
             try {
-              const text = await decrypt(data.payload, sharedKeyRef.current);
+              // data.payload is unknown — cast to EncryptedPayload for decrypt()
+              const text = await decrypt(data.payload as EncryptedPayload, sharedKeyRef.current);
               const msg: Message = {
                 id: data.msgId,
                 matchId,
@@ -76,12 +67,9 @@ export default function ChatScreen() {
           }
         });
 
-        // Listen for typing
         actions.getTyping((data, peerId) => {
           setTyping(matchId, peerId, data.isTyping);
-          if (data.isTyping) {
-            setTimeout(() => setTyping(matchId, peerId, false), 3000);
-          }
+          if (data.isTyping) setTimeout(() => setTyping(matchId, peerId, false), 3000);
         });
       } catch {
         setP2pStatus('offline');
@@ -91,75 +79,41 @@ export default function ChatScreen() {
     return () => { p2p.leave(matchId); };
   }, [matchId, peer?.id]);
 
-  // Auto-scroll
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages.length]);
 
-  // Send message
   const send = useCallback(async (text?: string) => {
     const content = text ?? draft;
     if (!content.trim() || !me || !matchId) return;
-
-    setSending(true);
-    setDraft('');
-    setQuickReplies([]);
-    setWordCompletions([]);
-
+    setSending(true); setDraft(''); setQuickReplies([]); setWordCompletions([]);
     const msg: Message = {
-      id: crypto.randomUUID(),
-      matchId,
-      senderId: me.id,
-      type: 'text',
-      content: content.trim(),
-      read: false,
-      delivered: false,
-      createdAt: Date.now(),
+      id: crypto.randomUUID(), matchId, senderId: me.id, type: 'text',
+      content: content.trim(), read: false, delivered: false, createdAt: Date.now(),
     };
-
     addMessage(matchId, msg);
-
-    // Send via P2P
     const actions = p2p.join(matchId);
-    const p2pMsg: P2PMessage = {
-      type: 'text',
-      payload: content.trim(),
-      msgId: msg.id,
-      ts: msg.createdAt,
-      senderId: me.id,
-    };
+    const p2pMsg: P2PMessage = { type: 'text', payload: content.trim(), msgId: msg.id, ts: msg.createdAt, senderId: me.id };
     await actions.sendChat(p2pMsg);
     setSending(false);
   }, [draft, me, matchId]);
 
-  // AI smart replies (on incoming message)
   const loadAISuggestions = useCallback(async () => {
     const lastIncoming = [...chatMessages].reverse().find(m => m.senderId !== me?.id);
     if (!lastIncoming || !aiReady) return;
-
     setAiLoading(true);
     try {
       const replies = await smartReplies(lastIncoming.content);
       setAiSuggestions(replies);
     } catch {
-      // Fallback to instant keyword suggestions
       setAiSuggestions(getQuickReplies(lastIncoming.content));
-    } finally {
-      setAiLoading(false);
-    }
+    } finally { setAiLoading(false); }
   }, [chatMessages, me, aiReady]);
 
-  // Real-time autocomplete on typing
   const handleInput = useCallback((value: string) => {
     setDraft(value);
-
-    // Instant keyword-based quick replies
     setQuickReplies(getQuickReplies(value));
-
-    // Word completion suggestions
     setWordCompletions(getWordCompletions(value));
-
-    // Send typing indicator
     if (matchId && me) {
       const actions = p2p.join(matchId);
       actions.sendTyping({ peerId: me.id, isTyping: true });
@@ -185,38 +139,23 @@ export default function ChatScreen() {
         }
       />
 
-      {/* Messages */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '12px 13px' }}>
         {chatMessages.length === 0 && (
           <div style={{ textAlign: 'center', padding: '32px 0' }}>
             <Avatar src={peer.avatar} size={64} />
-            <p style={{ marginTop: 12, color: COLORS.w60, fontSize: 13 }}>
-              Start your conversation with {peer.name}
-            </p>
-            <p style={{ fontSize: 11, color: COLORS.w35, marginTop: 4 }}>
-              🔒 E2E encrypted · Never stored on central servers
-            </p>
-            {/* AI icebreakers */}
+            <p style={{ marginTop: 12, color: COLORS.w60, fontSize: 13 }}>Start your conversation with {peer.name}</p>
+            <p style={{ fontSize: 11, color: COLORS.w35, marginTop: 4 }}>🔒 E2E encrypted · Never stored on central servers</p>
             {aiReady && (
-              <button
-                onClick={loadAISuggestions}
-                style={{
-                  marginTop: 16, padding: '8px 16px',
-                  background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.3)',
-                  color: COLORS.purple, fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                }}
-              >
+              <button onClick={loadAISuggestions}
+                style={{ marginTop: 16, padding: '8px 16px', background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.3)', color: COLORS.purple, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
                 ✨ Generate icebreaker
               </button>
             )}
           </div>
         )}
-
         {chatMessages.map((m) => (
           <MessageBubble key={m.id} message={m} isMine={m.senderId === me?.id} peer={peer} />
         ))}
-
-        {/* Typing indicator */}
         {typing.length > 0 && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
             <Avatar src={peer.avatar} size={28} />
@@ -230,9 +169,7 @@ export default function ChatScreen() {
         <div ref={bottomRef} />
       </div>
 
-      {/* Input area */}
       <div style={{ flexShrink: 0, padding: '8px 12px', background: 'rgba(6,6,16,.98)', borderTop: `1px solid ${COLORS.w07}` }}>
-        {/* AI suggestions */}
         {aiSuggestions.length > 0 && (
           <div style={{ display: 'flex', gap: 6, marginBottom: 8, overflowX: 'auto' }}>
             {aiSuggestions.map((s, i) => (
@@ -244,8 +181,6 @@ export default function ChatScreen() {
             <button onClick={() => setAiSuggestions([])} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
           </div>
         )}
-
-        {/* Quick replies (instant, keyword-based) */}
         {quickReplies.length > 0 && draft.length > 0 && aiSuggestions.length === 0 && (
           <div style={{ display: 'flex', gap: 6, marginBottom: 8, overflowX: 'auto' }}>
             {quickReplies.map((r, i) => (
@@ -256,8 +191,6 @@ export default function ChatScreen() {
             ))}
           </div>
         )}
-
-        {/* Word completions */}
         {wordCompletions.length > 0 && (
           <div style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
             {wordCompletions.map((c, i) => (
@@ -268,7 +201,6 @@ export default function ChatScreen() {
             ))}
           </div>
         )}
-
         <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
           <textarea
             value={draft}
@@ -276,22 +208,11 @@ export default function ChatScreen() {
             onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
             placeholder="Message…"
             rows={1}
-            style={{
-              flex: 1, background: COLORS.w04, border: `1px solid ${COLORS.w12}`,
-              padding: '12px 14px', color: '#fff', fontSize: 14, outline: 'none',
-              resize: 'none', maxHeight: 90, overflow: 'auto', lineHeight: 1.5,
-            }}
+            style={{ flex: 1, background: COLORS.w04, border: `1px solid ${COLORS.w12}`, padding: '12px 14px', color: '#fff', fontSize: 14, outline: 'none', resize: 'none', maxHeight: 90, overflow: 'auto', lineHeight: 1.5 }}
           />
           <AIButton onClick={loadAISuggestions} loading={aiLoading} active={aiSuggestions.length > 0} size="md" />
           <button onClick={() => { send(); haptic.sendMessage(); }} disabled={!draft.trim()}
-            style={{
-              width: 44, height: 44, borderRadius: '50%',
-              background: draft.trim() ? `linear-gradient(135deg,${COLORS.red},#FF4020)` : 'rgba(255,255,255,.05)',
-              border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', opacity: draft.trim() ? 1 : 0.4,
-              boxShadow: draft.trim() ? '0 4px 16px rgba(229,25,46,.3)' : 'none',
-              transition: 'all .2s',
-            }}>
+            style={{ width: 44, height: 44, borderRadius: '50%', background: draft.trim() ? `linear-gradient(135deg,${COLORS.red},#FF4020)` : 'rgba(255,255,255,.05)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', opacity: draft.trim() ? 1 : 0.4, boxShadow: draft.trim() ? '0 4px 16px rgba(229,25,46,.3)' : 'none', transition: 'all .2s' }}>
             ➤
           </button>
         </div>
@@ -304,17 +225,11 @@ const MessageBubble = memo(({ message, isMine, peer }: { message: Message; isMin
   <div style={{ display: 'flex', justifyContent: isMine ? 'flex-end' : 'flex-start', marginBottom: 8, animation: 'fadeUp .2s ease' }}>
     {!isMine && <Avatar src={peer.avatar} size={28} />}
     <div style={{ maxWidth: '75%', marginLeft: isMine ? 0 : 8 }}>
-      <div style={{
-        padding: '10px 13px',
-        background: isMine ? `linear-gradient(135deg,${COLORS.red},#FF4020)` : 'rgba(255,255,255,.07)',
-        border: isMine ? 'none' : `1px solid ${COLORS.w07}`,
-      }}>
+      <div style={{ padding: '10px 13px', background: isMine ? `linear-gradient(135deg,${COLORS.red},#FF4020)` : 'rgba(255,255,255,.07)', border: isMine ? 'none' : `1px solid ${COLORS.w07}` }}>
         <p style={{ fontSize: 13.5, lineHeight: 1.5 }}>{message.content}</p>
       </div>
       <div style={{ display: 'flex', justifyContent: isMine ? 'flex-end' : 'flex-start', gap: 4, marginTop: 3 }}>
-        <span style={{ fontSize: 10, color: COLORS.w35 }}>
-          {new Date(message.createdAt).toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' })}
-        </span>
+        <span style={{ fontSize: 10, color: COLORS.w35 }}>{new Date(message.createdAt).toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' })}</span>
         {isMine && <span style={{ fontSize: 10, color: message.read ? COLORS.blue : COLORS.w35 }}>{message.read ? '✓✓' : '✓'}</span>}
       </div>
     </div>
