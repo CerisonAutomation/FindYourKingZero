@@ -1,9 +1,17 @@
 // ═══════════════════════════════════════════════════════════════
-// SCREEN: SignIn — API-based auth (Supabase optional upgrade)
+// SCREEN: SignIn — Supabase Auth (email/password)
+//
+// Flow:
+//   1. User enters email + password
+//   2. supabase.auth.signInWithPassword() → session + user
+//   3. Fetch profile from Supabase DB
+//   4. Store in Zustand → navigate to discover
+//
+// If Supabase not configured, shows error with setup instructions.
 // ═══════════════════════════════════════════════════════════════
 import { useState } from 'react';
 import { useNavStore, useAuthStore } from '@/store';
-import { api } from '@/services/api';
+import { supabase } from '@/lib/supabase';
 import { COLORS } from '@/types';
 import type { UserProfile } from '@/types';
 
@@ -18,39 +26,59 @@ export default function SignInScreen() {
 
   const submit = async () => {
     if (!email.trim() || !password) { setError('Fill all fields'); return; }
+    if (!supabase) { setError('App not configured. Contact support.'); return; }
+    
     setLoading(true); setError('');
     try {
-      const res = await api.auth.login({ email: email.trim().toLowerCase(), password });
-      const u = res.user;
-      const profile: UserProfile = {
-        id: u.id,
-        authId: u.id,
-        email: u.email ?? '',
-        name: u.name || u.email?.split('@')[0] || 'King',
-        avatar: (u as any).avatar ?? '',
-        bio: (u as any).bio ?? '',
-        age: (u as any).age ?? 18,
-        city: (u as any).city ?? '',
-        tribes: (u as any).tribes ?? [],
-        lookingFor: (u as any).lookingFor ?? [],
-        online: true,
-        height: '',
-        position: '',
-        relationshipStatus: 'Single',
-        hivStatus: '',
-        onPrEP: false,
-        photos: (u as any).avatar ? [(u as any).avatar] : [],
-        verified: (u as any).verified ?? false,
-        premium: (u as any).premium ?? false,
+      // 1. Sign in with Supabase Auth
+      const { data, error: authErr } = await supabase.auth.signInWithPassword({
+        email: email.trim().toLowerCase(),
+        password,
+      });
+      if (authErr) throw authErr;
+
+      const userId = data.user!.id;
+
+      // 2. Fetch profile from Supabase DB
+      const { data: profile, error: profileErr } = await supabase
+        .from('profiles')
+        .select('id, handle, display_name, bio, age, photo_url, verified, premium, online_status, tribes, looking_for, position, hiv_status, on_prep, height_cm, relationship_status, coarse_lat, coarse_lng, geohash, created_at')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (profileErr) throw profileErr;
+
+      // 3. Build UserProfile
+      const user: UserProfile = {
+        id: userId,
+        authId: userId,
+        email: data.user!.email ?? '',
+        name: profile?.display_name ?? data.user!.email?.split('@')[0] ?? 'King',
+        avatar: profile?.photo_url ?? '',
+        bio: profile?.bio ?? '',
+        age: profile?.age ?? 18,
+        city: '',
+        lat: profile?.coarse_lat ?? 0,
+        lng: profile?.coarse_lng ?? 0,
+        h3Hex: profile?.geohash ?? '',
         distance: 0,
+        tribes: (profile?.tribes ?? []) as UserProfile['tribes'],
+        lookingFor: (profile?.looking_for ?? []) as UserProfile['lookingFor'],
+        height: profile?.height_cm ? `${profile.height_cm}cm` : '',
+        position: (profile?.position ?? '') as UserProfile['position'],
+        relationshipStatus: (profile?.relationship_status ?? 'Single') as UserProfile['relationshipStatus'],
+        hivStatus: (profile?.hiv_status ?? '') as UserProfile['hivStatus'],
+        onPrEP: profile?.on_prep ?? false,
+        photos: profile?.photo_url ? [profile.photo_url] : [],
+        verified: profile?.verified ?? false,
+        premium: profile?.premium ?? false,
+        online: profile?.online_status === 'online',
         lastSeen: Date.now(),
-        lat: 0,
-        lng: 0,
-        h3Hex: '',
         publicKey: {} as JsonWebKey,
-        createdAt: Date.now(),
+        createdAt: profile?.created_at ? new Date(profile.created_at).getTime() : Date.now(),
       };
-      login(profile, res.token);
+
+      login(user, data.session!.access_token);
       go('discover');
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Sign in failed';

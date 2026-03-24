@@ -1,14 +1,13 @@
 // ═══════════════════════════════════════════════════════════════
-// SCREEN: ForgotPassword — API-based password reset
+// SCREEN: ForgotPassword — Supabase Auth password reset
 // ═══════════════════════════════════════════════════════════════
 import { useState } from 'react';
 import { useNavStore } from '@/store';
-import { api } from '@/services/api';
+import { supabase } from '@/lib/supabase';
 import { COLORS } from '@/types';
 
 export default function ForgotPasswordScreen() {
   const go = useNavStore((s) => s.go);
-
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -16,15 +15,19 @@ export default function ForgotPasswordScreen() {
 
   const submit = async () => {
     if (!email.trim()) { setError('Enter your email'); return; }
+    if (!supabase) { setError('App not configured. Contact support.'); return; }
+    
     setLoading(true); setError('');
     try {
-      // Assuming the API has a forgot password endpoint
-      await api.auth.forgotPassword({ email: email.trim().toLowerCase() });
+      const { error: err } = await supabase.auth.resetPasswordForEmail(
+        email.trim().toLowerCase(),
+        { redirectTo: `${window.location.origin}/reset-password` }
+      );
+      if (err) throw err;
       setSent(true);
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Reset failed';
-      // Don't reveal if email exists or not for security
-      setSent(true); // Still show success to prevent email enumeration
+      // Don't reveal if email exists — always show success
+      setSent(true);
     } finally { setLoading(false); }
   };
 
@@ -34,7 +37,7 @@ export default function ForgotPasswordScreen() {
         <div style={{ fontSize: 48, marginBottom: 20 }}>📧</div>
         <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 10 }}>Check your email</h2>
         <p style={{ color: COLORS.w35, fontSize: 14, lineHeight: 1.6 }}>
-          We've sent a password reset link to <strong style={{ color: '#fff' }}>{email}</strong>.<br />
+          We sent a password reset link to <strong style={{ color: '#fff' }}>{email}</strong>.<br />
           If the email exists in our system, you'll receive instructions shortly.
         </p>
         <button onClick={() => go('signin')} style={{ marginTop: 28, padding: '13px 28px', background: `linear-gradient(135deg,${COLORS.red},#FF4020)`, border: 'none', color: '#fff', fontWeight: 700, cursor: 'pointer' }}>

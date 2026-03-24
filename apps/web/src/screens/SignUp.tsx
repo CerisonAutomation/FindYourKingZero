@@ -1,9 +1,17 @@
 // ═══════════════════════════════════════════════════════════════
-// SCREEN: SignUp — API-based auth (Supabase optional upgrade)
+// SCREEN: SignUp — Supabase Auth (email/password + profile creation)
+//
+// Flow:
+//   1. User enters name, email, password
+//   2. supabase.auth.signUp() → creates auth user
+//   3. If email confirmation required → show "check email" state
+//   4. If session returned → create profile row → navigate to onboarding
+//
+// If Supabase not configured, shows error with setup instructions.
 // ═══════════════════════════════════════════════════════════════
 import { useState } from 'react';
 import { useNavStore, useAuthStore } from '@/store';
-import { api } from '@/services/api';
+import { supabase } from '@/lib/supabase';
 import { COLORS } from '@/types';
 import type { UserProfile } from '@/types';
 
@@ -21,51 +29,79 @@ export default function SignUpScreen() {
   const submit = async () => {
     if (!email.trim() || !password || !name.trim()) { setError('Fill all fields'); return; }
     if (password.length < 8) { setError('Password min 8 chars'); return; }
+    if (!supabase) { setError('App not configured. Contact support.'); return; }
+
     setLoading(true); setError('');
     try {
-      const res = await api.auth.register({ 
-        email: email.trim().toLowerCase(), 
-        password, 
-        name: name.trim(),
-        age: 18
+      // 1. Sign up with Supabase Auth
+      const { data, error: authErr } = await supabase.auth.signUp({
+        email: email.trim().toLowerCase(),
+        password,
+        options: { data: { name: name.trim() } },
       });
-      
-      // If email confirmation required, API might return token=null or similar
-      if (!res.token) {
+      if (authErr) throw authErr;
+
+      // 2. If email confirmation required, Supabase returns session=null
+      if (!data.session) {
         setSent(true);
         return;
       }
 
-      const u = res.user;
-      const profile: UserProfile = {
-        id: u.id,
-        authId: u.id,
-        email: u.email ?? '',
+      const userId = data.user!.id;
+
+      // 3. Create profile row in Supabase DB
+      const handle = name.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      const { error: profileErr } = await supabase
+        .from('profiles')
+        .upsert({
+          id: userId,
+          handle: `${handle}-${userId.slice(0, 6)}`,
+          display_name: name.trim(),
+          bio: '',
+          age: 18,
+          tribes: [],
+          looking_for: [],
+          online_status: 'online',
+          onboarding_completed: false,
+          created_at: new Date().toISOString(),
+        }, { onConflict: 'id' });
+
+      if (profileErr) {
+        // Profile creation failed, but auth succeeded — still proceed
+        console.warn('[SignUp] Profile creation failed:', profileErr.message);
+      }
+
+      // 4. Build UserProfile for store
+      const user: UserProfile = {
+        id: userId,
+        authId: userId,
+        email: data.user!.email ?? '',
         name: name.trim(),
-        avatar: (u as any).avatar ?? '',
-        bio: (u as any).bio ?? '',
+        avatar: '',
+        bio: '',
         age: 18,
-        city: (u as any).city ?? '',
-        tribes: (u as any).tribes ?? [],
-        lookingFor: (u as any).lookingFor ?? [],
+        city: '',
+        lat: 0,
+        lng: 0,
+        h3Hex: '',
+        distance: 0,
+        tribes: [],
+        lookingFor: [],
         online: true,
         height: '',
         position: '',
         relationshipStatus: 'Single',
         hivStatus: '',
         onPrEP: false,
-        photos: (u as any).avatar ? [(u as any).avatar] : [],
-        verified: (u as any).verified ?? false,
-        premium: (u as any).premium ?? false,
-        distance: 0,
+        photos: [],
+        verified: false,
+        premium: false,
         lastSeen: Date.now(),
-        lat: 0,
-        lng: 0,
-        h3Hex: '',
         publicKey: {} as JsonWebKey,
         createdAt: Date.now(),
       };
-      login(profile, res.token);
+
+      login(user, data.session!.access_token);
       go('onboarding');
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Registration failed';
