@@ -6,6 +6,7 @@ import { SpeedInsights } from '@vercel/speed-insights/react';
 import { useNavStore, useAuthStore } from './store';
 import { CommandPalette } from './components/ui/CommandPalette';
 import { BottomNav } from './components/ui/index';
+import { useAuthInit } from './hooks/useAuthInit';
 
 // Lazy screens — typed as FC (never returns null at screen level)
 const Landing      = lazy(() => import('./screens/Landing'));
@@ -76,7 +77,6 @@ function LoadingSpinner() {
 }
 
 // ── Screen Router ────────────────────────────────────────────
-// Use React.ComponentType to accept both FC and class components
 type AnyScreen = React.LazyExoticComponent<FC>;
 
 function ScreenRouter() {
@@ -101,7 +101,10 @@ function ScreenRouter() {
   );
 }
 
-export default function App() {
+// ── App Shell (calls useAuthInit to restore session) ────────
+function AppShell() {
+  useAuthInit(); // Supabase session restore + auth state listener
+
   const { isAuthenticated } = useAuthStore();
   const screen = useNavStore((s) => s.screen);
 
@@ -109,22 +112,28 @@ export default function App() {
     if (isAuthenticated && screen === 'landing') {
       useNavStore.getState().go('discover');
     }
-  }, []);
+  }, [isAuthenticated, screen]);
 
   const showNav = (BOTTOM_NAV_SCREENS as readonly string[]).includes(screen) && isAuthenticated;
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <div style={{ maxWidth: 430, margin: '0 auto', width: '100%', height: '100vh', display: 'flex', flexDirection: 'column', background: '#060610', overflow: 'hidden', position: 'relative' }}>
-        <CosmicBg />
-        <CommandPalette />
-        <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }}>
-          <ScreenRouter />
-        </div>
-        {showNav && <BottomNav />}
-        <Analytics />
-        <SpeedInsights />
+    <div style={{ maxWidth: 430, margin: '0 auto', width: '100%', height: '100vh', display: 'flex', flexDirection: 'column', background: '#060610', overflow: 'hidden', position: 'relative' }}>
+      <CosmicBg />
+      <CommandPalette />
+      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', position: 'relative', zIndex: 1 }}>
+        <ScreenRouter />
       </div>
+      {showNav && <BottomNav />}
+      <Analytics />
+      <SpeedInsights />
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AppShell />
     </QueryClientProvider>
   );
 }
