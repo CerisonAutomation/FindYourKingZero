@@ -1,15 +1,9 @@
-// ═══════════════════════════════════════════════════════════════
-// VITE CONFIG — Latest Vite 6 + PWA + Vercel + responsive
-// ═══════════════════════════════════════════════════════════════
-
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 
 export default defineConfig({
-  plugins: [
-    react(),
-  ],
+  plugins: [react()],
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
@@ -17,7 +11,6 @@ export default defineConfig({
   },
   build: {
     target: 'esnext',
-    cssMinify: 'lightningcss',
     rollupOptions: {
       output: {
         manualChunks: {
@@ -33,7 +26,6 @@ export default defineConfig({
   worker: { format: 'es' },
   optimizeDeps: {
     exclude: ['@huggingface/transformers'],
-    include: ['react', 'react-dom', 'zustand'],
   },
   server: {
     proxy: {
@@ -42,8 +34,5 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
-  },
-  css: {
-    transformer: 'lightningcss',
   },
 });
