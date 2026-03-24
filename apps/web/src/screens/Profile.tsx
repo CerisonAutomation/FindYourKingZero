@@ -11,7 +11,7 @@ import { COLORS } from '@/types';
 export default function ProfileScreen() {
   const go = useNavStore((s) => s.go);
   const user = useAuthStore((s) => s.user);
-  const [tab, setTab] = useState<'about' | 'stats'>('about');
+  const [tab, setTab] = useState<'about' | 'albums' | 'stats'>('about');
 
   if (!user) return null;
 
