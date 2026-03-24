@@ -75,6 +75,11 @@ app.post('/auth/register', async (c) => {
   }
 });
 
+app.post('/auth/forgot-password', async (c) => {
+  // Always return success to prevent email enumeration
+  return c.json({ ok: true });
+});
+
 app.get('/auth/verify', async (c) => {
   try {
     const auth = c.req.header('Authorization')?.replace('Bearer ', '');

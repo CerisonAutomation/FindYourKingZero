@@ -1,9 +1,9 @@
 // ═══════════════════════════════════════════════════════════════
-// SCREEN: SignUp — Supabase email/password registration
+// SCREEN: SignUp — API-based auth (Supabase optional upgrade)
 // ═══════════════════════════════════════════════════════════════
 import { useState } from 'react';
 import { useNavStore, useAuthStore } from '@/store';
-import { supabase } from '@/lib/supabase';
+import { api } from '@/services/api';
 import { COLORS } from '@/types';
 import type { UserProfile } from '@/types';
 
@@ -23,40 +23,40 @@ export default function SignUpScreen() {
     if (password.length < 8) { setError('Password min 8 chars'); return; }
     setLoading(true); setError('');
     try {
-      const { data, error: err } = await supabase.auth.signUp({
-        email: email.trim().toLowerCase(),
-        password,
-        options: { data: { name: name.trim(), age: 18 } },
+      const res = await api.auth.register({ 
+        email: email.trim().toLowerCase(), 
+        password, 
+        name: name.trim(),
+        age: 18
       });
-      if (err) throw err;
-
-      // If email confirmation required, Supabase returns session=null
-      if (!data.session) {
+      
+      // If email confirmation required, API might return token=null or similar
+      if (!res.token) {
         setSent(true);
         return;
       }
 
-      const u = data.user!;
-      const profile = {
-        id:     u.id,
+      const u = res.user;
+      const profile: UserProfile = {
+        id: u.id,
         authId: u.id,
-        email:  u.email ?? '',
-        name:   name.trim(),
-        avatar: '',
-        bio:    '',
-        age:    18,
-        city:   '',
-        tribes: [],
-        lookingFor: [],
+        email: u.email ?? '',
+        name: name.trim(),
+        avatar: (u as any).avatar ?? '',
+        bio: (u as any).bio ?? '',
+        age: 18,
+        city: (u as any).city ?? '',
+        tribes: (u as any).tribes ?? [],
+        lookingFor: (u as any).lookingFor ?? [],
         online: true,
         height: '',
         position: '',
         relationshipStatus: 'Single',
         hivStatus: '',
         onPrEP: false,
-        photos: [],
-        verified: false,
-        premium: false,
+        photos: (u as any).avatar ? [(u as any).avatar] : [],
+        verified: (u as any).verified ?? false,
+        premium: (u as any).premium ?? false,
         distance: 0,
         lastSeen: Date.now(),
         lat: 0,
@@ -64,8 +64,8 @@ export default function SignUpScreen() {
         h3Hex: '',
         publicKey: {} as JsonWebKey,
         createdAt: Date.now(),
-      } as UserProfile;
-      login(profile, data.session!.access_token);
+      };
+      login(profile, res.token);
       go('onboarding');
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Registration failed';

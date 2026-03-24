@@ -208,7 +208,7 @@ export interface SubscriptionTier {
 
 // ── Screen ────────────────────────────────────────────────────
 export type Screen =
-  | 'landing' | 'signin' | 'signup' | 'onboarding'
+  | 'landing' | 'signin' | 'signup' | 'onboarding' | 'forgot-password'
   | 'discover' | 'view-profile'
   | 'messages' | 'chat'
   | 'right-now'

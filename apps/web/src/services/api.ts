@@ -54,6 +54,11 @@ export const api = {
         body: JSON.stringify(data),
       }),
     verify: () => request<{ user: { id: string; email: string; name: string }; token?: string }>('/auth/verify'),
+    forgotPassword: (data: { email: string }) =>
+      request<void>('/auth/forgot-password', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
     logout: () => request<void>('/auth/logout', { method: 'POST' }),
   },
 

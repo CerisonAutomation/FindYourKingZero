@@ -1,9 +1,9 @@
 // ═══════════════════════════════════════════════════════════════
-// SCREEN: SignIn — Supabase email/password (no backend needed)
+// SCREEN: SignIn — API-based auth (Supabase optional upgrade)
 // ═══════════════════════════════════════════════════════════════
 import { useState } from 'react';
 import { useNavStore, useAuthStore } from '@/store';
-import { supabase } from '@/lib/supabase';
+import { api } from '@/services/api';
 import { COLORS } from '@/types';
 import type { UserProfile } from '@/types';
 
@@ -20,42 +20,37 @@ export default function SignInScreen() {
     if (!email.trim() || !password) { setError('Fill all fields'); return; }
     setLoading(true); setError('');
     try {
-      const { data, error: err } = await supabase.auth.signInWithPassword({
-        email: email.trim().toLowerCase(),
-        password,
-      });
-      if (err) throw err;
-      const u = data.user!;
-      const meta = u.user_metadata ?? {};
-      const profile = {
-        id:     u.id,
-        email:  u.email ?? '',
-        name:   (meta.name as string) || u.email?.split('@')[0] || 'King',
-        avatar: (meta.avatar_url as string) || '',
-        bio:    '',
-        age:    (meta.age as number) || 18,
-        city:   '',
-        tribes: [],
-        lookingFor: [],
+      const res = await api.auth.login({ email: email.trim().toLowerCase(), password });
+      const u = res.user;
+      const profile: UserProfile = {
+        id: u.id,
+        authId: u.id,
+        email: u.email ?? '',
+        name: u.name || u.email?.split('@')[0] || 'King',
+        avatar: (u as any).avatar ?? '',
+        bio: (u as any).bio ?? '',
+        age: (u as any).age ?? 18,
+        city: (u as any).city ?? '',
+        tribes: (u as any).tribes ?? [],
+        lookingFor: (u as any).lookingFor ?? [],
         online: true,
         height: '',
         position: '',
         relationshipStatus: 'Single',
         hivStatus: '',
         onPrEP: false,
-        photos: [],
-        verified: u.email_confirmed_at != null,
-        premium: false,
+        photos: (u as any).avatar ? [(u as any).avatar] : [],
+        verified: (u as any).verified ?? false,
+        premium: (u as any).premium ?? false,
         distance: 0,
         lastSeen: Date.now(),
-        authId: u.id,
         lat: 0,
         lng: 0,
-        h3Hex: "",
+        h3Hex: '',
         publicKey: {} as JsonWebKey,
         createdAt: Date.now(),
-      } as UserProfile;
-      login(profile, data.session!.access_token);
+      };
+      login(profile, res.token);
       go('discover');
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Sign in failed';
@@ -107,7 +102,7 @@ export default function SignInScreen() {
       </button>
 
       <button
-        onClick={() => go('forgot-password' as any)}
+        onClick={() => go('forgot-password')}
         style={{ background: 'none', border: 'none', color: COLORS.w35, fontSize: 12, cursor: 'pointer', marginTop: 12, textAlign: 'center' }}
       >
         Forgot password?

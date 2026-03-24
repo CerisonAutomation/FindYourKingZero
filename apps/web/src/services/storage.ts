@@ -50,6 +50,15 @@ export async function uploadFile(
   const prefix = opts?.prefix ? `${opts.prefix}/` : '';
   const path = `${userId}/${prefix}${timestamp}.${ext}`;
 
+  if (!supabase) {
+    // Supabase not configured - return mock URL for demo
+    console.warn('[storage] Supabase not configured, returning mock URL');
+    return { 
+      path, 
+      url: `https://via.placeholder.com/150?text=${encodeURIComponent(file.name || 'file')}` 
+    };
+  }
+
   const { error: uploadError } = await supabase.storage
     .from(bucket)
     .upload(path, file, {
@@ -60,8 +69,15 @@ export async function uploadFile(
 
   if (uploadError) throw uploadError;
 
-  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-  return { path, url: data.publicUrl };
+  let url = '';
+  if (supabase) {
+    const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+    url = data.publicUrl;
+  } else {
+    // Supabase not configured - return mock URL
+    url = `https://via.placeholder.com/150?text=${encodeURIComponent(path.split('/').pop() || 'file')}`;
+  }
+  return { path, url };
 }
 
 /** Upload multiple files in parallel. Returns array of results. */
@@ -77,15 +93,19 @@ export async function uploadFiles(
 /** Upload avatar — replaces previous avatar for user. */
 export async function uploadAvatar(file: File, userId: string): Promise<string> {
   // Delete old avatars for this user
-  const { data: existing } = await supabase.storage.from('avatars').list(userId);
-  if (existing?.length) {
-    await supabase.storage.from('avatars').remove(existing.map(f => `${userId}/${f.name}`));
+  if (supabase) {
+    const { data: existing } = await supabase.storage.from('avatars').list(userId);
+    if (existing?.length) {
+      await supabase.storage.from('avatars').remove(existing.map(f => `${userId}/${f.name}`));
+    }
   }
 
   const { url } = await uploadFile(file, 'avatars', userId, { upsert: true });
 
   // Update profile
-  await supabase.from('profiles').update({ photo_url: url }).eq('id', userId);
+  if (supabase) {
+    await supabase.from('profiles').update({ photo_url: url }).eq('id', userId);
+  }
 
   return url;
 }
@@ -99,14 +119,19 @@ export async function uploadPhoto(
   const { path, url } = await uploadFile(file, 'photos', userId, { prefix: 'gallery' });
 
   // Insert into photos table
-  const { data, error } = await supabase
-    .from('photos')
-    .insert({ user_id: userId, url, caption })
-    .select('id')
-    .single();
+  if (supabase) {
+    const { data, error } = await supabase
+      .from('photos')
+      .insert({ user_id: userId, url, caption })
+      .select('id')
+      .single();
 
-  if (error) throw error;
-  return { path, url, photoId: data.id };
+    if (error) throw error;
+    return { path, url, photoId: data.id };
+  } else {
+    // Supabase not configured - return mock photo ID
+    return { path, url, photoId: `mock-${Date.now()}` };
+  }
 }
 
 /** Upload chat media. */
@@ -121,8 +146,11 @@ export async function uploadChatMedia(
 
 /** Delete a file from storage. */
 export async function deleteFile(bucket: StorageBucket, path: string): Promise<void> {
-  const { error } = await supabase.storage.from(bucket).remove([path]);
-  if (error) throw error;
+  if (supabase) {
+    const { error } = await supabase.storage.from(bucket).remove([path]);
+    if (error) throw error;
+  }
+  // If supabase not configured, silently succeed for demo
 }
 
 /** Get signed URL for private files (photos, chat-media). */
@@ -131,6 +159,10 @@ export async function getSignedUrl(
   path: string,
   expiresIn = 3600
 ): Promise<string> {
+  if (!supabase) {
+    // Supabase not configured - return the public URL as-is for demo
+    return path; // For demo, just return the path as URL
+  }
   const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, expiresIn);
   if (error) throw error;
   return data.signedUrl;
@@ -143,15 +175,29 @@ export async function listUserFiles(
   prefix?: string
 ): Promise<{ name: string; url: string; size: number; createdAt: string }[]> {
   const folder = prefix ? `${userId}/${prefix}` : userId;
+  
+  if (!supabase) {
+    // Supabase not configured - return empty array for demo
+    console.warn('[storage] Supabase not configured, returning empty file list');
+    return [];
+  }
+  
   const { data, error } = await supabase.storage.from(bucket).list(folder, { limit: 100 });
   if (error) throw error;
 
   return data.map(file => {
     const fullPath = `${folder}/${file.name}`;
-    const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(fullPath);
+    let url = '';
+    if (supabase) {
+      const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(fullPath);
+      url = urlData.publicUrl;
+    } else {
+      // Supabase not configured - mock URL
+      url = `https://via.placeholder.com/150?text=${encodeURIComponent(file.name)}`;
+    }
     return {
       name: file.name,
-      url: urlData.publicUrl,
+      url,
       size: file.metadata?.size ?? 0,
       createdAt: file.created_at ?? '',
     };

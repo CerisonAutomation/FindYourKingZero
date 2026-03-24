@@ -41,6 +41,13 @@ export function AlbumGrid({ userId, isOwner, mode, chatPartnerId }: AlbumGridPro
 
   const loadAlbums = useCallback(async () => {
     if (loaded) return;
+    if (!supabase) {
+      // Supabase not configured - use mock data or skip
+      console.warn('[AlbumGrid] Supabase not configured, skipping album load');
+      setAlbums([]);
+      setLoaded(true);
+      return;
+    }
     setLoading(true);
     try {
       const { data, error } = await supabase.rpc('get_user_albums', { target_user_id: userId });
@@ -56,6 +63,14 @@ export function AlbumGrid({ userId, isOwner, mode, chatPartnerId }: AlbumGridPro
 
   const loadPhotos = useCallback(async (albumId: string) => {
     setLoading(true);
+    if (!supabase) {
+      // Supabase not configured - use mock data or skip
+      console.warn('[AlbumGrid] Supabase not configured, skipping photo load');
+      setPhotos([]);
+      setSelectedAlbum(null);
+      setLoading(false);
+      return;
+    }
     try {
       const { data, error } = await supabase.rpc('get_album_photos', { album_id: albumId });
       if (error) throw error;
@@ -69,6 +84,11 @@ export function AlbumGrid({ userId, isOwner, mode, chatPartnerId }: AlbumGridPro
   }, [albums]);
 
   const toggleVisibility = useCallback(async (albumId: string) => {
+    if (!supabase) {
+      // Supabase not configured - skip
+      console.warn('[AlbumGrid] Supabase not configured, skipping toggle visibility');
+      return;
+    }
     try {
       const { data, error } = await supabase.rpc('toggle_album_visibility', { album_id: albumId });
       if (error) throw error;
@@ -82,6 +102,12 @@ export function AlbumGrid({ userId, isOwner, mode, chatPartnerId }: AlbumGridPro
 
   const shareInChat = useCallback(async (albumId: string) => {
     if (!chatPartnerId) return;
+    if (!supabase) {
+      // Supabase not configured - skip
+      console.warn('[AlbumGrid] Supabase not configured, skipping share in chat');
+      setSharing(null);
+      return;
+    }
     setSharing(albumId);
     try {
       const { data, error } = await supabase.rpc('share_album_in_chat', {
