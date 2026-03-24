@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { useNavStore, useAuthStore, useNotifStore } from '@/store';
 import { useAI } from '@/hooks/useAI';
 import { haptic } from '@/services/haptics';
+import { usePaygate, getUserTier } from '@/services/paygate';
 import { COLORS } from '@/types';
 
 export default function SettingsScreen() {

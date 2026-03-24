@@ -9,6 +9,7 @@ import { p2p, chatRoomId } from '@/services/p2p';
 import { encrypt, decrypt, deriveSharedKey, importPublicKey } from '@/services/crypto';
 import { getQuickReplies, getWordCompletions } from '@/services/autocomplete';
 import { haptic } from '@/services/haptics';
+import { useRateLimit } from '@/services/rateLimit';
 import { TopBar } from '@/components/ui/index';
 import { Avatar } from '@/components/ui/index';
 import { AIButton } from '@/components/ui/AIButton';

@@ -11,6 +11,7 @@ import { p2p, proximityRoomId } from '@/services/p2p';
 import { api } from '@/services/api';
 import { searchCities } from '@/services/autocomplete';
 import { haptic } from '@/services/haptics';
+import { usePaygate } from '@/services/paygate';
 import { COLORS } from '@/types';
 import type { UserProfile, Tribe, LookingFor } from '@/types';
 
