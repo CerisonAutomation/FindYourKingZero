@@ -1,4 +1,4 @@
-// haptics.ts — Haptic feedback + sendMessage action
+// haptics.ts — Haptic feedback via Vibration API
 const vibe = (pattern: VibratePattern) => {
   if ('vibrate' in navigator) navigator.vibrate(pattern);
 };
@@ -13,6 +13,9 @@ export const haptics = {
   tap:         () => vibe(8),
   match:       () => vibe([10, 40, 10, 40, 80]),
   message:     () => vibe(15),
-  // alias used in Chat.tsx
   sendMessage: () => vibe(15),
 };
+
+// ── Backwards-compat alias ─────────────────────────────────────
+// Screens import { haptic } (singular) — keep both exports
+export const haptic = haptics;

@@ -1,4 +1,4 @@
-// p2p.ts — Trystero P2P (Nostr relay strategy)
+// p2p.ts — Trystero P2P (Nostr relay strategy) + backwards-compat shim
 import { joinRoom } from 'trystero/nostr';
 import type { Room } from 'trystero';
 import type { P2PMessage } from '@/types';
@@ -7,47 +7,42 @@ const APP_ID = 'find-your-king-v1';
 
 interface P2PRoom {
   room: Room;
-  sendMessage:  (data: P2PMessage, peerId?: string) => void;
+  sendChat:     (data: P2PMessage, peerId?: string) => void;
   sendTyping:   (data: { peerId: string; isTyping: boolean }, peerId?: string) => void;
   sendPresence: (data: { name: string; avatar: string; online: boolean }, peerId?: string) => void;
-  onMessage:    (cb: (data: P2PMessage, peerId: string) => void) => void;
-  onTyping:     (cb: (data: { peerId: string; isTyping: boolean }, peerId: string) => void) => void;
-  onPresence:   (cb: (data: { name: string; avatar: string; online: boolean }, peerId: string) => void) => void;
-  onFile:       (cb: (data: ArrayBuffer, peerId: string, meta: { name: string; type: string }) => void) => void;
-  leave:        () => void;
+  getChat:      (cb: (data: P2PMessage, peerId: string) => void) => void;
+  getTyping:    (cb: (data: { peerId: string; isTyping: boolean }, peerId: string) => void) => void;
+  getPresence:  (cb: (data: { name: string; avatar: string; online: boolean }, peerId: string) => void) => void;
+  getFile:      (cb: (data: ArrayBuffer, peerId: string, meta: { name: string; type: string }) => void) => void;
 }
 
 const rooms = new Map<string, P2PRoom>();
 
-export function joinChatRoom(roomId: string): P2PRoom {
+function joinChatRoom(roomId: string): P2PRoom {
   const existing = rooms.get(roomId);
   if (existing) return existing;
 
   const room = joinRoom({ appId: APP_ID }, roomId);
 
-  const [sendMessage,  onMessage]  = room.makeAction<P2PMessage>('msg');
-  const [sendTyping,   onTyping]   = room.makeAction<{ peerId: string; isTyping: boolean }>('typ');
-  const [sendPresence, onPresence] = room.makeAction<{ name: string; avatar: string; online: boolean }>('prs');
-  const [,             onFile]     = room.makeAction<ArrayBuffer>('file');
+  // makeAction returns [ActionSender, ActionReceiver]
+  // We wrap ActionSender so void[] collapses to void
+  const [rawSendChat,     rawGetChat]     = room.makeAction<{ [k: string]: unknown }>('msg');
+  const [rawSendTyping,   rawGetTyping]   = room.makeAction<{ peerId: string; isTyping: boolean }>('typ');
+  const [rawSendPresence, rawGetPresence] = room.makeAction<{ name: string; avatar: string; online: boolean }>('prs');
+  const [,                rawGetFile]     = room.makeAction<unknown>('file');
 
   const p2pRoom: P2PRoom = {
     room,
-    sendMessage:  (data, peerId?) => { void sendMessage(data, peerId); },
-    sendTyping:   (data, peerId?) => { void sendTyping(data, peerId); },
-    sendPresence: (data, peerId?) => { void sendPresence(data, peerId); },
-    onMessage:    (cb) => { onMessage(cb); },
-    onTyping:     (cb) => { onTyping(cb); },
-    onPresence:   (cb) => { onPresence(cb); },
-    onFile:       (cb) => {
-      onFile((data: unknown, peerId: string, meta: unknown) => {
-        if (data instanceof ArrayBuffer) {
-          cb(data, peerId, meta as { name: string; type: string });
-        }
+    sendChat:     (data, peerId?) => { void rawSendChat(data as Record<string, unknown>, peerId); },
+    sendTyping:   (data, peerId?) => { void rawSendTyping(data, peerId); },
+    sendPresence: (data, peerId?) => { void rawSendPresence(data, peerId); },
+    getChat:      (cb) => { rawGetChat((d, pid) => cb(d as P2PMessage, pid)); },
+    getTyping:    (cb) => { rawGetTyping(cb); },
+    getPresence:  (cb) => { rawGetPresence(cb); },
+    getFile:      (cb) => {
+      rawGetFile((d, pid, meta) => {
+        if (d instanceof ArrayBuffer) cb(d, pid, meta as { name: string; type: string });
       });
-    },
-    leave: () => {
-      room.leave();
-      rooms.delete(roomId);
     },
   };
 
@@ -55,7 +50,29 @@ export function joinChatRoom(roomId: string): P2PRoom {
   return p2pRoom;
 }
 
-export function leaveAll(): void {
-  rooms.forEach((r) => r.leave());
+function leaveRoom(roomId: string): void {
+  const r = rooms.get(roomId);
+  if (r) { r.room.leave(); rooms.delete(roomId); }
+}
+
+function leaveAll(): void {
+  rooms.forEach((r) => r.room.leave());
   rooms.clear();
 }
+
+// ── Backwards-compat shim (Chat.tsx / Discover.tsx / RightNow.tsx) ───────────
+// These screens import: { p2p, chatRoomId, proximityRoomId }
+export const p2p = {
+  join:  (roomId: string) => joinChatRoom(roomId),
+  leave: (roomId: string) => leaveRoom(roomId),
+  leaveAll,
+};
+
+export const chatRoomId      = (uid1: string, uid2: string): string =>
+  [uid1, uid2].sort().join(':');
+
+export const proximityRoomId = (h3Hex: string): string =>
+  `proximity:${h3Hex}`;
+
+// Named exports for direct use
+export { joinChatRoom, leaveAll };

@@ -1,8 +1,7 @@
-// SignIn — cast API response to UserProfile (full profile loaded post-onboarding)
+// SignIn — cast API response via unknown first (satisfies TS2352)
 import { useState } from 'react';
 import { useNavStore, useAuthStore } from '@/store';
 import { api } from '@/services/api';
-import { Spinner } from '@/components/ui/index';
 import { COLORS } from '@/types';
 import type { UserProfile } from '@/types';
 
@@ -19,8 +18,9 @@ export default function SignInScreen() {
     setLoading(true); setError('');
     try {
       const { user, token } = await api.auth.login({ email: email.trim(), password });
-      // API returns partial user on sign-in; full profile fetched during discover
-      login(user as UserProfile, token);
+      // API returns partial user on login; full profile fetched post-onboarding
+      // Double-cast via unknown to satisfy strict TS
+      login(user as unknown as UserProfile, token);
       go('discover');
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Invalid credentials');
@@ -29,7 +29,7 @@ export default function SignInScreen() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '48px 24px 40px' }}>
-      <button onClick={() => go('landing')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: COLORS.w35, marginBottom: 32, display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>← Back</button>
+      <button onClick={() => go('landing')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: COLORS.w35, marginBottom: 32, fontSize: 13 }}>← Back</button>
       <h1 style={{ fontSize: 26, fontWeight: 800, marginBottom: 28 }}>Welcome back</h1>
       {error && <div style={{ padding: '10px 14px', background: 'rgba(229,25,46,.1)', border: '1px solid rgba(229,25,46,.3)', color: COLORS.red, fontSize: 12, marginBottom: 14 }}>{error}</div>}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -37,7 +37,7 @@ export default function SignInScreen() {
         <input value={password} onChange={e => { setPassword(e.target.value); setError(''); }} placeholder="Password" type="password" style={{ width: '100%', background: COLORS.w04, border: `1px solid ${COLORS.w12}`, padding: '13px 16px', color: '#fff', fontSize: 14, outline: 'none' }} />
       </div>
       <button onClick={submit} disabled={loading} style={{ marginTop: 16, padding: '15px 24px', background: `linear-gradient(135deg,${COLORS.red},#FF4020)`, border: 'none', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', width: '100%', opacity: loading ? 0.6 : 1 }}>
-        {loading ? <Spinner size={16} /> : 'Sign In →'}
+        {loading ? '…' : 'Sign In →'}
       </button>
       <p style={{ textAlign: 'center', marginTop: 16, fontSize: 13, color: COLORS.w35 }}>
         No account? <button onClick={() => go('signup')} style={{ background: 'none', border: 'none', color: COLORS.red, fontWeight: 700, cursor: 'pointer' }}>Create one free</button>
