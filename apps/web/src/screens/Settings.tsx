@@ -216,15 +216,15 @@ export default function SettingsScreen() {
                     <div style={{ fontSize: 14, fontWeight: 700 }}>{item.label}</div>
                     <div style={{ fontSize: 11, color: COLORS.w35 }}>{item.sub}</div>
                   </div>
-                  {item.toggle !== undefined ? (
+                  {'toggle' in item && (item as { toggle?: boolean }).toggle !== undefined ? (
                     <div style={{
                       width: 40, height: 22, borderRadius: 11, padding: 2,
-                      background: item.toggle ? COLORS.green : 'rgba(255,255,255,.15)',
+                      background: (item as { toggle?: boolean }).toggle ? COLORS.green : 'rgba(255,255,255,.15)',
                       transition: 'background .2s', cursor: 'pointer',
                     }}>
                       <div style={{
                         width: 18, height: 18, borderRadius: '50%', background: '#fff',
-                        transform: item.toggle ? 'translateX(18px)' : 'translateX(0)',
+                        transform: (item as { toggle?: boolean }).toggle ? 'translateX(18px)' : 'translateX(0)',
                         transition: 'transform .2s',
                       }} />
                     </div>
