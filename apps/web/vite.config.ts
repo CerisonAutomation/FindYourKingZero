@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig, type PluginOption } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import { resolve } from 'path';
 import { compression } from 'vite-plugin-compression2';
@@ -7,14 +7,10 @@ import { visualizer } from 'rollup-plugin-visualizer';
 
 const isProd = process.env.NODE_ENV === 'production';
 
-// Cast each plugin via unknown to avoid cross-version Rollup Plugin interface mismatches.
-// This is intentional — vite.config plugins array accepts PluginOption which is a wide union.
-type AnyPlugin = Parameters<typeof defineConfig>[0]['plugins'] extends (infer U)[] | undefined ? U : never;
-
-const plugins: AnyPlugin[] = [
-  react() as AnyPlugin,
-  compression({ algorithm: 'brotliCompress', exclude: [/\.br$/, /\.gz$/] }) as AnyPlugin,
-  compression({ algorithm: 'gzip', exclude: [/\.br$/, /\.gz$/] }) as AnyPlugin,
+const plugins: PluginOption[] = [
+  react(),
+  compression({ algorithm: 'brotliCompress', exclude: [/\.br$/, /\.gz$/] }),
+  compression({ algorithm: 'gzip', exclude: [/\.br$/, /\.gz$/] }),
   VitePWA({
     registerType: 'autoUpdate',
     includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
@@ -46,12 +42,12 @@ const plugins: AnyPlugin[] = [
         },
       ],
     },
-  }) as AnyPlugin,
+  }),
 ];
 
 if (isProd && process.env.ANALYZE === 'true') {
   plugins.push(
-    visualizer({ filename: 'dist/stats.html', open: true, gzipSize: true, brotliSize: true }) as AnyPlugin,
+    visualizer({ filename: 'dist/stats.html', open: true, gzipSize: true, brotliSize: true }),
   );
 }
 
