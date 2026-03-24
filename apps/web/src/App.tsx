@@ -1,12 +1,12 @@
 // APP.TSX — Production-grade root with error boundaries + lazy screens
 import React, { Suspense, lazy, useEffect, type ReactNode, type FC } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Analytics } from '@vercel/analytics/react';
+import { Analytics as VercelAnalytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { useNavStore, useAuthStore } from './store';
 import { CommandPalette } from './components/ui/CommandPalette';
 import { BottomNav } from './components/ui/index';
-import { CookieConsent } from './components/ui/CookieConsent';
+import CookieConsent from './components/ui/CookieConsent';
 import { useAuthInit } from './hooks/useAuthInit';
 
 // Lazy screens — typed as FC (never returns null at screen level)
@@ -145,7 +145,7 @@ function AppShell() {
       </div>
       {showNav && <BottomNav />}
       <CookieConsent />
-      <Analytics />
+      <VercelAnalytics />
       <SpeedInsights />
     </div>
   );

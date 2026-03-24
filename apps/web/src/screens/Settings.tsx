@@ -50,7 +50,15 @@ export default function SettingsScreen() {
     haptic.success();
   };
 
-  const sections = [
+  interface MenuItem {
+    icon: string;
+    label: string;
+    sub: string;
+    action: () => void;
+    toggle?: boolean;
+  }
+
+  const sections: { label: string; items: MenuItem[] }[] = [
     {
       label: 'ACCOUNT',
       items: [

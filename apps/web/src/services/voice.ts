@@ -6,6 +6,16 @@
 
 import { type Screen } from '@/types';
 
+// ── Web Speech API type declarations ─────────────────────────
+// Using 'any' casts for Web Speech API since the DOM lib types conflict
+// with custom declarations. This is the cleanest approach for a feature
+// that gracefully degrades when unavailable.
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+type SpeechRecognition = any;
+type SpeechRecognitionEvent = any;
+type SpeechRecognitionErrorEvent = any;
+
 // ── Types ────────────────────────────────────────────────────
 export interface VoiceCommand {
   id: string;
@@ -98,12 +108,13 @@ export class VoiceCommandProcessor {
     }
 
     this.recognition = new SpeechRecognition();
-    this.recognition.continuous = false;
-    this.recognition.interimResults = true;
-    this.recognition.lang = 'en-US';
-    this.recognition.maxAlternatives = 1;
+    const rec = this.recognition!;
+    rec.continuous = false;
+    rec.interimResults = true;
+    rec.lang = 'en-US';
+    rec.maxAlternatives = 1;
 
-    this.recognition.onresult = (event: SpeechRecognitionEvent) => {
+    rec.onresult = (event: any) => {
       const result = event.results[0];
       this.transcript = result[0].transcript.toLowerCase().trim();
       this.confidence = result[0].confidence;
@@ -114,12 +125,12 @@ export class VoiceCommandProcessor {
       }
     };
 
-    this.recognition.onend = () => {
+    rec.onend = () => {
       this.isListening = false;
       this.emit();
     };
 
-    this.recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+    rec.onerror = (event: any) => {
       this.error = `Speech error: ${event.error}`;
       this.isListening = false;
       this.emit();

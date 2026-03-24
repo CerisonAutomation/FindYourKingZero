@@ -28,11 +28,14 @@ export default function CookieConsent() {
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
+    let timer: NodeJS.Timeout | null = null;
     if (!stored) {
       // Small delay so it slides up after page load
-      const timer = setTimeout(() => setVisible(true), 800);
-      return () => clearTimeout(timer);
+      timer = setTimeout(() => setVisible(true), 800);
     }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
   }, []);
 
   const saveConsent = useCallback((prefs: ConsentPreferences) => {
