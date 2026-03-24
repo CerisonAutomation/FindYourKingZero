@@ -1,5 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
-// PRISMA SCHEMA — PostgreSQL with pgvector
+// PRISMA SCHEMA — PostgreSQL with pgvector (Supabase)
+// Updated to match Supabase schema
 // ═══════════════════════════════════════════════════════════════
 
 generator client {
@@ -11,157 +12,504 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Enable pgvector extension
-// Run: CREATE EXTENSION IF NOT EXISTS vector;
-
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
-  passwordHash String
-  name         String
-  age          Int
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id        String   @id
+  email     String?
+  createdAt DateTime @default(now()) @map("created_at")
 
-  profile      Profile?
-  swipesMade   Swipe[]  @relation("Swiper")
-  swipesRecvd  Swipe[]  @relation("Target")
-  matchesA     Match[]  @relation("UserA")
-  matchesB     Match[]  @relation("UserB")
-  messages     Message[]
-  eventsHosted Event[]
-  presence     Presence?
-  blocks       Block[]  @relation("Blocker")
-  blockedBy    Block[]  @relation("Blocked")
-  reports      Report[] @relation("Reporter")
-  reportedBy   Report[] @relation("Reported")
+  profile Profile?
+
+  @@map("users")
 }
 
 model Profile {
-  id                  String   @id @default(uuid())
-  userId              String   @unique
-  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bio                 String   @default("")
-  avatar              String   @default("")
-  photos              String[] @default([])
-  city                String   @default("")
-  lat                 Float    @default(0)
-  lng                 Float    @default(0)
-  h3Hex               String   @default("") @db.VarChar(16)
-  tribes              String[] @default([])
-  lookingFor          String[] @default([])
-  height              String   @default("")
-  position            String   @default("")
-  relationshipStatus  String   @default("Single")
-  hivStatus           String   @default("")
-  onPrEP              Boolean  @default(false)
-  verified            Boolean  @default(false)
-  premium             Boolean  @default(false)
-  online              Boolean  @default(false)
-  lastSeen            BigInt   @default(0)
-  publicKey           Json?    // For E2EE key exchange
-  bioEmbedding        Unsupported("vector(384)")? // pgvector for AI matching
+  id                 String   @id
+  handle             String   @unique
+  displayName        String   @default("New User") @map("display_name")
+  bio                String?  @default("")
+  age                Int?
+  heightCm           Int?     @map("height_cm")
+  weightKg           Int?     @map("weight_kg")
+  bodyType           String?  @map("body_type")
+  position           String?
+  hivStatus          String?  @map("hiv_status")
+  lastTestedAt       String?  @map("last_tested_at")
+  onPrep             Boolean? @default(false) @map("on_prep")
+  practices          String[] @default([])
+  tribes             String[] @default([])
+  lookingFor         String[] @default([]) @map("looking_for")
+  kinks              String[] @default([])
+  meetPlaces         String[] @default([]) @map("meet_places")
+  bodyHair           String?  @map("body_hair")
+  ethnicity          String?
+  relationshipStatus String?  @map("relationship_status")
+  languages          String[] @default([])
+  photoUrl           String?  @map("photo_url")
+  verified           Boolean? @default(false)
+  premium            Boolean? @default(false)
+  onlineStatus       String?  @default("offline") @map("online_status")
+  lastSeenAt         DateTime? @default(now()) @map("last_seen_at")
+  availableNow       Boolean? @default(false) @map("available_now")
+  incognito          Boolean? @default(false)
+  hideDistance        Boolean? @default(false) @map("hide_distance")
+  hideVisits         Boolean? @default(false) @map("hide_visits")
+  readWithoutReceipt Boolean? @default(false) @map("read_without_receipt")
+  hidePhotosOffline  Boolean? @default(false) @map("hide_photos_offline")
+  showAge            Boolean? @default(true) @map("show_age")
+  travelMode         Boolean? @default(false) @map("travel_mode")
+  travelCity         String?  @map("travel_city")
+  travelLat          Float?   @map("travel_lat")
+  travelLng          Float?   @map("travel_lng")
+  travelUntil        String?  @map("travel_until")
+  geohash            String?
+  coarseLat          Float?   @map("coarse_lat")
+  coarseLng          Float?   @map("coarse_lng")
+  boostExpiresAt     DateTime? @map("boost_expires_at")
+  bioExtended        String?  @default("") @map("bio_extended")
+  socialLinks        Json?    @default("{}") @map("social_links")
+  stats              Json?    @default("{\"taps\":0,\"views\":0,\"favorites\":0}")
+  onboardingCompleted Boolean? @default(false) @map("onboarding_completed")
+  travelModeActive   Boolean? @default(false) @map("travel_mode_active")
+  isActive           Boolean? @default(true) @map("is_active")
+  isBanned           Boolean? @default(false) @map("is_banned")
+  lastActiveAt       DateTime? @default(now()) @map("last_active_at")
+  createdAt          DateTime? @default(now()) @map("created_at")
+  updatedAt          DateTime? @default(now()) @map("updated_at")
 
-  updatedAt DateTime @updatedAt
+  photos           Photo[]
+  albums           Album[]
+  tapsSent         Tap[]        @relation("TapSender")
+  tapsReceived     Tap[]        @relation("TapReceiver")
+  favoritesSent    Favorite[]   @relation("FavSender")
+  favoritesReceived Favorite[]  @relation("FavReceiver")
+  conversationsA   Conversation[] @relation("ConvA")
+  conversationsB   Conversation[] @relation("ConvB")
+  messages         Message[]
+  events           Event[]
+  eventAttendees   EventAttendee[]
+  groups           Group[]
+  groupMembers     GroupMember[]
+  notifications    Notification[] @relation("NotifUser")
+  notificationsAsActor Notification[] @relation("NotifActor")
+  blocksSent       Block[]      @relation("Blocker")
+  blocksReceived   Block[]      @relation("Blocked")
+  reportsSent      Report[]     @relation("Reporter")
+  reportsReceived  Report[]     @relation("Reported")
+  subscription     Subscription?
+  visitsSent       Visit[]      @relation("Visitor")
+  visitsReceived   Visit[]      @relation("Visited")
+  presenceCell     PresenceCell?
+  locationSharesSent LocationShare[] @relation("LocSender")
+  locationSharesReceived LocationShare[] @relation("LocReceiver")
+  quickshareSent   QuickshareAlbum[] @relation("QSSender")
+  quickshareReceived QuickshareAlbum[] @relation("QSReceiver")
+  voiceCommands    VoiceCommand[]
+  aiTypingResponses AiTypingResponse[]
+  albums2          Album[]
+  bookings         Booking[]
+  messageTemplates MessageTemplate[]
+  userKinks        UserKink[]
+  superFavsSent    SuperFavorite[] @relation("SuperFavSender")
+  superFavsReceived SuperFavorite[] @relation("SuperFavReceiver")
+  travelModes      TravelMode[]
+  profileViewsSent ProfileView[] @relation("PVViewer")
+  profileViewsReceived ProfileView[] @relation("PVViewed")
+
+  @@map("profiles")
 }
 
-model Swipe {
+model Photo {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  user        Profile  @relation(fields: [userId], references: [id])
+  url         String
+  thumbnailUrl String? @map("thumbnail_url")
+  isPrivate   Boolean? @default(false) @map("is_private")
+  isEphemeral Boolean? @default(false) @map("is_ephemeral")
+  viewLimit   Int?     @map("view_limit")
+  viewCount   Int?     @default(0) @map("view_count")
+  caption     String?
+  sortOrder   Int?     @default(0) @map("sort_order")
+  createdAt   DateTime? @default(now()) @map("created_at")
+
+  @@map("photos")
+}
+
+model Album {
   id        String   @id @default(uuid())
-  swiperId  String
-  swiper    User     @relation("Swiper", fields: [swiperId], references: [id])
-  targetId  String
-  target    User     @relation("Target", fields: [targetId], references: [id])
-  action    String   // "like", "pass", "superlike"
-  createdAt DateTime @default(now())
+  userId    String?  @map("user_id")
+  user      Profile? @relation(fields: [userId], references: [id])
+  name      String
+  coverUrl  String?  @map("cover_url")
+  isPrivate Boolean? @default(false) @map("is_private")
+  createdAt DateTime? @default(now()) @map("created_at")
 
-  @@unique([swiperId, targetId])
+  photos AlbumPhoto[]
+
+  @@map("albums")
 }
 
-model Match {
-  id            String    @id @default(uuid())
-  userIdA       String
-  userA         User      @relation("UserA", fields: [userIdA], references: [id])
-  userIdB       String
-  userB         User      @relation("UserB", fields: [userIdB], references: [id])
-  lastMessageAt BigInt    @default(0)
-  lastMessage   String    @default("")
-  unreadCount   Int       @default(0)
-  createdAt     DateTime  @default(now())
+model AlbumPhoto {
+  id        String   @id @default(uuid())
+  albumId   String?  @map("album_id")
+  album     Album?   @relation(fields: [albumId], references: [id])
+  photoUrl  String   @map("photo_url")
+  caption   String?
+  sortOrder Int?     @default(0) @map("sort_order")
+  createdAt DateTime? @default(now()) @map("created_at")
 
-  messages Message[]
+  @@map("album_photos")
+}
 
-  @@unique([userIdA, userIdB])
+model Conversation {
+  id           String   @id @default(uuid())
+  participantA String   @map("participant_a")
+  userA        Profile  @relation("ConvA", fields: [participantA], references: [id])
+  participantB String   @map("participant_b")
+  userB        Profile  @relation("ConvB", fields: [participantB], references: [id])
+  lastMessageAt DateTime? @default(now()) @map("last_message_at")
+  unreadA      Int?     @default(0) @map("unread_a")
+  unreadB      Int?     @default(0) @map("unread_b")
+  deletedA     Boolean? @default(false) @map("deleted_a")
+  deletedB     Boolean? @default(false) @map("deleted_b")
+  createdAt    DateTime? @default(now()) @map("created_at")
+
+  messages    Message[]
+  aiResponses AiTypingResponse[]
+
+  @@map("conversations")
 }
 
 model Message {
+  id               String   @id @default(uuid())
+  conversationId   String   @map("conversation_id")
+  conversation     Conversation @relation(fields: [conversationId], references: [id])
+  senderId         String   @map("sender_id")
+  sender           Profile  @relation(fields: [senderId], references: [id])
+  contentEncrypted String?  @map("content_encrypted")
+  messageType      String?  @default("text") @map("message_type")
+  delivered        Boolean? @default(false)
+  readAt           DateTime? @map("read_at")
+  recalled         Boolean? @default(false)
+  createdAt        DateTime? @default(now()) @map("created_at")
+  editedAt         DateTime? @map("edited_at")
+  isDeleted        Boolean? @default(false) @map("is_deleted")
+
+  reactions MessageReaction[]
+
+  @@map("messages")
+}
+
+model MessageReaction {
   id        String   @id @default(uuid())
-  matchId   String
-  match     Match    @relation(fields: [matchId], references: [id])
-  senderId  String
-  sender    User     @relation(fields: [senderId], references: [id])
-  type      String   @default("text") // text, image, file, voice, location
-  content   String   // Encrypted content
-  metadata  Json?
-  read      Boolean  @default(false)
-  delivered Boolean  @default(false)
-  createdAt DateTime @default(now())
+  messageId String?  @map("message_id")
+  message   Message? @relation(fields: [messageId], references: [id])
+  userId    String?  @map("user_id")
+  user      Profile? @relation(fields: [userId], references: [id])
+  emoji     String
+  createdAt DateTime? @default(now()) @map("created_at")
 
-  @@index([matchId, createdAt])
+  @@map("message_reactions")
 }
 
-model Event {
-  id          String   @id @default(uuid())
-  title       String
-  type        String   // Party, Gym, Drinks, etc.
-  description String   @default("")
-  date        BigInt
-  time        String
-  location    String
-  lat         Float    @default(0)
-  lng         Float    @default(0)
-  capacity    Int      @default(50)
-  attendees   String[] @default([])
-  hostId      String
-  host        User     @relation(fields: [hostId], references: [id])
-  tags        String[] @default([])
-  createdAt   DateTime @default(now())
+model MessageTemplate {
+  id           String   @id @default(uuid())
+  userId       String?  @map("user_id")
+  user         Profile? @relation(fields: [userId], references: [id])
+  templateText String   @map("template_text")
+  category     String?  @default("quick_reply")
+  usageCount   Int?     @default(0) @map("usage_count")
+  createdAt    DateTime? @default(now()) @map("created_at")
 
-  @@index([date])
-  @@index([type])
+  @@map("message_templates")
 }
 
-model Presence {
-  id       String @id @default(uuid())
-  userId   String @unique
-  h3Hex    String @db.VarChar(16)
-  lat      Float
-  lng      Float
-  online   Boolean @default(false)
-  intent   String  @default("")
-  lastSeen BigInt  @default(0)
+model Tap {
+  id         String   @id @default(uuid())
+  fromUserId String   @map("from_user_id")
+  fromUser   Profile  @relation("TapSender", fields: [fromUserId], references: [id])
+  toUserId   String   @map("to_user_id")
+  toUser     Profile  @relation("TapReceiver", fields: [toUserId], references: [id])
+  mutual     Boolean? @default(false)
+  createdAt  DateTime? @default(now()) @map("created_at")
 
-  @@index([h3Hex])
-  @@index([online])
+  @@map("taps")
+}
+
+model Favorite {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  user      Profile  @relation("FavSender", fields: [userId], references: [id])
+  targetId  String   @map("target_id")
+  target    Profile  @relation("FavReceiver", fields: [targetId], references: [id])
+  createdAt DateTime? @default(now()) @map("created_at")
+
+  @@map("favorites")
+}
+
+model SuperFavorite {
+  id        String   @id @default(uuid())
+  userId    String?  @map("user_id")
+  user      Profile? @relation("SuperFavSender", fields: [userId], references: [id])
+  targetId  String?  @map("target_id")
+  target    Profile? @relation("SuperFavReceiver", fields: [targetId], references: [id])
+  notes     String?
+  priority  Int?     @default(0)
+  createdAt DateTime? @default(now()) @map("created_at")
+
+  @@map("super_favorites")
+}
+
+model Visit {
+  id        String   @id @default(uuid())
+  visitorId String   @map("visitor_id")
+  visitor   Profile  @relation("Visitor", fields: [visitorId], references: [id])
+  visitedId String   @map("visited_id")
+  visited   Profile  @relation("Visited", fields: [visitedId], references: [id])
+  createdAt DateTime? @default(now()) @map("created_at")
+
+  @@map("visits")
+}
+
+model ProfileView {
+  id        String   @id @default(uuid())
+  viewerId  String   @map("viewer_id")
+  viewer    Profile? @relation("PVViewer", fields: [viewerId], references: [id])
+  viewedId  String   @map("viewed_id")
+  viewed    Profile? @relation("PVViewed", fields: [viewedId], references: [id])
+  createdAt DateTime? @default(now()) @map("created_at")
+
+  @@map("profile_views")
 }
 
 model Block {
   id        String   @id @default(uuid())
-  blockerId String
-  blocker   User     @relation("Blocker", fields: [blockerId], references: [id])
-  blockedId String
-  blocked   User     @relation("Blocked", fields: [blockedId], references: [id])
-  createdAt DateTime @default(now())
+  blockerId String   @map("blocker_id")
+  blocker   Profile  @relation("Blocker", fields: [blockerId], references: [id])
+  blockedId String   @map("blocked_id")
+  blocked   Profile  @relation("Blocked", fields: [blockedId], references: [id])
+  createdAt DateTime? @default(now()) @map("created_at")
 
-  @@unique([blockerId, blockedId])
+  @@map("blocks")
 }
 
 model Report {
+  id          String   @id @default(uuid())
+  reporterId  String   @map("reporter_id")
+  reporter    Profile  @relation("Reporter", fields: [reporterId], references: [id])
+  reportedId  String   @map("reported_id")
+  reported    Profile  @relation("Reported", fields: [reportedId], references: [id])
+  reason      String
+  description String?  @default("")
+  status      String?  @default("pending")
+  createdAt   DateTime? @default(now()) @map("created_at")
+
+  @@map("reports")
+}
+
+model Event {
+  id            String   @id @default(uuid())
+  title         String
+  description   String?
+  groupId       String?  @map("group_id")
+  organizerId   String   @map("organizer_id")
+  organizer     Profile  @relation(fields: [organizerId], references: [id])
+  coverUrl      String?  @map("cover_url")
+  startsAt      DateTime @map("starts_at")
+  endsAt        DateTime? @map("ends_at")
+  locationName  String?  @map("location_name")
+  locationLat   Float?   @map("location_lat")
+  locationLng   Float?   @map("location_lng")
+  isOnline      Boolean? @default(false) @map("is_online")
+  attendeeCount Int?     @default(0) @map("attendee_count")
+  maxAttendees  Int?     @map("max_attendees")
+  tags          String[] @default([])
+  createdAt     DateTime? @default(now()) @map("created_at")
+
+  attendees EventAttendee[]
+
+  @@map("events")
+}
+
+model EventAttendee {
+  id        String   @id @default(uuid())
+  eventId   String   @map("event_id")
+  event     Event    @relation(fields: [eventId], references: [id])
+  userId    String   @map("user_id")
+  user      Profile  @relation(fields: [userId], references: [id])
+  rsvpStatus String? @default("going") @map("rsvp_status")
+  joinedAt  DateTime? @default(now()) @map("joined_at")
+
+  @@map("event_attendees")
+}
+
+model Group {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  category    String?
+  photoUrl    String?  @map("photo_url")
+  ownerId     String   @map("owner_id")
+  owner       Profile  @relation(fields: [ownerId], references: [id])
+  memberCount Int?     @default(1) @map("member_count")
+  isPrivate   Boolean? @default(false) @map("is_private")
+  tags        String[] @default([])
+  createdAt   DateTime? @default(now()) @map("created_at")
+  updatedAt   DateTime? @default(now()) @map("updated_at")
+
+  members GroupMember[]
+  events  Event[]
+
+  @@map("groups")
+}
+
+model GroupMember {
+  id       String   @id @default(uuid())
+  groupId  String   @map("group_id")
+  group    Group    @relation(fields: [groupId], references: [id])
+  userId   String   @map("user_id")
+  user     Profile  @relation(fields: [userId], references: [id])
+  role     String?  @default("member")
+  joinedAt DateTime? @default(now()) @map("joined_at")
+
+  @@map("group_members")
+}
+
+model Subscription {
+  id                  String    @id @default(uuid())
+  userId              String    @unique @map("user_id")
+  user                Profile   @relation(fields: [userId], references: [id])
+  tier                String    @default("free")
+  stripeCustomerId    String?   @map("stripe_customer_id")
+  stripeSubscriptionId String?  @map("stripe_subscription_id")
+  currentPeriodStart  DateTime? @map("current_period_start")
+  currentPeriodEnd    DateTime? @map("current_period_end")
+  status              String?   @default("active")
+  createdAt           DateTime? @default(now()) @map("created_at")
+
+  @@map("subscriptions")
+}
+
+model Booking {
   id         String   @id @default(uuid())
-  reporterId String
-  reporter   User     @relation("Reporter", fields: [reporterId], references: [id])
-  reportedId String
-  reported   User     @relation("Reported", fields: [reportedId], references: [id])
-  reason     String   // spam, harassment, fake, underage, other
-  details    String   @default("")
-  createdAt  DateTime @default(now())
+  userId     String?  @map("user_id")
+  user       Profile? @relation(fields: [userId], references: [id])
+  listingId  String?  @map("listing_id")
+  status     String?  @default("pending")
+  totalPrice Int?     @map("total_price")
+  currency   String?  @default("EUR")
+  createdAt  DateTime? @default(now()) @map("created_at")
+
+  @@map("bookings")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  user      Profile  @relation("NotifUser", fields: [userId], references: [id])
+  type      String
+  actorId   String?  @map("actor_id")
+  actor     Profile? @relation("NotifActor", fields: [actorId], references: [id])
+  data      Json?    @default("{}")
+  read      Boolean? @default(false)
+  createdAt DateTime? @default(now()) @map("created_at")
+
+  @@map("notifications")
+}
+
+model PresenceCell {
+  id            String   @id @default(uuid())
+  userId        String   @unique @map("user_id")
+  user          Profile  @relation(fields: [userId], references: [id])
+  geohash       String
+  status        String?  @default("online")
+  meetNow       Boolean? @default(false) @map("meet_now")
+  lastHeartbeat DateTime? @default(now()) @map("last_heartbeat")
+
+  @@map("presence_cells")
+}
+
+model LocationShare {
+  id        String   @id @default(uuid())
+  userId    String?  @map("user_id")
+  user      Profile? @relation("LocSender", fields: [userId], references: [id])
+  targetId  String?  @map("target_id")
+  target    Profile? @relation("LocReceiver", fields: [targetId], references: [id])
+  lat       Float?
+  lng       Float?
+  expiresAt DateTime? @map("expires_at")
+  active    Boolean? @default(true)
+  createdAt DateTime? @default(now()) @map("created_at")
+
+  @@map("location_shares")
+}
+
+model TravelMode {
+  id              String   @id @default(uuid())
+  userId          String?  @map("user_id")
+  user            Profile? @relation(fields: [userId], references: [id])
+  destinationLat  Float?   @map("destination_lat")
+  destinationLng  Float?   @map("destination_lng")
+  destinationName String?  @map("destination_name")
+  arrivalDate     String?  @map("arrival_date")
+  departureDate   String?  @map("departure_date")
+  isActive        Boolean? @default(true) @map("is_active")
+  createdAt       DateTime? @default(now()) @map("created_at")
+
+  @@map("travel_mode")
+}
+
+model QuickshareAlbum {
+  id         String   @id @default(uuid())
+  senderId   String?  @map("sender_id")
+  sender     Profile? @relation("QSSender", fields: [senderId], references: [id])
+  receiverId String?  @map("receiver_id")
+  receiver   Profile? @relation("QSReceiver", fields: [receiverId], references: [id])
+  roomId     String?  @map("room_id")
+  files      Json     @default("[]")
+  expiresAt  DateTime? @default(dbgenerated("now() + interval '1 hour'")) @map("expires_at")
+  viewed     Boolean? @default(false)
+  viewedAt   DateTime? @map("viewed_at")
+  createdAt  DateTime? @default(now()) @map("created_at")
+
+  @@map("quickshare_albums")
+}
+
+model UserKink {
+  id        String   @id @default(uuid())
+  userId    String?  @map("user_id")
+  user      Profile? @relation(fields: [userId], references: [id])
+  kink      String
+  isLimit   Boolean? @default(false) @map("is_limit")
+  createdAt DateTime? @default(now()) @map("created_at")
+
+  @@map("user_kinks")
+}
+
+model VoiceCommand {
+  id           String   @id @default(uuid())
+  userId       String?  @map("user_id")
+  commandText  String   @map("command_text")
+  parsedAction String   @map("parsed_action")
+  parameters   Json?    @default("{}")
+  success      Boolean? @default(true)
+  executedAt   DateTime? @default(now()) @map("executed_at")
+  aiModelUsed  String?  @default("mlc-web-llm") @map("ai_model_used")
+  confidence   Float?   @default(0)
+
+  @@map("voice_commands")
+}
+
+model AiTypingResponse {
+  id             String   @id @default(uuid())
+  userId         String?  @map("user_id")
+  user           Profile? @relation(fields: [userId], references: [id])
+  conversationId String?  @map("conversation_id")
+  conversation   Conversation? @relation(fields: [conversationId], references: [id])
+  suggestedReply String   @map("suggested_reply")
+  context        String?
+  used           Boolean? @default(false)
+  createdAt      DateTime? @default(now()) @map("created_at")
+
+  @@map("ai_typing_responses")
 }
