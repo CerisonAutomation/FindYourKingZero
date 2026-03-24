@@ -1,12 +1,15 @@
 import type { UserProfile, Message, KingEvent } from '@/types';
 // ═══════════════════════════════════════════════════════════════
-// SERVICES: API Client — Hono backend
-// JWT auth, Zod validation, TanStack Query integration
+// SERVICES: API Client — Hono backend (Vercel serverless or standalone)
+//
+// Base URL resolution:
+//   VITE_API_URL set  → use that URL (standalone Hono server)
+//   VITE_API_URL empty/unset → use '' (relative URLs → Vercel serverless /api/*)
 // ═══════════════════════════════════════════════════════════════
 
 import { useAuthStore } from '@/store';
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
+const BASE_URL = import.meta.env.VITE_API_URL ?? '';
 
 class ApiError extends Error {
   constructor(public status: number, message: string, public data?: any) {
