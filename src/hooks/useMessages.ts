@@ -201,4 +201,9 @@ export function useMessages(options: UseMessagesOptions = {}) {
   };
 }
 
+export function useConversations() {
+  const { conversations, isLoading, error, fetchConversations } = useMessages();
+  return { conversations, isLoading, error, fetchConversations };
+}
+
 export default useMessages;

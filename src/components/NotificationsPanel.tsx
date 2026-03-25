@@ -102,7 +102,7 @@ const NotificationItem = ({
             exit={{opacity: 0, x: 20}}
             className={cn(
                 'p-4 hover:bg-muted/50 transition-colors group',
-                !notification.is_read && 'bg-primary/5'
+                !notification.read && 'bg-primary/5'
             )}
         >
             <div className="flex items-start gap-3">
@@ -112,7 +112,7 @@ const NotificationItem = ({
                 <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
                         <div>
-                            <p className={cn('font-medium', !notification.is_read && 'text-primary')}>
+                            <p className={cn('font-medium', !notification.read && 'text-primary')}>
                                 {notification.title}
                             </p>
                             {notification.body && (
@@ -120,7 +120,7 @@ const NotificationItem = ({
                             )}
                         </div>
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            {!notification.is_read && (
+                            {!notification.read && (
                                 <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onMarkAsRead}>
                                     <Check className="h-4 w-4"/>
                                 </Button>
@@ -134,7 +134,7 @@ const NotificationItem = ({
                         {formatDistanceToNow(new Date(notification.created_at), {addSuffix: true})}
                     </p>
                 </div>
-                {!notification.is_read && (
+                {!notification.read && (
                     <div className="w-2 h-2 rounded-full bg-primary flex-shrink-0 mt-2"/>
                 )}
             </div>

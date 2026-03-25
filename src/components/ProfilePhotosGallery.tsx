@@ -3,12 +3,12 @@ import {motion} from 'framer-motion';
 import {Plus, Star, Trash2, X} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Dialog, DialogContent} from '@/components/ui/dialog';
+import type {ProfilePhoto} from '@/hooks/useProfilePhotos';
 import {
-    ProfilePhoto,
     useAddProfilePhoto,
     useDeleteProfilePhoto,
     useProfilePhotos,
-    useSetPrimaryPhoto,
+    useSetPrimaryPhoto
 } from '@/hooks/useProfilePhotos';
 
 interface ProfilePhotosGalleryProps {

@@ -4,7 +4,7 @@
 // Uses: useChat from 'ai/react' (v4 API), streamText for server actions
 // =============================================================================
 import {useCallback, useRef, useState} from 'react';
-import {type Message, useChat} from 'ai/react';
+import {type Message, useChat} from '@ai-sdk/react';
 import {useQueryClient} from '@tanstack/react-query';
 import {useToast} from './use-toast';
 import {supabase} from '@/integrations/supabase/client';

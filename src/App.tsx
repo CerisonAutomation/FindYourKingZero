@@ -7,7 +7,7 @@ import {ErrorBoundary} from "./components/ui/ErrorBoundary";
 import {OfflineBanner} from "@/components/ui/OfflineBanner";
 import {lazy, Suspense, useEffect} from "react";
 import {log} from '@/lib/logger';
-import {VoiceAssistantButton} from "@/components/voice/VoiceAssistantButton";
+import {AIAvatarOrb} from "@/components/ai";
 import {registerDeepLinkListener} from "@/lib/deeplinks";
 // Eager loaded critical components
 import HomePage from "./pages/HomePage";
@@ -408,10 +408,12 @@ const App = () => {
                 <BrowserRouter future={{v7_startTransition: true, v7_relativeSplatPath: true}}>
                     <AuthProvider>
                         <AppRoutes/>
-                        {/* Global Voice Assistant - Floating */}
-                        <VoiceAssistantButton
-                            variant="floating"
-                            showSettings={true}
+                        {/* Global AI Avatar Orb - Premium Power Orb with Crown */}
+                        <AIAvatarOrb
+                            size="md"
+                            position="fixed"
+                            placement="bottom-right"
+                            showChat={true}
                         />
                     </AuthProvider>
                 </BrowserRouter>

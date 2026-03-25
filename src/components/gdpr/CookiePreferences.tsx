@@ -3,7 +3,8 @@ import {AnimatePresence, motion} from 'framer-motion';
 import {Check, Cookie, Settings, Shield, X} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Switch} from '@/components/ui/switch';
-import {ConsentState, useCookieConsent} from '@/hooks/useConsent';
+import type {ConsentState} from '@/hooks/useConsent';
+import {useCookieConsent} from '@/hooks/useConsent';
 
 interface CookiePreferencesProps {
     onSave?: (preferences: Partial<ConsentState>) => void;

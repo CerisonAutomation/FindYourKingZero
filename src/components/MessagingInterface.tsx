@@ -6,28 +6,28 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
 import {
-  Archive,
-  Brain,
-  Check,
-  CheckCheck,
-  Flag,
-  Lock,
-  MessageCircle,
-  MoreVertical,
-  Paperclip,
-  Phone,
-  Search,
-  Send,
-  Settings,
-  Star,
-  Trash2,
-  User,
-  Video,
-  Volume2,
-  VolumeX,
+    Archive,
+    Brain,
+    Check,
+    CheckCheck,
+    Flag,
+    Lock,
+    MessageCircle,
+    MoreVertical,
+    Paperclip,
+    Phone,
+    Search,
+    Send,
+    Settings,
+    Star,
+    Trash2,
+    User,
+    Video,
+    Volume2,
+    VolumeX,
 } from 'lucide-react';
 
-import {Message} from '@/lib/hybrid-p2p-dating';
+import type {Message} from '@/lib/hybrid-p2p-dating';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Badge} from '@/components/ui/badge';

@@ -121,7 +121,7 @@ export function ProfileDetail({
                                 </div>
                                 <div className="flex items-center gap-1.5 text-muted-foreground mt-1">
                                     <MapPin className="w-4 h-4"/>
-                                    <span>{profile.location}</span>
+                                    <span>{profile.location ? `${profile.location.lat.toFixed(4)}, ${profile.location.lng.toFixed(4)}` : 'Unknown location'}</span>
                                     {profile.distance && (
                                         <span className="text-primary">• {profile.distance} mi away</span>
                                     )}

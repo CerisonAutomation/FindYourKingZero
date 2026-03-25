@@ -255,11 +255,17 @@ export default function HomePage() {
 
                 {/* Nav links — desktop */}
                 <nav className="hidden md:flex items-center gap-6">
-                    {['Features', 'Pricing', 'Safety', 'Events'].map(l => (
-                        <button
-                            key={l}
+                    {[
+                        { label: 'Features', href: '#features' },
+                        { label: 'Pricing', href: '#pricing' },
+                        { label: 'Safety', href: '#safety' },
+                        { label: 'Events', href: '#events' }
+                    ].map(({ label, href }) => (
+                        <Link
+                            key={label}
+                            to={href}
                             className="text-[11px] font-semibold text-muted-foreground/60 hover:text-foreground transition-colors duration-120 tracking-wide"
-                        >{l}</button>
+                        >{label}</Link>
                     ))}
                 </nav>
 
