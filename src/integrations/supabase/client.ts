@@ -3,14 +3,8 @@
 // Fixes: SQL injection, channel leaks, user:any, duplicate getById, no PKCE
 // Added: Query builder, pagination, caching, typed helpers
 // =============================================================================
-import { createClient, type Session, type AuthError } from '@supabase/supabase-js';
-import type {
-  Database,
-  PaginatedResult,
-  PaginationParams,
-  TableRow,
-  TableInsert,
-} from './types';
+import {type AuthError, createClient, type Session} from '@supabase/supabase-js';
+import type {Database, PaginatedResult, PaginationParams,} from './types';
 
 // ── Env validation ─────────────────────────────────────────────────────────────
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;

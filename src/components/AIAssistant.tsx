@@ -4,7 +4,7 @@ import {Bot, Lightbulb, MessageCircle, Send, Sparkles, X} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Avatar, AvatarFallback} from '@/components/ui/avatar';
-import {useAIAssistant} from '@/hooks/useAI';
+import {useAI} from '@/hooks/useAI';
 import {cn} from '@/lib/utils';
 
 interface AIAssistantProps {
@@ -21,16 +21,17 @@ const QUICK_PROMPTS = [
 export const AIAssistant = ({isOpen, onClose}: AIAssistantProps) => {
     const [input, setInput] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const {messages, currentResponse, isLoading, sendMessage} = useAIAssistant();
+    const {messages, isStreaming, sendMessage, setInput: setAiInput} = useAI();
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({behavior: 'smooth'});
-    }, [messages, currentResponse]);
+    }, [messages]);
 
     const handleSend = async (content?: string) => {
         const messageContent = content || input;
-        if (!messageContent.trim() || isLoading) return;
+        if (!messageContent.trim() || isStreaming) return;
 
+        setAiInput(messageContent);
         await sendMessage(messageContent);
         setInput('');
     };
@@ -64,7 +65,7 @@ export const AIAssistant = ({isOpen, onClose}: AIAssistantProps) => {
 
                         {/* Messages */}
                         <div className="h-80 overflow-y-auto p-4 space-y-4">
-                            {messages.length === 0 && !currentResponse && (
+                            {messages.length === 0 && !isStreaming && (
                                 <div className="text-center py-8">
                                     <Bot className="w-12 h-12 mx-auto text-muted-foreground mb-3"/>
                                     <p className="text-muted-foreground mb-4">
@@ -115,8 +116,8 @@ export const AIAssistant = ({isOpen, onClose}: AIAssistantProps) => {
                                 </motion.div>
                             ))}
 
-                            {/* Streaming response */}
-                            {currentResponse && (
+                            {/* Loading indicator */}
+                            {isStreaming && messages.length > 0 && messages[messages.length - 1]?.role === 'user' && (
                                 <motion.div
                                     initial={{opacity: 0, y: 10}}
                                     animate={{opacity: 1, y: 0}}
@@ -128,8 +129,7 @@ export const AIAssistant = ({isOpen, onClose}: AIAssistantProps) => {
                                         </AvatarFallback>
                                     </Avatar>
                                     <div className="max-w-[80%] px-3 py-2 rounded-2xl text-sm bg-secondary">
-                                        {currentResponse}
-                                        <span className="inline-block w-1 h-4 bg-primary animate-pulse ml-1"/>
+                                        <span className="inline-block w-1 h-4 bg-primary animate-pulse"/>
                                     </div>
                                 </motion.div>
                             )}
@@ -150,13 +150,13 @@ export const AIAssistant = ({isOpen, onClose}: AIAssistantProps) => {
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     placeholder="Ask me anything..."
-                                    disabled={isLoading}
+                                    disabled={isStreaming}
                                     className="flex-1"
                                 />
                                 <Button
                                     type="submit"
                                     size="icon"
-                                    disabled={!input.trim() || isLoading}
+                                    disabled={!input.trim() || isStreaming}
                                 >
                                     <Send className="w-4 h-4"/>
                                 </Button>

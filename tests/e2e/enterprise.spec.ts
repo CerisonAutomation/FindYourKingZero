@@ -3,10 +3,9 @@
 // =====================================================
 // Senior-level testing with E2E, Integration, and Unit tests
 
-import { test, expect, type Page, type BrowserContext } from '@playwright/test';
-import { chromium, type Browser } from 'playwright';
-import { faker } from '@faker-js/faker';
-import { supabase } from '@/integrations/supabase/client';
+import {expect, type Page, test} from '@playwright/test';
+import {faker} from '@faker-js/faker';
+import {supabase} from '@/integrations/supabase/client';
 
 // =====================================================
 // TEST CONFIGURATION

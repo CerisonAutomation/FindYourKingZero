@@ -4,48 +4,47 @@
  * Based on real enterprise standards and best practices
  */
 
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {AnimatePresence, motion} from 'framer-motion';
 import {
+  Activity,
+  BarChart3,
   Bell,
+  Brain,
+  Compass,
+  Cpu,
+  CreditCard,
+  Eye,
+  EyeOff,
+  Globe,
   Home,
   LogOut,
   Menu,
   MessageCircle,
   Settings,
+  Shield,
+  Star,
+  TrendingUp,
   User as UserIcon,
   X,
-  Activity,
-  Shield,
-  Brain,
-  Globe,
-  Eye,
-  EyeOff,
-  Cpu,
-  TrendingUp,
-  Compass,
-  Star,
-  CreditCard,
-  BarChart3,
 } from 'lucide-react';
 
-import { useDating } from '@/hooks/unified/useDating';
-import { useLocation, useTravelMode } from '@/hooks/unified/useLocation';
-import { useAI } from '@/hooks/useAI';
+import {useDating} from '@/hooks/unified/useDating';
+import {useLocation, useTravelMode} from '@/hooks/unified/useLocation';
+import {useAI} from '@/hooks/useAI';
+// Enhanced Components (enterprise implementations)
+import {DatingGrid} from './DatingGrid';
+import MessagingInterface from './MessagingInterface';
+import ProfileView from './ProfileView';
+import AICoachingPanel from './AICoachingPanel';
+import AnalyticsDashboard from './AnalyticsDashboard';
+import SettingsPanel from './SettingsPanel';
 // Performance monitoring utilities
 const PerformanceMonitor = {
   getInstance: () => ({
     getMetrics: () => ({ connectionQuality: 95, messageLatency: 12, encryptionSpeed: 88 })
   })
 };
-
-// Enhanced Components (enterprise implementations)
-import { DatingGrid } from './DatingGrid';
-import MessagingInterface from './MessagingInterface';
-import ProfileView from './ProfileView';
-import AICoachingPanel from './AICoachingPanel';
-import AnalyticsDashboard from './AnalyticsDashboard';
-import SettingsPanel from './SettingsPanel';
 
 interface EnterpriseMainAppProps {
   className?: string;

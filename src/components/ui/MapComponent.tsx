@@ -13,10 +13,10 @@
 
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import {useEffect, useRef, useState} from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { UserProfile } from '@/types'
+import {UserProfile} from '@/types'
 
 // Fix Leaflet default markers
 delete (L.Icon.Default.prototype as any)._getIconUrl

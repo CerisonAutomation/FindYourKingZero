@@ -31,7 +31,7 @@ import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Textarea} from '@/components/ui/textarea';
 import {Switch} from '@/components/ui/switch';
-import {Event, EVENT_TYPES, useCreateEvent, useEvents, useJoinEvent, useLeaveEvent} from '@/hooks/useEvents';
+import {AppEvent, EVENT_TYPES, useCreateEvent, useEvents, useJoinEvent, useLeaveEvent} from '@/hooks/useEvents';
 import {useAuth} from '@/hooks/useAuth';
 import {useLocaleStore} from '@/stores/useLocaleStore';
 import {cn} from '@/lib/utils';
@@ -63,7 +63,7 @@ const formatDate = (d?: string) => {
 
 // ─── Event List Card (mirroring screenshot style) ─────────────────────────
 const EventListCard = memo(({event, onDetail, currentUserId}: {
-    event: Event; onDetail: (e: Event) => void; currentUserId?: string;
+    event: AppEvent; onDetail: (e: AppEvent) => void; currentUserId?: string;
 }) => {
     const isParty = event.event_type === 'party';
     const isHost = event.host_id === currentUserId;
@@ -181,7 +181,7 @@ EventListCard.displayName = 'EventListCard';
 
 // ─── Event Detail Sheet ───────────────────────────────────────────────────
 function EventDetailSheet({event, open, onOpenChange, onJoin, onLeave, currentUserId}: {
-    event: Event | null; open: boolean; onOpenChange: (v: boolean) => void;
+    event: AppEvent | null; open: boolean; onOpenChange: (v: boolean) => void;
     onJoin: (id: string) => void; onLeave: (id: string) => void;
     currentUserId?: string;
 }) {
@@ -509,11 +509,11 @@ export default function EventsHub() {
     const [tab, setTab] = useState<EventTab>('discover');
     const [category, setCategory] = useState('all');
     const [createOpen, setCreateOpen] = useState(false);
-    const [detailEvent, setDetailEvent] = useState<Event | null>(null);
+    const [detailEvent, setDetailEvent] = useState<AppEvent | null>(null);
     const [detailOpen, setDetailOpen] = useState(false);
     const categoryRef = useRef<HTMLDivElement>(null);
 
-    const openDetail = (event: Event) => {
+    const openDetail = (event: AppEvent) => {
         setDetailEvent(event);
         setDetailOpen(true);
     };

@@ -11,7 +11,7 @@
 
 import {useEffect} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
-import {Mic, MicOff, X} from 'lucide-react';
+import {Mic} from 'lucide-react';
 import {useVoiceInput} from '@/hooks/useVoiceInput';
 import {cn} from '@/lib/utils';
 

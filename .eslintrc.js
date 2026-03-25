@@ -1,8 +1,8 @@
-# =====================================================
+// =====================================================
 # OMNI-PERFECT ENTERPRISE ESLINT CONFIGURATION
 # Comprehensive linting rules for maximum code quality
 
-module.exports = {
+export default {
   root: true,
   env: {
     browser: true,

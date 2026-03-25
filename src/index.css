@@ -62,10 +62,10 @@
         --ring: 42 98% 56%;
 
         /* ZERO RADIUS — pure sharp geometry */
-        --radius: 0px;
-        --radius-sm: 0px;
-        --radius-lg: 0px;
-        --radius-xl: 0px;
+        --radius: 0;
+        --radius-sm: 0;
+        --radius-lg: 0;
+        --radius-xl: 0;
 
         /* LUXURY PALETTE — Reds, Golds, Royals, Obsidian */
         --red: 0 92% 54%;
@@ -132,10 +132,7 @@
 
         /* ── COMPONENT RADIUS (for cards, chips, avatars) ── */
         --radius-xs: 4px;
-        --radius-sm: 6px;
         --radius-md: 10px;
-        --radius-lg: 14px;
-        --radius-xl: 20px;
         --radius-full: 9999px;
 
         /* ── SPACING TOKENS ── */
@@ -209,18 +206,12 @@
 
     #root {
         width: 100%;
-        /* 100dvh = dynamic viewport height — reacts to browser chrome show/hide */
         height: 100dvh;
-        max-height: 100dvh;
         overflow: hidden;
         display: flex;
         flex-direction: column;
-        /* Prevent iOS rubber-band bounce from bleeding outside shell */
         position: fixed;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
+        inset: 0;
         contain: strict;
     }
 
@@ -942,7 +933,6 @@
 
 /* Mobile-first full-bleed layout */
 html, body, #root {
-    min-height: 100vh;
     min-height: 100dvh;
     overflow-x: hidden;
 }
@@ -952,10 +942,7 @@ html, body, #root {
 .safe-bottom { padding-bottom: var(--safe-bottom); }
 .safe-x { padding-left: var(--safe-left); padding-right: var(--safe-right); }
 .safe-all {
-    padding-top: var(--safe-top);
-    padding-bottom: var(--safe-bottom);
-    padding-left: var(--safe-left);
-    padding-right: var(--safe-right);
+    padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
 }
 
 /* Mobile bottom nav spacing — ensure content doesn't hide behind nav */

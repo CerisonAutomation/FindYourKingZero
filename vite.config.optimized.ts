@@ -11,9 +11,9 @@
  * @version 2.0.0
  */
 
-import { defineConfig } from 'vite'
+import {defineConfig} from 'vite'
 import react from '@vitejs/plugin-react-swc'
-import { resolve } from 'path'
+import {resolve} from 'path'
 
 export default defineConfig({
   plugins: [react()],

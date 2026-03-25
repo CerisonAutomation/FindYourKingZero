@@ -1,6 +1,6 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts'
-import { corsHeaders, handleCORS } from '../_shared/cors.ts'
-import { supabaseAdmin } from '../_shared/supabase.ts'
+import {corsHeaders, handleCORS} from '../_shared/cors.ts'
+import {supabaseAdmin} from '../_shared/supabase.ts'
 
 interface MatchingRequest {
     userId: string;

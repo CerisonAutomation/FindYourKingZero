@@ -1,8 +1,8 @@
-# =====================================================
+// =====================================================
 # OMNI-PERFECT ENTERPRISE PRETTIER CONFIGURATION
 # Comprehensive formatting rules for maximum code consistency
 
-module.exports = {
+export default {
   // =====================================================
   // BASIC CONFIGURATION
   // =====================================================

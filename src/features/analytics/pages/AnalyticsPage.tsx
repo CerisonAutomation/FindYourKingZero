@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart3, Users, TrendingUp, Activity } from "lucide-react";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import {Activity, BarChart3, TrendingUp, Users} from "lucide-react";
 
 export default function AnalyticsPage() {
   const stats = [

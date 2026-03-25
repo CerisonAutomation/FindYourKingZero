@@ -3,43 +3,34 @@
  * Real-time messaging with encryption, AI moderation, and performance optimization
  */
 
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {AnimatePresence, motion} from 'framer-motion';
 import {
-  MessageCircle,
-  Send,
-  Phone,
-  Video,
-  Paperclip,
-  Smile,
-  MoreVertical,
-  Search,
-  Users,
-  Settings,
-  Shield,
+  Archive,
   Brain,
-  Activity,
   Check,
   CheckCheck,
-  Clock,
-  User,
-  Zap,
+  Flag,
   Lock,
-  Eye,
-  EyeOff,
+  MessageCircle,
+  MoreVertical,
+  Paperclip,
+  Phone,
+  Search,
+  Send,
+  Settings,
+  Star,
+  Trash2,
+  User,
+  Video,
   Volume2,
   VolumeX,
-  Archive,
-  Trash2,
-  Star,
-  Flag,
 } from 'lucide-react';
 
-import { Message } from '@/lib/hybrid-p2p-dating';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import {Message} from '@/lib/hybrid-p2p-dating';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {Badge} from '@/components/ui/badge';
 
 interface MessagingInterfaceProps {
   advancedMode: boolean;

@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, useCallback } from "react";
-import { cn } from "@/lib/utils";
+import {useCallback, useEffect, useRef, useState} from "react";
+import {cn} from "@/lib/utils";
 
 interface LazyImageProps {
   src: string;

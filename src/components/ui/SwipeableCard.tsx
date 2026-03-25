@@ -2,11 +2,11 @@
 // SWIPEABLE PROFILE CARD — Gestured profile card
 // Swipe right = like, left = pass
 // =====================================================
-import { useCallback, useRef, useState } from 'react';
-import { motion, useMotionValue, useTransform, type PanInfo } from 'framer-motion';
-import { Heart, X } from 'lucide-react';
-import { haptics } from '@/lib/haptics';
-import { cn } from '@/lib/utils';
+import {useCallback, useState} from 'react';
+import {motion, type PanInfo, useMotionValue, useTransform} from 'framer-motion';
+import {Heart, X} from 'lucide-react';
+import {haptics} from '@/lib/haptics';
+import {cn} from '@/lib/utils';
 
 export interface SwipeableCardProps {
   children: React.ReactNode;

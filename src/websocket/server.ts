@@ -3,10 +3,10 @@
 // =====================================================
 // Senior-level WebSocket server with enterprise features
 
-import { Server as SocketIOServer } from 'socket.io';
-import { Server as HTTPServer } from 'http';
-import { createClient } from 'redis';
-import { supabase } from '@/integrations/supabase/client';
+import {Server as SocketIOServer} from 'socket.io';
+import {Server as HTTPServer} from 'http';
+import {createClient} from 'redis';
+import {supabase} from '@/integrations/supabase/client';
 import * as jwt from 'jsonwebtoken';
 import * as Sentry from '@sentry/node';
 

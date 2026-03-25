@@ -4,7 +4,7 @@ import {supabase} from '@/integrations/supabase/client';
 import {useAuth} from './useAuth';
 import {useToast} from './use-toast';
 
-export type Event ={
+export type AppEvent ={
     id: string;
     host_id: string;
     title: string;
@@ -161,7 +161,7 @@ export const useEvents = (filter?: 'upcoming' | 'my_events' | 'attending') => {
                         host: hostResult.data,
                         attendee_count: attendeesResult.count || 0,
                         is_attending: !!attendingResult.data,
-                    } as Event;
+                    } as AppEvent;
                 })
             );
 

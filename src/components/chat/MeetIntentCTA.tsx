@@ -5,9 +5,9 @@
  * in an incoming message. Tap to open a lightweight date/time planner.
  */
 
-import { useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { Calendar, MapPin, Clock, X, Check } from 'lucide-react';
+import {useState} from 'react';
+import {AnimatePresence, motion} from 'framer-motion';
+import {Calendar, Check, Clock, MapPin, X} from 'lucide-react';
 
 interface MeetIntentCTAProps {
   otherUserName: string;

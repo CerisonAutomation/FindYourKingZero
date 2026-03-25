@@ -2,11 +2,11 @@
 // main.tsx v4.0 — Enterprise React 18 entry point
 // StrictMode enabled, null-safe root mount, theme hydration before paint
 // =============================================================================
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
+import {StrictMode} from 'react';
+import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
-import { applyTheme } from './stores/useThemeStore';
+import {applyTheme} from './stores/useThemeStore';
 
 // ── Hydrate persisted theme BEFORE first paint (prevents flash) ──────────────
 try {

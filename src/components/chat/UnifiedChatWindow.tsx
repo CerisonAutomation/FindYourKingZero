@@ -1,39 +1,37 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {AnimatePresence, motion} from 'framer-motion';
 import {
+  BadgeCheck,
   Check,
   CheckCheck,
   ChevronLeft,
+  CornerUpLeft,
+  Crown,
   Globe,
-  ImagePlus,
   Lock,
   MoreVertical,
+  Paperclip,
   Phone,
-  CornerUpLeft,
   Send,
+  ShieldCheck,
   Smile,
   Video,
-  Zap,
-  Calendar,
-  Crown,
-  BadgeCheck,
   X,
-  Paperclip,
-  ShieldCheck,
+  Zap,
 } from 'lucide-react';
-import { useChat, type Conversation, type ChatMessage as Message } from '@/hooks/unified/useChat';
-import { useConversationPresence } from '@/hooks/usePresence';
-import { REACTION_EMOJIS, useReactions } from '@/hooks/useReactions';
-import { useAuth } from '@/hooks/useAuth';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Skeleton } from '@/components/ui/skeleton';
-import { cn } from '@/lib/utils';
-import { supabase } from '@/integrations/supabase/client';
-import { chatAI, type QuickReply, type SafetyResult } from '@/lib/ai/ChatAI';
-import { MeetIntentCTA } from './MeetIntentCTA';
-import { SafetyShield } from './SafetyShield';
-import { QuickReplyBar } from './QuickReplyBar';
-import { VoiceInputButton } from '@/components/voice/VoiceInputButton';
+import {type ChatMessage as Message, type Conversation, useChat} from '@/hooks/unified/useChat';
+import {useConversationPresence} from '@/hooks/usePresence';
+import {REACTION_EMOJIS, useReactions} from '@/hooks/useReactions';
+import {useAuth} from '@/hooks/useAuth';
+import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
+import {Skeleton} from '@/components/ui/skeleton';
+import {cn} from '@/lib/utils';
+import {supabase} from '@/integrations/supabase/client';
+import {chatAI, type QuickReply, type SafetyResult} from '@/lib/ai/ChatAI';
+import {MeetIntentCTA} from './MeetIntentCTA';
+import {SafetyShield} from './SafetyShield';
+import {QuickReplyBar} from './QuickReplyBar';
+import {VoiceInputButton} from '@/components/voice/VoiceInputButton';
 
 // ─────────────────────────────────────────────────────────────
 // Config

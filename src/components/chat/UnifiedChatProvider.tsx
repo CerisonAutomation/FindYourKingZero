@@ -4,47 +4,32 @@
  * Supports multiple chat modes and conversation types for maximum flexibility
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { cn } from '@/lib/utils';
+import {useCallback, useEffect, useRef, useState} from 'react';
+import {motion} from 'framer-motion';
+import {Button} from '@/components/ui/button';
+import {Badge} from '@/components/ui/badge';
+import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
+import {Input} from '@/components/ui/input';
+import {Textarea} from '@/components/ui/textarea';
+import {cn} from '@/lib/utils';
 import {
-  MessageCircle,
-  Send,
-  Paperclip,
-  Smile,
-  Phone,
-  Video,
-  MoreVertical,
-  Search,
-  Users,
-  Settings,
-  Archive,
-  Trash2,
   Check,
   CheckCheck,
-  Clock,
-  User,
-  Heart,
-  Star,
-  Shield,
-  Activity,
-  RefreshCw,
-  Plus,
-  X,
   ChevronLeft,
-  ChevronRight,
+  Clock,
+  MessageCircle,
   Mic,
   MicOff,
-  Volume2,
-  VolumeX
+  MoreVertical,
+  Paperclip,
+  Phone,
+  Plus,
+  Search,
+  Send,
+  Star,
+  Users,
+  VolumeX,
+  X
 } from 'lucide-react';
 
 // Unified Chat Types

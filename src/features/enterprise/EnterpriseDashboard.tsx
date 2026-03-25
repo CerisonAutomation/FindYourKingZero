@@ -3,35 +3,21 @@
  * Production-ready admin interface with comprehensive analytics and management
  */
 
-import React, { useState, useMemo, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, {useCallback, useMemo, useState} from 'react';
+import {motion} from 'framer-motion';
 import {
-  BarChart3,
-  Users,
-  MessageSquare,
-  Shield,
-  TrendingUp,
   Activity,
-  DollarSign,
   AlertTriangle,
+  ArrowDown,
+  ArrowUp,
   CheckCircle,
   Clock,
-  Globe,
-  Zap,
-  Database,
-  Cpu,
-  Wifi,
-  Settings,
+  DollarSign,
   Download,
-  RefreshCw,
-  Eye,
-  Target,
-  Brain,
-  Heart,
-  Star,
-  ArrowUp,
-  ArrowDown,
   Minus,
+  RefreshCw,
+  Users,
+  Zap,
 } from 'lucide-react';
 
 // ── INTERFACES ────────────────────────────────────────────────────────

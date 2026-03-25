@@ -1,6 +1,6 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts'
-import { corsHeaders, handleCORS } from '../_shared/cors.ts'
-import { getSystemPrompt } from '../_shared/ai-types.ts'
+import {corsHeaders, handleCORS} from '../_shared/cors.ts'
+import {getSystemPrompt} from '../_shared/ai-types.ts'
 
 Deno.serve(async (req) => {
     const corsResponse = handleCORS(req)

@@ -1,9 +1,22 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
-import {Bot, ChevronDown, Cpu, Heart, Mic, MicOff, RefreshCw, Send, Shield, Sparkles, Square, WifiOff, Zap,} from 'lucide-react';
+import {
+    Bot,
+    ChevronDown,
+    Cpu,
+    Heart,
+    Mic,
+    MicOff,
+    RefreshCw,
+    Send,
+    Shield,
+    Sparkles,
+    Square,
+    WifiOff,
+    Zap,
+} from 'lucide-react';
 import {cn} from '@/lib/utils';
 import {useLocalAI} from '@/lib/ai';
-import type {LocalAIStatus} from '@/lib/ai';
 
 /* ── Types ───────────────────────────────────────────────────── */
 type Message = { id: string; role: 'user' | 'assistant'; content: string };

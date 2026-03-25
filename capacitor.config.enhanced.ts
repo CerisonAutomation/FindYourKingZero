@@ -10,7 +10,7 @@
  * @version 4.0.0
  */
 
-import { CapacitorConfig } from '@capacitor/cli'
+import {CapacitorConfig} from '@capacitor/cli'
 
 const config: CapacitorConfig = {
   // 🎯 App Identity

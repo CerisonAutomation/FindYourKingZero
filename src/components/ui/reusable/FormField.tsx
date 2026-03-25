@@ -1,7 +1,7 @@
 import React from 'react';
-import { cva } from 'class-variance-authority';
-import { cn } from '@/lib/utils';
-import { BaseInputProps } from '@/types/base-props';
+import {cva} from 'class-variance-authority';
+import {cn} from '@/lib/utils';
+import {BaseInputProps} from '@/types/base-props';
 
 // Form field variants
 const formFieldVariants = cva(

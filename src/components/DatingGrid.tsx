@@ -3,9 +3,9 @@
  * Production-ready user discovery with AI matching and performance optimization
  */
 
-import React, { useState, useMemo, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, MessageCircle, X, Star, MapPin, Shield, Brain } from 'lucide-react';
+import React, {useCallback, useMemo, useState} from 'react';
+import {AnimatePresence, motion} from 'framer-motion';
+import {Brain, Heart, MapPin, MessageCircle, Shield, Star, X} from 'lucide-react';
 
 export type UserProfile  = {
   id: string;

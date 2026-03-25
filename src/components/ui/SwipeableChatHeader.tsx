@@ -2,10 +2,10 @@
 // SWIPEABLE CHAT HEADER — Swipe down to close chat
 // Uses framer-motion drag for smooth experience
 // =====================================================
-import { useCallback, useState } from 'react';
-import { motion, type PanInfo } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
-import { haptics } from '@/lib/haptics';
+import {useCallback, useState} from 'react';
+import {motion, type PanInfo} from 'framer-motion';
+import {ChevronDown} from 'lucide-react';
+import {haptics} from '@/lib/haptics';
 
 interface SwipeableChatHeaderProps {
   /** Title shown in the header */

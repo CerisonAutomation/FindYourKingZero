@@ -5,9 +5,9 @@
  * the typed message is flagged. Offers a one-tap "Soften" rewrite.
  */
 
-import { AnimatePresence, motion } from 'framer-motion';
-import { AlertTriangle, XCircle, Sparkles } from 'lucide-react';
-import type { SafetyResult } from '@/lib/ai/ChatAI';
+import {AnimatePresence, motion} from 'framer-motion';
+import {AlertTriangle, Sparkles, XCircle} from 'lucide-react';
+import type {SafetyResult} from '@/lib/ai/ChatAI';
 
 interface SafetyShieldProps {
   result: SafetyResult | null;

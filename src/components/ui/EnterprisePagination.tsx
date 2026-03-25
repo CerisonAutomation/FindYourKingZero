@@ -1,9 +1,9 @@
-import React, { useMemo, useCallback } from 'react';
-import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useEnterprisePagination, paginationUtils, type PaginationConfig } from '@/lib/pagination/EnterprisePagination';
+import React, {useCallback, useMemo} from 'react';
+import {ChevronLeft, ChevronRight, MoreHorizontal} from 'lucide-react';
+import {cn} from '@/lib/utils';
+import {Button} from '@/components/ui/button';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
+import {type PaginationConfig, paginationUtils, useEnterprisePagination} from '@/lib/pagination/EnterprisePagination';
 
 interface EnterprisePaginationProps<T = any> {
   // Pagination state

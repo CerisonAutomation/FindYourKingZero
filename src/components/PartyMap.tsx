@@ -10,14 +10,15 @@ import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Textarea} from '@/components/ui/textarea';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from '@/components/ui/select';
-import {Party, PARTY_TYPES, useCreateParty, useParties, useRSVPParty} from '@/hooks/useParties';
+import type {Party} from '@/hooks/useParties';
+import {PARTY_TYPES, useCreateParty, useParties, useRSVPParty} from '@/hooks/useParties';
+import type {MeetNowUser} from '@/hooks/useMeetNow';
 import {
-  MEET_NOW_STATUSES,
-  MeetNowUser,
-  useMeetNowUsers,
-  useMyMeetNowStatus,
-  useShareLocation,
-  useStopSharing
+    MEET_NOW_STATUSES,
+    useMeetNowUsers,
+    useMyMeetNowStatus,
+    useShareLocation,
+    useStopSharing
 } from '@/hooks/useMeetNow';
 import {useSubscription} from '@/hooks/useSubscription';
 import {useAuth} from '@/hooks/useAuth';

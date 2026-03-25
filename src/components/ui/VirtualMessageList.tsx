@@ -3,9 +3,9 @@
 // Uses fixed-height virtual scrolling for performance
 // with long conversation histories
 // =====================================================
-import { memo, useEffect, useRef } from 'react';
-import { useVirtualScroll } from '@/hooks/useVirtualScroll';
-import { cn } from '@/lib/utils';
+import {memo, useEffect, useRef} from 'react';
+import {useVirtualScroll} from '@/hooks/useVirtualScroll';
+import {cn} from '@/lib/utils';
 
 interface Message {
   id: string;

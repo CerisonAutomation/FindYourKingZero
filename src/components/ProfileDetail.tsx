@@ -1,7 +1,7 @@
 import {motion} from 'framer-motion';
 import {BadgeCheck, ChevronLeft, ChevronRight, Crown, Heart, MapPin, MessageCircle, Ruler, Star, X} from 'lucide-react';
 import {useState} from 'react';
-import {Profile} from '@/types';
+import type {Profile} from '@/types';
 import {Sheet, SheetContent} from '@/components/ui/sheet';
 import {Button} from '@/components/ui/button';
 import {Badge} from '@/components/ui/badge';
@@ -141,15 +141,15 @@ export function ProfileDetail({
                         {profile.role === 'provider' && (
                             <div className="grid grid-cols-3 gap-4 p-4 rounded-2xl bg-secondary/50">
                                 <div className="text-center">
-                                    <p className="text-2xl font-bold text-primary">${profile.hourlyRate}</p>
+                                    <p className="text-2xl font-bold text-primary">${profile.hourly_rate ?? 0}</p>
                                     <p className="text-sm text-muted-foreground">per hour</p>
                                 </div>
                                 <div className="text-center border-x border-border">
-                                    <p className="text-2xl font-bold">{profile.reviewCount}</p>
+                                    <p className="text-2xl font-bold">{profile.review_count ?? 0}</p>
                                     <p className="text-sm text-muted-foreground">reviews</p>
                                 </div>
                                 <div className="text-center">
-                                    <p className="text-2xl font-bold text-gold">{profile.rating}</p>
+                                    <p className="text-2xl font-bold text-gold">{profile.rating ?? 0}</p>
                                     <p className="text-sm text-muted-foreground">rating</p>
                                 </div>
                             </div>

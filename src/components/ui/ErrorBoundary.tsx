@@ -1,9 +1,9 @@
 // =====================================================
 // ENTERPRISE ERROR BOUNDARY — Sentry + Supabase + Logger
 // =====================================================
-import React, { Component, type ErrorInfo, type ReactNode } from 'react';
+import React, {Component, type ErrorInfo, type ReactNode} from 'react';
 import * as Sentry from '@sentry/react';
-import { log } from '@/lib/enterprise/Logger';
+import {log} from '@/lib/enterprise/Logger';
 
 // Lazy-import supabase to avoid circular deps and keep boundary lightweight
 let supabaseClient: typeof import('@/integrations/supabase/client').supabase | null = null;

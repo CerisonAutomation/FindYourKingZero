@@ -3,63 +3,27 @@
  * Real-time analytics with AI insights and performance monitoring
  */
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, {useCallback, useEffect, useState} from 'react';
+import {motion} from 'framer-motion';
 import {
-  BarChart3,
-  LineChart,
-  PieChart,
-  TrendingUp,
-  TrendingDown,
   Activity,
-  Users,
-  MessageCircle,
-  Heart,
-  Eye,
-  Clock,
-  Calendar,
-  Filter,
-  Download,
-  RefreshCw,
-  Settings,
-  Zap,
-  Target,
-  Award,
   AlertTriangle,
-  CheckCircle,
-  Info,
-  HelpCircle,
-  ChevronUp,
-  ChevronDown,
-  MoreVertical,
-  Share2,
-  Monitor,
-  Smartphone,
-  Globe,
-  Wifi,
-  Database,
-  Shield,
-  Brain,
-  Gauge,
-  ArrowUp,
   ArrowDown,
-  Minus,
-  Plus,
-  Calendar as CalendarIcon,
-  User,
-  Star,
-  Trophy,
-  Flag,
-  Archive,
-  Trash2,
-  Copy,
-  ExternalLink,
+  ArrowUp,
+  BarChart3,
+  Download,
+  Heart,
+  MessageCircle,
+  Monitor,
+  RefreshCw,
+  Shield,
+  Users,
+  Wifi,
 } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import {Button} from '@/components/ui/button';
+import {Card} from '@/components/ui/card';
+import {Badge} from '@/components/ui/badge';
 
 interface AnalyticsDashboardProps {
   performanceMetrics: {

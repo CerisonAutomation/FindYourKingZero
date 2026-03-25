@@ -10,7 +10,7 @@ import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Textarea} from '@/components/ui/textarea';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from '@/components/ui/select';
-import {Event, EVENT_TYPES, useCreateEvent, useEvents, useJoinEvent, useLeaveEvent} from '@/hooks/useEvents';
+import {AppEvent, EVENT_TYPES, useCreateEvent, useEvents, useJoinEvent, useLeaveEvent} from '@/hooks/useEvents';
 import {useAuth} from '@/hooks/useAuth';
 import {cn} from '@/lib/utils';
 import {format, parseISO} from 'date-fns';
@@ -20,7 +20,7 @@ interface EventsTabProps {
 }
 
 const EventCard = memo(({event, onJoin, onLeave, onViewProfile}: {
-    event: Event;
+    event: AppEvent;
     onJoin: (id: string) => void;
     onLeave: (id: string) => void;
     onViewProfile: (id: string) => void;

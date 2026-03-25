@@ -3,59 +3,36 @@
  * Advanced AI-powered dating coach with personalized recommendations and analysis
  */
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {AnimatePresence, motion} from 'framer-motion';
 import {
-  Brain,
-  MessageCircle,
-  TrendingUp,
-  Target,
-  Users,
-  Heart,
-  Star,
-  Zap,
-  Activity,
-  BarChart3,
-  PieChart,
-  Lightbulb,
-  CheckCircle,
   AlertCircle,
-  Clock,
-  Calendar,
-  MapPin,
-  Eye,
-  Shield,
-  Award,
-  Compass,
-  Settings,
-  Play,
-  Pause,
-  RotateCcw,
-  Download,
-  Share2,
-  Filter,
-  Search,
+  BarChart3,
+  Brain,
+  CheckCircle,
   ChevronRight,
-  ChevronDown,
-  Plus,
-  X,
+  Download,
+  Eye,
   Info,
-  HelpCircle,
-  Sparkles,
-  Rocket,
-  Trophy,
-  Flag,
+  Lightbulb,
+  MessageCircle,
+  Play,
   RefreshCw,
-  Sliders,
-  Gauge,
-  Target as TargetIcon,
+  Search,
+  Share2,
+  Sparkles,
+  Target,
+  TrendingUp,
+  Trophy,
+  Users,
+  X,
 } from 'lucide-react';
 
-import type { UserProfile } from '@/lib/hybrid-p2p-dating';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import type {UserProfile} from '@/lib/hybrid-p2p-dating';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {Card} from '@/components/ui/card';
+import {Badge} from '@/components/ui/badge';
 
 interface AICoachingPanelProps {
   profile: UserProfile | null;

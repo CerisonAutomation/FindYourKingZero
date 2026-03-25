@@ -2,32 +2,19 @@
  * LiveLocationMap — Real-time location sharing with MapLibre
  * Integrates with Supabase Realtime for live updates
  */
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  MapPin, 
-  Navigation, 
-  Users, 
-  Eye, 
-  EyeOff, 
-  Settings, 
-  RefreshCw,
-  Locate,
-  Share2,
-  Clock,
-  Shield,
-  Zap
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { useAuth } from '@/hooks/useAuth';
-import { useLocation } from '@/hooks/unified/useLocation';
-import { supabase } from '@/integrations/supabase/client';
-import { cn } from '@/lib/utils';
-import { formatDistanceMiles } from '@/lib/formatters';
+import {useCallback, useEffect, useRef, useState} from 'react';
+import {motion} from 'framer-motion';
+import {Clock, MapPin, Navigation, RefreshCw, Share2, Shield, Users} from 'lucide-react';
+import {Button} from '@/components/ui/button';
+import {Badge} from '@/components/ui/badge';
+import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
+import {Switch} from '@/components/ui/switch';
+import {Label} from '@/components/ui/label';
+import {useAuth} from '@/hooks/useAuth';
+import {useLocation} from '@/hooks/unified/useLocation';
+import {supabase} from '@/integrations/supabase/client';
+import {cn} from '@/lib/utils';
+import {formatDistanceMiles} from '@/lib/formatters';
 
 // MapLibre GL (dynamic import for better performance)
 let maplibregl: any = null;

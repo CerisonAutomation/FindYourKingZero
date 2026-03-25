@@ -1,4 +1,4 @@
-import { joinRoom } from 'https://unpkg.com/trystero?module';
+import {joinRoom} from 'https://unpkg.com/trystero?module';
 
 export default class LoveEngine {
   constructor(config, roomName) {

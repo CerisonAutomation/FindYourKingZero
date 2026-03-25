@@ -3,81 +3,52 @@
  * Comprehensive settings management with performance, accessibility, and security options
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, {useCallback, useEffect, useState} from 'react';
+import {AnimatePresence, motion} from 'framer-motion';
 import {
-  Settings,
-  User,
-  Shield,
-  Bell,
-  Eye,
-  EyeOff,
-  Globe,
-  Lock,
-  Unlock,
-  Volume2,
-  VolumeX,
-  Wifi,
-  Cpu,
-  Brain,
-  Compass,
   Activity,
-  Zap,
-  TrendingUp,
-  BarChart3,
-  PieChart,
-  Monitor,
-  Smartphone,
-  Moon,
-  Sun,
-  Palette,
-  Type,
-  Maximize2,
-  Minimize2,
-  Save,
-  RotateCcw,
-  Download,
-  Upload,
-  Trash2,
-  Plus,
-  X,
-  Check,
   AlertTriangle,
-  Info,
-  HelpCircle,
-  ChevronRight,
-  ChevronDown,
-  Sliders,
-  Radio,
-  Toggle,
-  Key,
-  Fingerprint,
-  Smartphone as PhoneIcon,
-  Mail,
-  Link,
-  Camera,
-  MapPin,
+  BarChart3,
+  Bell,
+  Brain,
   Calendar,
+  Camera,
   Clock,
-  Users,
-  MessageSquare,
-  Heart,
-  Star,
-  Award,
-  Target,
-  Flag,
-  Ban,
-  Archive,
+  Compass,
   Copy,
-  Share2,
-  ExternalLink,
+  Download,
+  Eye,
+  Fingerprint,
+  Heart,
+  Key,
+  Lock,
+  Mail,
+  MapPin,
+  MessageSquare,
+  Monitor,
+  Moon,
+  Palette,
+  PieChart,
+  RotateCcw,
+  Save,
+  Settings,
+  Shield,
+  Sliders,
+  Smartphone,
+  Smartphone as PhoneIcon,
+  Star,
+  Sun,
+  Trash2,
+  Upload,
+  Wifi,
+  Zap,
 } from 'lucide-react';
 
-import { SignalingStrategy } from '@/lib/hybrid-p2p-dating';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import {SignalingStrategy} from '@/lib/hybrid-p2p-dating';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {Card} from '@/components/ui/card';
+import {Badge} from '@/components/ui/badge';
 
 interface SettingsPanelProps {
   config: {

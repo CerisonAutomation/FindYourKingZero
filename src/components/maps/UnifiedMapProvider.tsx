@@ -4,29 +4,28 @@
  * Supports multiple map modes and providers for maximum flexibility
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
+import {useCallback, useEffect, useRef, useState} from 'react';
+import {Button} from '@/components/ui/button';
+import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
+import {Dialog, DialogContent, DialogHeader, DialogTitle} from '@/components/ui/dialog';
+import {Input} from '@/components/ui/input';
+import {cn} from '@/lib/utils';
 import {
-  Navigation,
-  Users,
+  Activity,
+  BadgeCheck,
+  Crown,
+  Filter,
+  Heart,
+  Layers,
   MapPin,
   Maximize2,
-  Minimize2,
-  Layers,
-  Filter,
-  RefreshCw,
-  Activity,
-  Crown,
-  BadgeCheck,
-  Heart,
   MessageCircle,
+  Minimize2,
+  Navigation,
   Plus,
-  Search
+  RefreshCw,
+  Search,
+  Users
 } from 'lucide-react';
 
 // Unified Map Types

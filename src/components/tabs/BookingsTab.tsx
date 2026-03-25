@@ -1,7 +1,8 @@
 import {useState} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
 import {Calendar, Check, ChevronRight, Clock, CreditCard, DollarSign, Loader2, MapPin, Plus, X} from 'lucide-react';
-import {Booking, useBookings, useUpdateBookingStatus} from '@/hooks/useBookings';
+import type {Booking} from '@/hooks/useBookings';
+import {useBookings, useUpdateBookingStatus} from '@/hooks/useBookings';
 import {Button} from '@/components/ui/button';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {Badge} from '@/components/ui/badge';

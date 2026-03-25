@@ -3,59 +3,39 @@
  * Comprehensive user profile with AI analysis, verification, and performance optimization
  */
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, {useCallback, useEffect, useState} from 'react';
+import {AnimatePresence, motion} from 'framer-motion';
 import {
-  User,
-  Camera,
-  MapPin,
+  Ban,
+  BarChart3,
+  Brain,
   Calendar,
+  Camera,
+  Check,
+  Clock,
+  Edit,
+  Eye,
+  Flag,
   Heart,
+  Lock,
+  MapPin,
   MessageCircle,
   Phone,
-  Star,
-  Shield,
-  Brain,
-  Activity,
-  Edit,
-  Settings,
-  Eye,
-  EyeOff,
-  Check,
-  X,
-  Upload,
-  Trash2,
   Plus,
-  Zap,
-  TrendingUp,
-  Award,
-  Target,
-  Compass,
-  Clock,
-  Users,
-  Flag,
-  Block,
   Share2,
-  Download,
-  Copy,
-  BarChart3,
-  PieChart,
-  Activity as ActivityIcon,
-  Lock,
+  Shield,
+  Target,
   Unlock,
-  Globe,
-  Mail,
-  Link,
-  Instagram,
-  Twitter,
-  Linkedin,
+  Upload,
+  User,
+  Users,
+  X,
 } from 'lucide-react';
 
-import { UserProfile } from '@/lib/hybrid-p2p-dating';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import type {UserProfile} from '@/lib/hybrid-p2p-dating';
+import {Button} from '@/components/ui/button';
+import {Card} from '@/components/ui/card';
+import {Badge} from '@/components/ui/badge';
 
 interface ProfileViewProps {
   profile: UserProfile | null;
@@ -600,7 +580,7 @@ export default function ProfileView({ profile, onUpdate, advancedMode }: Profile
             Report
           </Button>
           <Button variant="outline" className="bg-red-500/20 text-red-400">
-            <Block className="w-4 h-4 mr-2" />
+            <Ban className="w-4 h-4 mr-2" />
             Block
           </Button>
         </div>
