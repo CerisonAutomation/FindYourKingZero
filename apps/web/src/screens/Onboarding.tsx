@@ -300,7 +300,7 @@ export default function OnboardingScreen() {
             <div style={{
               padding: '14px 16px', background: 'rgba(229,25,46,.06)', border: '1px solid rgba(229,25,46,.18)',
             }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: COLORS.red, marginBottom: 4 }}>📷 Photo Guidelines</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: COLORS.red, marginBottom: 4 }}>Photo Guidelines</div>
               <div style={{ fontSize: 12, color: COLORS.w60, lineHeight: 1.5 }}>
                 Clear face photos get 10x more engagement. No nudity in public photos. Private albums available after profile setup.
               </div>

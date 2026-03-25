@@ -65,7 +65,7 @@ export default function EventsScreen() {
               background: `linear-gradient(135deg,${COLORS.red},#FF4020)`, border: 'none', cursor: 'pointer',
               fontSize: 16, color: '#fff',
             }}>
-            {showCreate ? '✕' : '+'}
+            {showCreate ? '' : '+'}
           </button>
         </div>
 
@@ -95,7 +95,7 @@ export default function EventsScreen() {
                 padding: '13px', background: `linear-gradient(135deg,${COLORS.red},#FF4020)`,
                 border: 'none', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: creating ? 0.6 : 1,
               }}>
-              {creating ? 'Creating…' : '📅 Create Event'}
+              {creating ? 'Creating…' : 'Create Event'}
             </button>
           </div>
         )}
@@ -135,7 +135,7 @@ export default function EventsScreen() {
       <div style={{ flex: 1, overflowY: 'auto' }}>
         {displayed.length === 0 && (
           <div style={{ textAlign: 'center', padding: '50px 24px' }}>
-            <div style={{ fontSize: 36, marginBottom: 16 }}>📅</div>
+            <div style={{ fontSize: 36, marginBottom: 16 }}>+</div>
             <p style={{ color: COLORS.w60, fontSize: 13 }}>
               {tab === 'attending' ? 'RSVP to events to see them here' : tab === 'hosting' ? 'Create your first event above' : 'No events yet — be the first!'}
             </p>
@@ -144,7 +144,7 @@ export default function EventsScreen() {
 
         {displayed.map((event) => {
           const c = EVENT_COLORS[event.type] || COLORS.red;
-          const emoji = EVENT_EMOJI[event.type] || '📅';
+          const emoji = EVENT_EMOJI[event.type] || 'E';
           const fill = event.capacity > 0 ? Math.round(((event.attendees?.length ?? 0) / event.capacity) * 100) : 0;
           const going = event.attendees?.includes(me?.id ?? '');
 

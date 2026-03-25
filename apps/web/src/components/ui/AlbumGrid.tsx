@@ -249,7 +249,7 @@ export function AlbumGrid({ userId, isOwner, mode, chatPartnerId }: AlbumGridPro
             cursor: 'pointer', fontSize: 13, fontWeight: 600,
           }}
         >
-          {loading ? 'Loading...' : '📷 Show Albums'}
+          {loading ? 'Loading...' : 'Show Albums'}
         </button>
       )}
 
@@ -281,7 +281,7 @@ export function AlbumGrid({ userId, isOwner, mode, chatPartnerId }: AlbumGridPro
                   <img src={album.cover_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
                   <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
-                    📷
+                    X
                   </div>
                 )}
               </div>
@@ -325,7 +325,7 @@ export function AlbumGrid({ userId, isOwner, mode, chatPartnerId }: AlbumGridPro
                       color: COLORS.blue, borderRadius: 5, cursor: sharing === album.id ? 'wait' : 'pointer',
                     }}
                   >
-                    {sharing === album.id ? '...' : '↗ Share'}
+                    {sharing === album.id ? '...' : 'Share'}
                   </button>
                 )}
               </div>

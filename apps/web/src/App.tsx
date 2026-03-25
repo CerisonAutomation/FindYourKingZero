@@ -57,7 +57,7 @@ class AppErrorBoundary extends React.Component<{ children: ReactNode }, ErrorSta
     if (this.state.hasError) {
       return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#060610', color: '#fff', padding: 24, textAlign: 'center' }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>⚡</div>
+          <div style={{ fontSize: 48, marginBottom: 16, color: '#E5192E' }}>!</div>
           <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 8 }}>Something went wrong</h2>
           <p style={{ color: 'rgba(255,255,255,.5)', fontSize: 13, marginBottom: 24 }}>{this.state.error?.message ?? 'An unexpected error occurred'}</p>
           <button onClick={() => { this.setState({ hasError: false, error: null }); window.location.reload(); }}

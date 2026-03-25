@@ -73,7 +73,7 @@ export default function EventDetailScreen() {
   }
 
   const c = EVENT_COLORS[event.type] || COLORS.red;
-  const emoji = EVENT_EMOJI[event.type] || '📅';
+  const emoji = EVENT_EMOJI[event.type] || 'E';
   const fill = event.capacity > 0 ? Math.round((attendeeCount / event.capacity) * 100) : 0;
 
   return (
@@ -107,8 +107,8 @@ export default function EventDetailScreen() {
           {/* Info grid */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
             {[
-              { icon: '📅', label: 'Date', value: new Date(event.date).toLocaleDateString('en', { weekday: 'short', month: 'short', day: 'numeric' }) },
-              { icon: '🕐', label: 'Time', value: event.time },
+              { icon: 'D', label: 'Date', value: new Date(event.date).toLocaleDateString('en', { weekday: 'short', month: 'short', day: 'numeric' }) },
+              { icon: 'T', label: 'Time', value: event.time },
               { icon: <MapPin size={14} />, label: 'Location', value: event.location || 'TBA' },
               { icon: <Users size={14} />, label: 'Attending', value: `${attendeeCount} / ${event.capacity}` },
             ].map((m) => (
@@ -192,7 +192,7 @@ export default function EventDetailScreen() {
               padding: '14px 24px', background: 'transparent', border: `1px solid rgba(255,255,255,.12)`,
               color: COLORS.w60, fontSize: 13, fontWeight: 700, cursor: 'pointer', width: '100%',
             }}>
-            ✕ Leave Event
+            Leave Event
           </button>
         ) : (
           <button onClick={() => rsvp(true)}

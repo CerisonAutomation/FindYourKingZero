@@ -23,8 +23,8 @@ export function searchCities(query: string): string[] {
 // ── Bio autocomplete (AI-powered) ─────────────────────────────
 // Uses TF-IDF locally + optional AI generation
 const BIO_TEMPLATES = [
-  "Gym rat who loves {interest}. Looking for someone who can keep up 💪",
-  "Coffee addict ☕ | {interest} | Let's explore the city together",
+  "Gym rat who loves {interest}. Looking for someone who can keep up",
+  "Coffee addict | {interest} | Let's explore the city together",
   "{interest} enthusiast. Swipe right if you can handle bad puns 😂",
   "Professional {interest} fan. Amateur chef. Let's grab dinner?",
   "Adventurous soul who loves {interest}. Life's too short for boring chats",
@@ -44,12 +44,12 @@ export function suggestBio(interests: string[]): string[] {
 
 // ── Chat autocomplete (smart suggestions) ─────────────────────
 const QUICK_REPLIES = {
-  greeting: ["Hey! 👋", "What's up?", "Hey there! How are you?", "Hi king 👑"],
+  greeting: ["Hey!", "What's up?", "Hey there! How are you?", "Hi there"],
   interest: ["Tell me more!", "That's awesome!", "Interesting! What else?", "Love that 🔥"],
   agree: ["Sounds good!", "Count me in!", "Let's do it!", "I'm down!"],
-  compliment: ["You look great!", "Love your vibe!", "Stunning!", "You're killing it 💪"],
+  compliment: ["You look great!", "Love your vibe!", "Stunning!", "You're killing it"],
   plan: ["When are you free?", "Let's plan something!", "How about this weekend?", "I know a great spot"],
-  goodbye: ["Talk later!", "See you! 👋", "Good night 🌙", "Take care!"],
+  goodbye: ["Talk later!", "See you!", "Good night", "Take care!"],
 };
 
 export function getQuickReplies(context: string): string[] {
@@ -69,7 +69,7 @@ export function getQuickReplies(context: string): string[] {
 
 // ── Smart compose (word-by-word completion) ────────────────────
 const COMMON_COMPLETIONS: Record<string, string[]> = {
-  'hey': ['there!', 'how are you?', 'king 👑'],
+  'hey': ['there!', 'how are you?', 'there'],
   'want': ['to grab coffee?', 'to meet up?', 'to hang out?'],
   'are': ['you free tonight?', 'you into gym?', 'you looking for something serious?'],
   'let': ['\'s meet!', '\'s grab a drink!', '\'s do something fun!'],

@@ -53,14 +53,14 @@ export const authClient = {
   getMatches() {
     return [
       { id: 'm1', userIdA: 'current', userIdB: 'demo-1', lastMessage: 'Hey! How are you?', lastMessageAt: Date.now() - 300000, unreadCount: 2 },
-      { id: 'm2', userIdA: 'current', userIdB: 'demo-2', lastMessage: 'See you at the gym tomorrow 💪', lastMessageAt: Date.now() - 3600000, unreadCount: 0 },
+      { id: 'm2', userIdA: 'current', userIdB: 'demo-2', lastMessage: 'See you at the gym tomorrow', lastMessageAt: Date.now() - 3600000, unreadCount: 0 },
       { id: 'm3', userIdA: 'current', userIdB: 'demo-4', lastMessage: 'That party was amazing!', lastMessageAt: Date.now() - 86400000, unreadCount: 1 },
     ];
   },
 
   getMessages(matchId: string) {
     return [
-      { id: '1', matchId, senderId: 'demo-1', content: 'Hey there! 👋', type: 'text', read: true, createdAt: Date.now() - 600000 },
+      { id: '1', matchId, senderId: 'demo-1', content: 'Hey there!', type: 'text', read: true, createdAt: Date.now() - 600000 },
       { id: '2', matchId, senderId: 'current', content: 'Hey! How are you?', type: 'text', read: true, createdAt: Date.now() - 300000 },
     ];
   },

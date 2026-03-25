@@ -13,7 +13,7 @@ const TYPE_CONFIG: Record<NotificationType, { color: string; icon: string }> = {
   superlike: { color: COLORS.purple, icon: '<Star size={16} />' },
   match: { color: COLORS.pink, icon: '💕' },
   message: { color: COLORS.blue, icon: '<MessageCircle size={16} />' },
-  event: { color: COLORS.yellow, icon: '📅' },
+  event: { color: COLORS.yellow, icon: 'E' },
   system: { color: COLORS.green, icon: '<Check size={12} />' },
 };
 

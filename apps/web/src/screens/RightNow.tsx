@@ -203,7 +203,7 @@ export default function RightNowScreen() {
                   padding: '15px 24px', background: `linear-gradient(135deg,${COLORS.red},#FF4020)`,
                   border: 'none', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', width: '100%',
                 }}>
-                📡 GO LIVE NOW
+                GO LIVE NOW
               </button>
             </div>
           )}

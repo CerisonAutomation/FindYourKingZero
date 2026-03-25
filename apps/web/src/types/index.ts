@@ -252,6 +252,6 @@ export const EVENT_COLORS: Record<EventType, string> = {
 };
 
 export const EVENT_EMOJI: Record<EventType, string> = {
-  Party: '🎉', Gym: '🏋️', Drinks: '🍻', Music: '🎵',
-  Outdoor: '🌿', Gaming: '🎮', Cinema: '🎬', Food: '🍽️',
+  Party: 'P', Gym: 'G', Drinks: 'D', Music: 'M',
+  Outdoor: 'O', Gaming: 'G', Cinema: 'C', Food: 'F',
 };

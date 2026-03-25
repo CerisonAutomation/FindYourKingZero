@@ -179,7 +179,7 @@ export default function ChatScreen() {
                 {s}
               </button>
             ))}
-            <button onClick={() => setAiSuggestions([])} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
+            <button onClick={() => setAiSuggestions([])} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>X</button>
           </div>
         )}
         {quickReplies.length > 0 && draft.length > 0 && aiSuggestions.length === 0 && (

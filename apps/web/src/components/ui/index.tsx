@@ -124,9 +124,9 @@ export const BottomNav: FC = memo(() => {
 
   const tabs = [
     { id: 'discover' as const, icon: '🧭', label: 'Discover' },
-    { id: 'right-now' as const, icon: '📡', label: 'Now' },
+    { id: 'right-now' as const, icon: 'N', label: 'Now' },
     { id: 'messages' as const, icon: <MessageCircle size={14} />, label: 'Messages' },
-    { id: 'events' as const, icon: '📅', label: 'Events' },
+    { id: 'events' as const, icon: 'E', label: 'Events' },
     { id: 'profile' as const, icon: <User size={14} />, label: 'Profile' },
   ];
 

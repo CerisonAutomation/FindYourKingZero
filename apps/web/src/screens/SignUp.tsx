@@ -113,7 +113,7 @@ export default function SignUpScreen() {
   if (sent) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', padding: '40px 24px', textAlign: 'center' }}>
-        <div style={{ fontSize: 48, marginBottom: 20 }}>📬</div>
+        <div style={{ fontSize: 48, marginBottom: 20, color: COLORS.red }}>✉</div>
         <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 10 }}>Check your email</h2>
         <p style={{ color: COLORS.w35, fontSize: 14, lineHeight: 1.6 }}>
           We sent a confirmation link to <strong style={{ color: '#fff' }}>{email}</strong>.<br />

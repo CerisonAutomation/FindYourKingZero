@@ -15,7 +15,7 @@ const RULES = [
   { id: 'r5', icon: <DollarSign size={16} />, title: 'No Solicitation', desc: 'No selling, promoting businesses, requesting money, or financial scams of any kind.' },
   { id: 'r6', icon: <Shield size={16} />, title: 'Protect Privacy', desc: 'Never share someone else\'s personal information, photos, or conversations without explicit consent.' },
   { id: 'r7', icon: '🚫', title: 'No Illegal Activity', desc: 'Drug dealing, solicitation of illegal services, and any criminal activity will result in an immediate ban.' },
-  { id: 'r8', icon: '📸', title: 'Photo Standards', desc: 'No nudity in public photos. Private albums are consensual. No photos of minors. No non-consensual intimate images.' },
+  { id: 'r8', icon: 'P', title: 'Photo Standards', desc: 'No nudity in public photos. Private albums are consensual. No photos of minors. No non-consensual intimate images.' },
 ];
 
 const PROHIBITED = [

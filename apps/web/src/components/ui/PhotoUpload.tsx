@@ -113,7 +113,7 @@ export function PhotoUpload({
             fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
           }}
         >
-          {uploading ? `Uploading... ${progress}%` : `📷 Add Photos (${previews.length}/${maxFiles})`}
+          {uploading ? `Uploading... ${progress}%` : `Add Photos (${previews.length}/${maxFiles})`}
         </button>
       )}
 

@@ -41,7 +41,7 @@ interface ChatMessage {
 // ─── Data ───
 const COACHING_TIPS: CoachingTip[] = [
   { id: 't1', category: 'profile', title: 'Add a bio', text: 'Profiles with bios get 4x more engagement. Be authentic and specific.', icon: '✍️', priority: 'high' },
-  { id: 't2', category: 'photo', title: 'First photo matters', text: 'Clear face shots get 10x more taps. Natural light is your best friend.', icon: '📸', priority: 'high' },
+  { id: 't2', category: 'photo', title: 'First photo matters', text: 'Clear face shots get 10x more taps. Natural light is your best friend.', icon: 'X', priority: 'high' },
   { id: 't3', category: 'conversation', title: 'Ask open questions', text: 'Instead of "hey", try asking about something specific in their profile.', icon: '', priority: 'medium' },
   { id: 't4', category: 'profile', title: 'Update your tribes', text: 'You selected 2 tribes. Profiles with 3+ tribes get 2x more matches.', icon: '🏷️', priority: 'medium' },
   { id: 't5', category: 'safety', title: 'Verify your profile', text: 'Verified profiles get 3x more trust and engagement from other kings.', icon: '✅', priority: 'high' },
@@ -271,7 +271,7 @@ export default function VoiceScreen() {
                         border: `1px solid ${CATEGORY_COLORS[tip.category]}30`,
                       }}>{tip.category}</span>
                       {tip.priority === 'high' && (
-                        <span style={{ fontSize: 8, fontWeight: 700, color: COLORS.red }}>⚡ HIGH</span>
+                        <span style={{ fontSize: 8, fontWeight: 700, color: COLORS.red }}>HIGH</span>
                       )}
                     </div>
                     <div style={{ fontSize: 12, color: COLORS.w60, lineHeight: 1.4 }}>{tip.text}</div>
