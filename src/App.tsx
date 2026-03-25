@@ -1,7 +1,7 @@
 import {Toaster} from "@/components/ui/toaster";
 import {Toaster as Sonner} from "@/components/ui/sonner";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Navigate, Route, Routes, useLocation} from "react-router-dom";
 import {AuthProvider, useAuth} from "./hooks/useAuth";
 import {ErrorBoundary} from "./components/ui/ErrorBoundary";
 import {OfflineBanner} from "@/components/ui/OfflineBanner";
@@ -9,6 +9,8 @@ import {lazy, Suspense, useEffect} from "react";
 import {log} from '@/lib/logger';
 import {AIAvatarOrb} from "@/components/ai";
 import {registerDeepLinkListener} from "@/lib/deeplinks";
+import {AnimatePresence, motion} from "framer-motion";
+import {PublicRoute} from "@/components/auth";
 // Eager loaded critical components
 import HomePage from "./pages/HomePage";
 import ConnectPage from "./pages/ConnectPage";
@@ -184,8 +186,8 @@ const prefetchRoute = (importFn: () => Promise<unknown>) => {
     }
 };
 
-// Enterprise Route Guards
-const ProtectedRoute = ({children, requiredRole = "user"}: {
+// Enterprise Route Guards — Using PublicRoute for marketing pages
+const ProtectedRouteWrapper = ({children, requiredRole = "user"}: {
     children: React.ReactNode;
     requiredRole?: "user" | "admin";
 }) => {
@@ -216,41 +218,29 @@ const ProtectedRoute = ({children, requiredRole = "user"}: {
     return <>{children}</>;
 };
 
-// PublicRoute component (currently unused but available for future use)
-// const PublicRoute = ({children}: {children: React.ReactNode}) => {
-//     const {user, isLoading} = useAuth();
-//
-//     if (isLoading) return <LoadingSpinner message="Loading"/>;
-//     if (user) {
-//         log.info('ROUTE', 'Redirecting authenticated user to app');
-//         return <Navigate to={ROUTES.APP + "/grid"} replace/>;
-//     }
-//
-//     return <>{children}</>;
-// };
+// Scene Transition Wrapper — Animates route changes like cinematic scenes
+const SceneRouteWrapper = ({children}: {children: React.ReactNode}) => {
+    const location = useLocation();
 
-// Route configuration helper (currently unused but available for future use)
-// const createRoute = (path: string, Component: React.ComponentType, options?: {
-//     protected?: boolean;
-//     adminOnly?: boolean;
-//     lazy?: boolean;
-// }) => {
-//     const WrappedComponent = options?.lazy ? (
-//         <Suspense fallback={<LoadingSpinner/>}>
-//             <Component/>
-//         </Suspense>
-//     ) : <Component/>;
-//
-//     const element = options?.protected ? (
-//         <ProtectedRoute requiredRole={options.adminOnly ? "admin" : "user"}>
-//             {WrappedComponent}
-//         </ProtectedRoute>
-//     ) : options?.protected === false ? (
-//         <PublicRoute>{WrappedComponent}</PublicRoute>
-//     ) : WrappedComponent;
-//
-//     return {path, element};
-// };
+    return (
+        <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, x: 20, scale: 0.98 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: -20, scale: 0.98 }}
+                transition={{
+                    duration: 0.35,
+                    ease: [0.16, 1, 0.3, 1],
+                }}
+                className="w-full h-full"
+                style={{ willChange: 'transform, opacity' }}
+            >
+                {children}
+            </motion.div>
+        </AnimatePresence>
+    );
+};
 
 // Main App Routes Component
 const AppRoutes = () => {
@@ -272,109 +262,133 @@ const AppRoutes = () => {
     return (
         <Suspense fallback={<LoadingSpinner/>}>
             <Routes>
-                {/* Public Routes */}
+                {/* Public Routes — Hide marketing when signed in */}
                 <Route
                     path={ROUTES.PUBLIC.HOME}
-                    element={user ? <Navigate to={ROUTES.APP + "/grid"} replace/> : <HomePage/>}
+                    element={
+                        <PublicRoute>
+                            <SceneRouteWrapper>
+                                <HomePage/>
+                            </SceneRouteWrapper>
+                        </PublicRoute>
+                    }
                 />
-                <Route path={ROUTES.PUBLIC.INSTALL} element={<InstallPage/>}/>
+                <Route path={ROUTES.PUBLIC.INSTALL} element={<SceneRouteWrapper><InstallPage/></SceneRouteWrapper>}/>
                 <Route
                     path={ROUTES.PUBLIC.CONNECT}
-                    element={user ? <Navigate to={ROUTES.APP + "/grid"} replace/> : <ConnectPage/>}
+                    element={
+                        <PublicRoute redirectTo={ROUTES.APP + "/grid"}>
+                            <SceneRouteWrapper>
+                                <ConnectPage/>
+                            </SceneRouteWrapper>
+                        </PublicRoute>
+                    }
                 />
 
-                {/* Authentication Routes */}
+                {/* Authentication Routes — Hide when signed in */}
                 <Route
                     path={ROUTES.PUBLIC.AUTH.SIGN_IN}
-                    element={user ? <Navigate to={ROUTES.APP + "/grid"} replace/> : <LazyComponents.SignIn/>}
+                    element={
+                        <PublicRoute redirectTo={ROUTES.APP + "/grid"}>
+                            <SceneRouteWrapper>
+                                <LazyComponents.SignIn/>
+                            </SceneRouteWrapper>
+                        </PublicRoute>
+                    }
                 />
                 <Route
                     path={ROUTES.PUBLIC.AUTH.SIGN_UP}
-                    element={user ? <Navigate to={ROUTES.APP + "/grid"} replace/> : <LazyComponents.SignUp/>}
+                    element={
+                        <PublicRoute redirectTo={ROUTES.APP + "/grid"}>
+                            <SceneRouteWrapper>
+                                <LazyComponents.SignUp/>
+                            </SceneRouteWrapper>
+                        </PublicRoute>
+                    }
                 />
-                <Route path={ROUTES.PUBLIC.AUTH.MAGIC_LINK} element={<LazyComponents.MagicLink/>}/>
-                <Route path={ROUTES.PUBLIC.AUTH.RESET_PASSWORD} element={<LazyComponents.ResetPassword/>}/>
-                <Route path={ROUTES.PUBLIC.AUTH.CALLBACK} element={<LazyComponents.Callback/>}/>
+                <Route path={ROUTES.PUBLIC.AUTH.MAGIC_LINK} element={<SceneRouteWrapper><LazyComponents.MagicLink/></SceneRouteWrapper>}/>
+                <Route path={ROUTES.PUBLIC.AUTH.RESET_PASSWORD} element={<SceneRouteWrapper><LazyComponents.ResetPassword/></SceneRouteWrapper>}/>
+                <Route path={ROUTES.PUBLIC.AUTH.CALLBACK} element={<SceneRouteWrapper><LazyComponents.Callback/></SceneRouteWrapper>}/>
 
                 {/* Legal Routes */}
-                <Route path={ROUTES.PUBLIC.LEGAL.PRIVACY} element={<LazyComponents.PrivacyPolicy/>}/>
-                <Route path={ROUTES.PUBLIC.LEGAL.TERMS} element={<LazyComponents.TermsOfService/>}/>
-                <Route path={ROUTES.PUBLIC.LEGAL.COOKIES} element={<LazyComponents.CookiePolicy/>}/>
-                <Route path={ROUTES.PUBLIC.LEGAL.COMMUNITY_GUIDELINES} element={<LazyComponents.CommunityGuidelines/>}/>
-                <Route path={ROUTES.PUBLIC.SAFETY.QUICK_TIPS} element={<LazyComponents.SafetyTips/>}/>
+                <Route path={ROUTES.PUBLIC.LEGAL.PRIVACY} element={<SceneRouteWrapper><LazyComponents.PrivacyPolicy/></SceneRouteWrapper>}/>
+                <Route path={ROUTES.PUBLIC.LEGAL.TERMS} element={<SceneRouteWrapper><LazyComponents.TermsOfService/></SceneRouteWrapper>}/>
+                <Route path={ROUTES.PUBLIC.LEGAL.COOKIES} element={<SceneRouteWrapper><LazyComponents.CookiePolicy/></SceneRouteWrapper>}/>
+                <Route path={ROUTES.PUBLIC.LEGAL.COMMUNITY_GUIDELINES} element={<SceneRouteWrapper><LazyComponents.CommunityGuidelines/></SceneRouteWrapper>}/>
+                <Route path={ROUTES.PUBLIC.SAFETY.QUICK_TIPS} element={<SceneRouteWrapper><LazyComponents.SafetyTips/></SceneRouteWrapper>}/>
 
                 {/* Legacy redirect routes */}
                 <Route path="/privacy" element={<Navigate to={ROUTES.PUBLIC.LEGAL.PRIVACY} replace/>}/>
                 <Route path="/terms" element={<Navigate to={ROUTES.PUBLIC.LEGAL.TERMS} replace/>}/>
                 <Route path="/cookies" element={<Navigate to={ROUTES.PUBLIC.LEGAL.COOKIES} replace/>}/>
 
-                {/* Onboarding Routes */}
-                <Route path={ROUTES.ONBOARDING} element={<ProtectedRoute><LazyComponents.OnboardingWelcome/></ProtectedRoute>}/>
-                <Route path={ROUTES.ONBOARDING + "/welcome"} element={<ProtectedRoute><LazyComponents.OnboardingWelcome/></ProtectedRoute>}/>
-                <Route path={ROUTES.ONBOARDING + "/basics"} element={<ProtectedRoute><LazyComponents.OnboardingBasics/></ProtectedRoute>}/>
-                <Route path={ROUTES.ONBOARDING + "/photos"} element={<ProtectedRoute><LazyComponents.OnboardingPhotos/></ProtectedRoute>}/>
-                <Route path={ROUTES.ONBOARDING + "/tribes-interests"} element={<ProtectedRoute><LazyComponents.OnboardingTribes/></ProtectedRoute>}/>
-                <Route path={ROUTES.ONBOARDING + "/preferences"} element={<ProtectedRoute><LazyComponents.OnboardingPreferences/></ProtectedRoute>}/>
-                <Route path={ROUTES.ONBOARDING + "/location"} element={<ProtectedRoute><LazyComponents.OnboardingLocation/></ProtectedRoute>}/>
-                <Route path={ROUTES.ONBOARDING + "/privacy"} element={<ProtectedRoute><LazyComponents.OnboardingPrivacy/></ProtectedRoute>}/>
-                <Route path={ROUTES.ONBOARDING + "/notifications"} element={<ProtectedRoute><LazyComponents.OnboardingNotifications/></ProtectedRoute>}/>
-                <Route path={ROUTES.ONBOARDING + "/consent"} element={<ProtectedRoute><LazyComponents.OnboardingConsent/></ProtectedRoute>}/>
-                <Route path={ROUTES.ONBOARDING + "/finish"} element={<ProtectedRoute><LazyComponents.OnboardingFinish/></ProtectedRoute>}/>
+                {/* Onboarding Routes — Protected */}
+                <Route path={ROUTES.ONBOARDING} element={<ProtectedRouteWrapper><LazyComponents.OnboardingWelcome/></ProtectedRouteWrapper>}/>
+                <Route path={ROUTES.ONBOARDING + "/welcome"} element={<ProtectedRouteWrapper><LazyComponents.OnboardingWelcome/></ProtectedRouteWrapper>}/>
+                <Route path={ROUTES.ONBOARDING + "/basics"} element={<ProtectedRouteWrapper><LazyComponents.OnboardingBasics/></ProtectedRouteWrapper>}/>
+                <Route path={ROUTES.ONBOARDING + "/photos"} element={<ProtectedRouteWrapper><LazyComponents.OnboardingPhotos/></ProtectedRouteWrapper>}/>
+                <Route path={ROUTES.ONBOARDING + "/tribes-interests"} element={<ProtectedRouteWrapper><LazyComponents.OnboardingTribes/></ProtectedRouteWrapper>}/>
+                <Route path={ROUTES.ONBOARDING + "/preferences"} element={<ProtectedRouteWrapper><LazyComponents.OnboardingPreferences/></ProtectedRouteWrapper>}/>
+                <Route path={ROUTES.ONBOARDING + "/location"} element={<ProtectedRouteWrapper><LazyComponents.OnboardingLocation/></ProtectedRouteWrapper>}/>
+                <Route path={ROUTES.ONBOARDING + "/privacy"} element={<ProtectedRouteWrapper><LazyComponents.OnboardingPrivacy/></ProtectedRouteWrapper>}/>
+                <Route path={ROUTES.ONBOARDING + "/notifications"} element={<ProtectedRouteWrapper><LazyComponents.OnboardingNotifications/></ProtectedRouteWrapper>}/>
+                <Route path={ROUTES.ONBOARDING + "/consent"} element={<ProtectedRouteWrapper><LazyComponents.OnboardingConsent/></ProtectedRouteWrapper>}/>
+                <Route path={ROUTES.ONBOARDING + "/finish"} element={<ProtectedRouteWrapper><LazyComponents.OnboardingFinish/></ProtectedRouteWrapper>}/>
 
-                {/* Protected App Routes */}
-                <Route path={ROUTES.APP} element={<ProtectedRoute><AppLayout/></ProtectedRoute>}>
+                {/* Protected App Routes with Scene Transitions */}
+                <Route path={ROUTES.APP} element={<ProtectedRouteWrapper><AppLayout/></ProtectedRouteWrapper>}>
                     <Route index element={<Navigate to="grid" replace/>}/>
-                    <Route path="grid" element={<LazyComponents.GridPage/>}/>
-                    <Route path="right-now" element={<LazyComponents.RightNowFeed/>}/>
-                    <Route path="right-now/map" element={<LazyComponents.RightNowMap/>}/>
+                    <Route path="grid" element={<SceneRouteWrapper><LazyComponents.GridPage/></SceneRouteWrapper>}/>
+                    <Route path="right-now" element={<SceneRouteWrapper><LazyComponents.RightNowFeed/></SceneRouteWrapper>}/>
+                    <Route path="right-now/map" element={<SceneRouteWrapper><LazyComponents.RightNowMap/></SceneRouteWrapper>}/>
 
                     {/* Communication */}
-                    <Route path="messages" element={<LazyComponents.MessagesPage/>}/>
-                    <Route path="chat/:conversationId" element={<LazyComponents.ChatThread/>}/>
-                    <Route path="room/:roomId" element={<LazyComponents.RoomChatPage/>}/>
-                    <Route path="events/:id/chat" element={<LazyComponents.EventChatPage/>}/>
+                    <Route path="messages" element={<SceneRouteWrapper><LazyComponents.MessagesPage/></SceneRouteWrapper>}/>
+                    <Route path="chat/:conversationId" element={<SceneRouteWrapper><LazyComponents.ChatThread/></SceneRouteWrapper>}/>
+                    <Route path="room/:roomId" element={<SceneRouteWrapper><LazyComponents.RoomChatPage/></SceneRouteWrapper>}/>
+                    <Route path="events/:id/chat" element={<SceneRouteWrapper><LazyComponents.EventChatPage/></SceneRouteWrapper>}/>
 
                     {/* Events */}
-                    <Route path="events" element={<LazyComponents.EventsHub/>}/>
-                    <Route path="events/create" element={<LazyComponents.CreateEvent/>}/>
-                    <Route path="events/:id" element={<LazyComponents.EventDetail/>}/>
+                    <Route path="events" element={<SceneRouteWrapper><LazyComponents.EventsHub/></SceneRouteWrapper>}/>
+                    <Route path="events/create" element={<SceneRouteWrapper><LazyComponents.CreateEvent/></SceneRouteWrapper>}/>
+                    <Route path="events/:id" element={<SceneRouteWrapper><LazyComponents.EventDetail/></SceneRouteWrapper>}/>
 
                     {/* Profile */}
-                    <Route path="profile/me" element={<LazyComponents.MePage/>}/>
-                    <Route path="profile/me/edit" element={<LazyComponents.EditProfile/>}/>
-                    <Route path="profile/me/photos" element={<LazyComponents.ProfilePhotosPage/>}/>
-                    <Route path="profile/:userId" element={<LazyComponents.ViewProfile/>}/>
+                    <Route path="profile/me" element={<SceneRouteWrapper><LazyComponents.MePage/></SceneRouteWrapper>}/>
+                    <Route path="profile/me/edit" element={<SceneRouteWrapper><LazyComponents.EditProfile/></SceneRouteWrapper>}/>
+                    <Route path="profile/me/photos" element={<SceneRouteWrapper><LazyComponents.ProfilePhotosPage/></SceneRouteWrapper>}/>
+                    <Route path="profile/:userId" element={<SceneRouteWrapper><LazyComponents.ViewProfile/></SceneRouteWrapper>}/>
 
                     {/* User Management */}
-                    <Route path="notifications" element={<LazyComponents.NotificationsPage/>}/>
-                    <Route path="safety" element={<LazyComponents.SafetyPage/>}/>
-                    <Route path="blocked" element={<LazyComponents.BlockedPage/>}/>
-                    <Route path="reports" element={<LazyComponents.ReportsPage/>}/>
+                    <Route path="notifications" element={<SceneRouteWrapper><LazyComponents.NotificationsPage/></SceneRouteWrapper>}/>
+                    <Route path="safety" element={<SceneRouteWrapper><LazyComponents.SafetyPage/></SceneRouteWrapper>}/>
+                    <Route path="blocked" element={<SceneRouteWrapper><LazyComponents.BlockedPage/></SceneRouteWrapper>}/>
+                    <Route path="reports" element={<SceneRouteWrapper><LazyComponents.ReportsPage/></SceneRouteWrapper>}/>
 
                     {/* Settings */}
-                    <Route path="settings" element={<LazyComponents.SettingsPage/>}/>
-                    <Route path="settings/account" element={<LazyComponents.SettingsAccount/>}/>
-                    <Route path="settings/security" element={<LazyComponents.SettingsSecurity/>}/>
-                    <Route path="settings/privacy" element={<LazyComponents.SettingsPrivacy/>}/>
-                    <Route path="settings/notifications" element={<LazyComponents.SettingsNotifications/>}/>
-                    <Route path="settings/content" element={<LazyComponents.SettingsContent/>}/>
-                    <Route path="settings/subscription" element={<LazyComponents.SubscriptionPage/>}/>
+                    <Route path="settings" element={<SceneRouteWrapper><LazyComponents.SettingsPage/></SceneRouteWrapper>}/>
+                    <Route path="settings/account" element={<SceneRouteWrapper><LazyComponents.SettingsAccount/></SceneRouteWrapper>}/>
+                    <Route path="settings/security" element={<SceneRouteWrapper><LazyComponents.SettingsSecurity/></SceneRouteWrapper>}/>
+                    <Route path="settings/privacy" element={<SceneRouteWrapper><LazyComponents.SettingsPrivacy/></SceneRouteWrapper>}/>
+                    <Route path="settings/notifications" element={<SceneRouteWrapper><LazyComponents.SettingsNotifications/></SceneRouteWrapper>}/>
+                    <Route path="settings/content" element={<SceneRouteWrapper><LazyComponents.SettingsContent/></SceneRouteWrapper>}/>
+                    <Route path="settings/subscription" element={<SceneRouteWrapper><LazyComponents.SubscriptionPage/></SceneRouteWrapper>}/>
 
                     {/* Admin Routes */}
-                    <Route path="admin" element={<ProtectedRoute requiredRole="admin"><LazyComponents.AdminHome/></ProtectedRoute>}/>
-                    <Route path="admin/reports" element={<ProtectedRoute requiredRole="admin"><LazyComponents.AdminReports/></ProtectedRoute>}/>
-                    <Route path="admin/moderation" element={<ProtectedRoute requiredRole="admin"><LazyComponents.AdminModeration/></ProtectedRoute>}/>
-                    <Route path="admin/audit" element={<ProtectedRoute requiredRole="admin"><LazyComponents.AdminAudit/></ProtectedRoute>}/>
-                    <Route path="admin/metrics" element={<ProtectedRoute requiredRole="admin"><LazyComponents.AdminMetrics/></ProtectedRoute>}/>
+                    <Route path="admin" element={<ProtectedRouteWrapper requiredRole="admin"><LazyComponents.AdminHome/></ProtectedRouteWrapper>}/>
+                    <Route path="admin/reports" element={<ProtectedRouteWrapper requiredRole="admin"><LazyComponents.AdminReports/></ProtectedRouteWrapper>}/>
+                    <Route path="admin/moderation" element={<ProtectedRouteWrapper requiredRole="admin"><LazyComponents.AdminModeration/></ProtectedRouteWrapper>}/>
+                    <Route path="admin/audit" element={<ProtectedRouteWrapper requiredRole="admin"><LazyComponents.AdminAudit/></ProtectedRouteWrapper>}/>
+                    <Route path="admin/metrics" element={<ProtectedRouteWrapper requiredRole="admin"><LazyComponents.AdminMetrics/></ProtectedRouteWrapper>}/>
 
                     {/* Additional Features */}
-                    <Route path="favorites" element={<LazyComponents.FavoritesPage/>}/>
-                    <Route path="bookings" element={<LazyComponents.BookingsPage/>}/>
-                    <Route path="verification" element={<LazyComponents.VerificationPage/>}/>
-                    <Route path="albums" element={<LazyComponents.AlbumsPage/>}/>
-                    <Route path="analytics" element={<LazyComponents.AnalyticsPage/>}/>
-                    <Route path="voice" element={<LazyComponents.VoicePage/>}/>
-                    <Route path="ai" element={<LazyComponents.AIPage/>}/>
+                    <Route path="favorites" element={<SceneRouteWrapper><LazyComponents.FavoritesPage/></SceneRouteWrapper>}/>
+                    <Route path="bookings" element={<SceneRouteWrapper><LazyComponents.BookingsPage/></SceneRouteWrapper>}/>
+                    <Route path="verification" element={<SceneRouteWrapper><LazyComponents.VerificationPage/></SceneRouteWrapper>}/>
+                    <Route path="albums" element={<SceneRouteWrapper><LazyComponents.AlbumsPage/></SceneRouteWrapper>}/>
+                    <Route path="analytics" element={<SceneRouteWrapper><LazyComponents.AnalyticsPage/></SceneRouteWrapper>}/>
+                    <Route path="voice" element={<SceneRouteWrapper><LazyComponents.VoicePage/></SceneRouteWrapper>}/>
+                    <Route path="ai" element={<SceneRouteWrapper><LazyComponents.AIPage/></SceneRouteWrapper>}/>
                 </Route>
 
                 {/* Legacy redirects */}
@@ -383,7 +397,7 @@ const AppRoutes = () => {
                 <Route path={ROUTES.APP + "/meetnow"} element={<Navigate to={ROUTES.APP + "/right-now"} replace/>}/>
 
                 {/* 404 */}
-                <Route path="*" element={<NotFound/>}/>
+                <Route path="*" element={<SceneRouteWrapper><NotFound/></SceneRouteWrapper>}/>
             </Routes>
         </Suspense>
     );

@@ -61,7 +61,7 @@ function Reveal({children, delay = 0, y = 28}: {
 }
 
 // ── Section divider ──────────────────────────────────────────
-function SectionDivider({accent = 'primary'}: { accent?: string }) {
+function _SectionDivider({accent = 'primary'}: { accent?: string }) {
     return (
         <div className="flex items-center gap-4 mb-14">
             <div className="flex-1 h-px" style={{background: 'hsl(var(--border))'}}/>
@@ -256,16 +256,16 @@ export default function HomePage() {
                 {/* Nav links — desktop */}
                 <nav className="hidden md:flex items-center gap-6">
                     {[
-                        { label: 'Features', href: '#features' },
-                        { label: 'Pricing', href: '#pricing' },
-                        { label: 'Safety', href: '#safety' },
-                        { label: 'Events', href: '#events' }
-                    ].map(({ label, href }) => (
-                        <Link
+                        { label: 'Features', id: 'features' },
+                        { label: 'Pricing', id: 'pricing' },
+                        { label: 'Safety', id: 'safety' },
+                        { label: 'Events', id: 'events' }
+                    ].map(({ label, id }) => (
+                        <button
                             key={label}
-                            to={href}
+                            onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })}
                             className="text-[11px] font-semibold text-muted-foreground/60 hover:text-foreground transition-colors duration-120 tracking-wide"
-                        >{label}</Link>
+                        >{label}</button>
                     ))}
                 </nav>
 
@@ -378,7 +378,6 @@ export default function HomePage() {
                                 style={{
                                     WebkitTextStroke: '1px hsl(var(--foreground))',
                                     WebkitTextFillColor: 'transparent',
-                                    textStroke: '1px hsl(var(--foreground))',
                                 }}
                             >YOUR
                             </motion.span>
@@ -578,7 +577,7 @@ export default function HomePage() {
             </section>
 
             {/* ════ FEATURES BENTO ════ */}
-            <section className="py-24 px-6 sm:px-10 md:px-14 lg:px-20 relative">
+            <section id="features" className="py-24 px-6 sm:px-10 md:px-14 lg:px-20 relative">
                 <div
                     className="absolute inset-0 pointer-events-none"
                     style={{background: 'radial-gradient(ellipse 60% 50% at 15% 60%, hsl(214 85% 58% / 0.05) 0%, transparent 60%)'}}
@@ -777,7 +776,7 @@ export default function HomePage() {
             </section>
 
             {/* ════ MEMBERSHIP TIERS ════ */}
-            <section className="py-24 px-6 sm:px-10 md:px-14 lg:px-20">
+            <section id="pricing" className="py-24 px-6 sm:px-10 md:px-14 lg:px-20">
                 <div className="max-w-7xl mx-auto">
                     <Reveal>
                         <p className="eyebrow mb-5">MEMBERSHIP</p>

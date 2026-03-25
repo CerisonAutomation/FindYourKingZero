@@ -6,9 +6,16 @@ export interface Language {
   flag: string;
 }
 
+export const LANGUAGES: Record<string, Language> = {};
+export const DEFAULT_LANGUAGE = 'en';
+
 export const languages: Language[] = [
   { code: 'en', name: 'English', nativeName: 'English', rtl: false, flag: '🇬🇧' },
   { code: 'es', name: 'Spanish', nativeName: 'Español', rtl: false, flag: '🇪🇸' },
+  { code: 'ar', name: 'Arabic', nativeName: 'العربية', rtl: true, flag: '🇸🇦' },
+  { code: 'he', name: 'Hebrew', nativeName: 'עברית', rtl: true, flag: '🇮🇱' },
+  { code: 'fa', name: 'Persian', nativeName: 'فارسی', rtl: true, flag: '🇮🇷' },
+  { code: 'ur', name: 'Urdu', nativeName: 'اردو', rtl: true, flag: '🇵🇰' },
   { code: 'fr', name: 'French', nativeName: 'Français', rtl: false, flag: '🇫🇷' },
   { code: 'de', name: 'German', nativeName: 'Deutsch', rtl: false, flag: '🇩🇪' },
   { code: 'it', name: 'Italian', nativeName: 'Italiano', rtl: false, flag: '🇮🇹' },
@@ -46,3 +53,8 @@ export function getLanguageByCode(code: string): Language | undefined {
 export function getSupportedLanguageCodes(): string[] {
   return languages.map((lang) => lang.code);
 }
+
+// Build LANGUAGES lookup
+languages.forEach(lang => {
+  LANGUAGES[lang.code] = lang;
+});

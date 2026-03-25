@@ -116,7 +116,6 @@ export const AIAvatarOrb = ({
 
   const synthRef = useRef<SpeechSynthesis | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-  const playerRef = useRef<{ setPlayerSpeed: (speed: number) => void } | null>(null);
 
   const { messages, isStreaming, sendMessage } = useAI();
 
@@ -164,8 +163,8 @@ export const AIAvatarOrb = ({
           setShowResponse(false);
           setAvatarState('idle');
         }, 5000);
-      } catch (err) {
-        log.error('AI_AVATAR', 'Failed to process voice input', { error: err instanceof Error ? err.message : String(err) });
+      } catch (err: unknown) {
+        log.error('AI_AVATAR', 'Failed to process voice input', err instanceof Error ? err : new Error(String(err)));
         setAvatarState('error');
         setTimeout(() => setAvatarState('idle'), 2000);
       }
@@ -234,10 +233,14 @@ export const AIAvatarOrb = ({
             initial={{ opacity: 0, y: 20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            className="bg-card border border-border rounded-2xl shadow-xl p-4 max-w-[280px] mb-2"
+            className="bg-card/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl p-4 max-w-[280px] mb-2"
+            style={{ boxShadow: `0 8px 32px ${currentColors.pulse}` }}
           >
             <div className="flex items-start gap-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#D4A853] to-[#B8860B] flex items-center justify-center shrink-0">
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+                style={{ background: `linear-gradient(135deg, ${currentColors.primary}, ${currentColors.secondary})` }}
+              >
                 <Crown className="w-4 h-4 text-white" />
               </div>
               <div className="flex-1">
@@ -342,23 +345,10 @@ export const AIAvatarOrb = ({
 
       {/* Avatar orb container */}
       <div
-        className="relative cursor-pointer"
+        className="relative cursor-pointer group"
         style={{ width: sizeConfig.container, height: sizeConfig.container }}
         onClick={() => !isListening && setIsChatOpen(!isChatOpen)}
       >
-        {/* Glow effect */}
-        <motion.div
-          className="absolute inset-0 rounded-full"
-          animate={{
-            boxShadow: avatarState === 'listening'
-              ? ['0 0 20px rgba(212, 168, 83, 0.4)', '0 0 40px rgba(212, 168, 83, 0.6)', '0 0 20px rgba(212, 168, 83, 0.4)']
-              : avatarState === 'speaking'
-              ? ['0 0 20px rgba(184, 134, 11, 0.4)', '0 0 35px rgba(184, 134, 11, 0.5)', '0 0 20px rgba(184, 134, 11, 0.4)']
-              : '0 0 20px rgba(212, 168, 83, 0.2)',
-          }}
-          transition={{ duration: avatarState === 'listening' ? 1 : 2, repeat: Infinity }}
-        />
-
         {/* Listening pulse rings */}
         <AnimatePresence>
           {isListening && (
@@ -366,7 +356,8 @@ export const AIAvatarOrb = ({
               {[0, 1, 2].map((i) => (
                 <motion.div
                   key={i}
-                  className="absolute inset-0 rounded-full border-2 border-[#D4A853]/30"
+                  className="absolute inset-0 rounded-full border-2"
+                  style={{ borderColor: COLORS.red.pulse }}
                   initial={{ scale: 1, opacity: 0.6 }}
                   animate={{ scale: 1.5 + i * 0.3, opacity: 0 }}
                   transition={{
@@ -381,54 +372,95 @@ export const AIAvatarOrb = ({
           )}
         </AnimatePresence>
 
-        {/* Main orb with animated SVG */}
+        {/* Main animated orb */}
         <div
           className="absolute inset-0 flex items-center justify-center"
-          style={{
-            width: sizeConfig.container,
-            height: sizeConfig.container,
-          }}
+          style={{ width: sizeConfig.container, height: sizeConfig.container }}
         >
           <AnimatedOrb state={avatarState} size={sizeConfig.orb} />
         </div>
 
         {/* Status indicator */}
         <div className="absolute -bottom-1 left-1/2 -translate-x-1/2">
-          <div className={cn(
-            'px-2 py-0.5 rounded-full text-[10px] font-medium backdrop-blur-sm',
-            avatarState === 'idle' && 'bg-muted text-muted-foreground',
-            avatarState === 'listening' && 'bg-red-500/20 text-red-400 animate-pulse',
-            avatarState === 'thinking' && 'bg-amber-500/20 text-amber-400',
-            avatarState === 'speaking' && 'bg-green-500/20 text-green-400',
-            avatarState === 'error' && 'bg-destructive/20 text-destructive'
-          )}>
+          <motion.div
+            className={cn(
+              'px-3 py-1 rounded-full text-[10px] font-bold backdrop-blur-md whitespace-nowrap',
+              avatarState === 'idle' && 'bg-muted/80 text-muted-foreground',
+              avatarState === 'listening' && 'text-white',
+              avatarState === 'thinking' && 'text-white',
+              avatarState === 'speaking' && 'text-white',
+              avatarState === 'error' && 'bg-destructive/20 text-destructive'
+            )}
+            style={{
+              background: avatarState === 'idle' ? undefined :
+                `linear-gradient(135deg, ${currentColors.primary}, ${currentColors.secondary})`,
+            }}
+            animate={{ scale: avatarState !== 'idle' ? [1, 1.05, 1] : 1 }}
+            transition={{ duration: 1, repeat: avatarState !== 'idle' ? Infinity : 0 }}
+          >
             {avatarState === 'idle' && 'King AI'}
             {avatarState === 'listening' && 'Listening'}
             {avatarState === 'thinking' && 'Thinking'}
             {avatarState === 'speaking' && 'Speaking'}
             {avatarState === 'error' && 'Error'}
-          </div>
+          </motion.div>
         </div>
 
-        {/* Quick action button */}
+        {/* Quick action button - Tap to open menu, Hold to talk */}
         <motion.button
           whileTap={{ scale: 0.9 }}
           onClick={(e) => {
             e.stopPropagation();
-            toggleListening();
+            setIsChatOpen(!isChatOpen);
           }}
-          className={cn(
-            'absolute -top-2 -right-2 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-colors',
-            isListening
-              ? 'bg-red-500 text-white animate-pulse'
-              : 'bg-[#D4A853] text-black hover:bg-[#E5C166]'
-          )}
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            // Start hold-to-talk timer
+            const holdTimer = setTimeout(() => {
+              if (!isListening) {
+                clearTranscript();
+                startListening();
+                setAvatarState('listening');
+                setIsChatOpen(true);
+              }
+            }, 500);
+            // Store timer reference
+            (e.target as any).__holdTimer = holdTimer;
+          }}
+          onPointerUp={(e) => {
+            e.stopPropagation();
+            // Clear hold timer
+            const holdTimer = (e.target as any).__holdTimer;
+            if (holdTimer) {
+              clearTimeout(holdTimer);
+            }
+            // Stop listening if was listening
+            if (isListening) {
+              stopListening();
+              setAvatarState('idle');
+            }
+          }}
+          onPointerLeave={(e) => {
+            // Clear hold timer and stop listening
+            const holdTimer = (e.target as any).__holdTimer;
+            if (holdTimer) {
+              clearTimeout(holdTimer);
+            }
+            if (isListening) {
+              stopListening();
+              setAvatarState('idle');
+            }
+          }}
+          className="absolute -top-2 -right-2 w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-all z-10"
+          style={{
+            background: isListening
+              ? `linear-gradient(135deg, ${COLORS.red.primary}, ${COLORS.red.secondary})`
+              : `linear-gradient(135deg, ${COLORS.gold.primary}, ${COLORS.gold.secondary})`,
+            boxShadow: `0 4px 20px ${isListening ? COLORS.red.pulse : COLORS.gold.pulse}`,
+          }}
+          title="Tap to open menu, Hold to talk"
         >
-          {isListening ? (
-            <MicOff className="w-5 h-5" />
-          ) : (
-            <Mic className="w-5 h-5" />
-          )}
+          {isListening ? <MicOff className="w-5 h-5 text-white" /> : <Mic className="w-5 h-5 text-black" />}
         </motion.button>
       </div>
     </div>

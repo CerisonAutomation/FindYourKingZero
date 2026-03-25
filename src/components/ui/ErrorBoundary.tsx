@@ -139,13 +139,19 @@ export class ErrorBoundary extends Component<Props, State> {
     const isDev = import.meta.env.DEV;
 
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <div className="max-w-md w-full bg-card border border-border rounded-xl shadow-xl p-8 text-center space-y-6">
+      <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">
+        {/* Ambient glow */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
+        </div>
+
+        <div className="max-w-md w-full bg-card border border-border rounded-xl shadow-xl p-8 text-center space-y-6 relative z-10">
           {/* Animated icon */}
           <div className="flex justify-center">
-            <div className="w-20 h-20 bg-destructive/10 rounded-full flex items-center justify-center animate-pulse">
+            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center animate-pulse" style={{ boxShadow: 'var(--shadow-glow-gold)' }}>
               <svg
-                className="w-10 h-10 text-destructive"
+                className="w-10 h-10 text-primary"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"

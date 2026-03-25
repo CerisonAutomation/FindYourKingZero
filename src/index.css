@@ -966,15 +966,19 @@ html, body, #root {
     min-width: 44px;
 }
 
-/* Ensure all interactive elements meet 44px touch target */
-button, a, [role="button"], input[type="checkbox"], input[type="radio"] {
+/* Ensure all interactive elements meet 44px touch target — but NOT icon/small buttons */
+button:not([class*="w-"]):not([class*="h-"]):not([class*="size-"]):not([class*="icon"]),
+a:not([class*="w-"]):not([class*="h-"]),
+[role="button"]:not([class*="w-"]):not([class*="h-"]) {
     min-height: 44px;
     min-width: 44px;
 }
 
 /* Inline buttons (icon-only, pill, chip) — allow override */
 button[class*="w-8"], button[class*="w-7"], button[class*="w-6"],
-button[class*="h-8"], button[class*="h-7"], button[class*="h-6"] {
+button[class*="h-8"], button[class*="h-7"], button[class*="h-6"],
+button[class*="size-8"], button[class*="size-7"], button[class*="size-6"],
+button[class*="icon"] {
     min-height: unset;
     min-width: unset;
 }
