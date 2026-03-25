@@ -25,9 +25,10 @@ import {Slider} from '@/components/ui/slider';
 import {Switch} from '@/components/ui/switch';
 import {Sheet, SheetContent} from '@/components/ui/sheet';
 import {Button} from '@/components/ui/button';
-import {useProfilesGrid} from '@/hooks/useProfile';
+import {useProfile, useProfilesGrid} from '@/hooks/useProfile';
 import {useFavorites} from '@/hooks/useFavorites';
 import {useCreateConversation} from '@/hooks/useConversations';
+import {AIMatchBadge} from '@/components/ai/AIMatchBadge';
 import {cn} from '@/lib/utils';
 
 const TRIBES = ['Bear', 'Jock', 'Twink', 'Daddy', 'Muscle', 'Otter', 'Cub', 'Leather', 'Geek', 'Trans', 'Femme', 'Masc'];
@@ -84,8 +85,8 @@ const DEFAULT: Filters = {
 };
 
 /* ── Grid card — premium 2050 profile card ── */
-const GridCard = memo(({profile, isFav, onFav, onMessage, onView, compact}: {
-    profile: any; isFav: boolean; compact: boolean;
+const GridCard = memo(({profile, isFav, onFav, onMessage, onView, compact, userProfile}: {
+    profile: any; isFav: boolean; compact: boolean; userProfile?: Record<string, any>;
     onFav: (id: string) => void; onMessage: (id: string) => void; onView: (id: string) => void;
 }) => {
     const [imgErr, setImgErr] = useState(false);
@@ -276,7 +277,7 @@ const GridCard = memo(({profile, isFav, onFav, onMessage, onView, compact}: {
 
             {/* ── Info panel ── */}
             <div className="absolute bottom-0 left-0 right-0 px-2 pb-2.5 z-10">
-                {/* Name + age */}
+                {/* Name + age + match badge */}
                 <div className="flex items-baseline gap-1">
                     <span className="font-black text-white leading-none truncate" style={{fontSize: compact ? '10px' : '11px', letterSpacing: '-0.01em'}}>
                         {profile.display_name || 'Anonymous'}
@@ -285,6 +286,11 @@ const GridCard = memo(({profile, isFav, onFav, onMessage, onView, compact}: {
                         <span className="text-white/55 font-normal shrink-0" style={{fontSize: compact ? '9px' : '10px'}}>
                             {profile.age}
                         </span>
+                    )}
+                    {userProfile && (
+                        <div className="ml-auto shrink-0">
+                            <AIMatchBadge userProfile={userProfile} targetProfile={profile} lazy/>
+                        </div>
                     )}
                 </div>
 
@@ -556,6 +562,7 @@ export default function GridPage() {
     const [cols, setCols] = useState<2 | 3>(2);
 
     const {data: profiles = [], isLoading, refetch, isFetching} = useProfilesGrid(filters);
+    const {profile: myProfile} = useProfile();
 
     const activeFilterCount = useMemo(() => [
         filters.onlineOnly, filters.verifiedOnly, filters.hasPhotos,
@@ -737,6 +744,7 @@ export default function GridPage() {
                                     onFav={toggleFavorite}
                                     onMessage={handleMessage}
                                     onView={id => navigate(`/app/profile/${id}`)}
+                                    userProfile={myProfile ?? undefined}
                                 />
                             ))
                             : (

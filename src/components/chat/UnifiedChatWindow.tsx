@@ -7,7 +7,6 @@ import {
   Globe,
   ImagePlus,
   Lock,
-  Mic,
   MoreVertical,
   Phone,
   CornerUpLeft,
@@ -34,6 +33,7 @@ import { chatAI, type QuickReply, type SafetyResult } from '@/lib/ai/ChatAI';
 import { MeetIntentCTA } from './MeetIntentCTA';
 import { SafetyShield } from './SafetyShield';
 import { QuickReplyBar } from './QuickReplyBar';
+import { VoiceInputButton } from '@/components/voice/VoiceInputButton';
 
 // ─────────────────────────────────────────────────────────────
 // Config
@@ -962,18 +962,23 @@ export function UnifiedChatWindow({
                 <Send className="w-4 h-4 text-white" strokeWidth={2.5} />
               </motion.button>
             ) : (
-              <motion.button
+              <motion.div
                 key="mic"
                 initial={{ scale: 0.6, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.6, opacity: 0 }}
                 transition={{ type: 'spring', stiffness: 600, damping: 30 }}
-                whileTap={{ scale: 0.88 }}
-                disabled={!finalConfig.enableVoiceMessages}
-                className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 bg-secondary/60 border border-border/25"
+                className="shrink-0"
               >
-                <Mic className="w-4 h-4 text-muted-foreground" />
-              </motion.button>
+                <VoiceInputButton
+                  onTranscript={(text) => {
+                    setDraft(prev => prev ? `${prev} ${text}` : text);
+                    textareaRef.current?.focus();
+                  }}
+                  disabled={!finalConfig.enableVoiceMessages}
+                  size="md"
+                />
+              </motion.div>
             )}
           </AnimatePresence>
         </div>

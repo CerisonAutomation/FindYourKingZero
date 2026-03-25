@@ -225,8 +225,16 @@ export default function MessagesPage() {
                                                 </Avatar>
                                             </div>
                                             {isOnline && (
-                                                <span
-                                                    className="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-background"/>
+                                                <span className="relative absolute bottom-0.5 right-0.5 flex">
+                                                    <span
+                                                        className="w-3.5 h-3.5 rounded-full border-2 border-background"
+                                                        style={{background: 'hsl(var(--status-online))'}}
+                                                    />
+                                                    <span
+                                                        className="absolute inset-0 rounded-full animate-ping opacity-60"
+                                                        style={{background: 'hsl(var(--status-online))'}}
+                                                    />
+                                                </span>
                                             )}
                                         </div>
 
@@ -240,8 +248,12 @@ export default function MessagesPage() {
                           )}>
                             {name}
                           </span>
-                                                    {isOnline && <span
-                                                        className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"/>}
+                                                    {isOnline && (
+                                                        <span
+                                                            className="w-1.5 h-1.5 rounded-full shrink-0"
+                                                            style={{background: 'hsl(var(--status-online))'}}
+                                                        />
+                                                    )}
                                                 </div>
                                                 <span className={cn(
                                                     'text-[11px] shrink-0 font-medium',
