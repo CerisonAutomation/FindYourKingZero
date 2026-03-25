@@ -3,6 +3,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { useState, useEffect } from 'react';
+import { Crown } from 'lucide-react';
 import { useNavStore, useAuthStore, useChatStore } from '@/store';
 import { api } from '@/services/api';
 import { TopBar } from '@/components/ui/index';
@@ -70,7 +71,7 @@ export default function MessagesScreen() {
                 border: 'none', borderBottom: `1px solid ${COLORS.w07}`, cursor: 'pointer', width: '100%', textAlign: 'left',
               }}>
               <div style={{ width: 50, height: 50, background: COLORS.bg2, border: `1px solid ${COLORS.w12}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
-                👑
+                <Crown size={20} />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>

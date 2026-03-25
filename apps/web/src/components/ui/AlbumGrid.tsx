@@ -5,6 +5,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { COLORS } from '@/types';
+import { ArrowLeft, ArrowRight, Lock, Globe } from 'lucide-react';
 
 interface Album {
   id: string;
@@ -165,7 +166,7 @@ export function AlbumGrid({ userId, isOwner, mode, chatPartnerId }: AlbumGridPro
               opacity: viewerIndex === 0 ? 0.3 : 1,
             }}
           >
-            ← Prev
+            <ArrowLeft size={16} /> Prev
           </button>
           <span style={{ color: COLORS.w40, fontSize: 13, lineHeight: '36px' }}>
             {viewerIndex + 1} / {photos.length}
@@ -179,7 +180,7 @@ export function AlbumGrid({ userId, isOwner, mode, chatPartnerId }: AlbumGridPro
               opacity: viewerIndex === photos.length - 1 ? 0.3 : 1,
             }}
           >
-            Next →
+            Next <ArrowRight size={16} />
           </button>
         </div>
       </div>
@@ -198,12 +199,12 @@ export function AlbumGrid({ userId, isOwner, mode, chatPartnerId }: AlbumGridPro
               color: COLORS.w60, borderRadius: 6, cursor: 'pointer', fontSize: 12,
             }}
           >
-            ← Back
+            <ArrowLeft size={16} /> Back
           </button>
           <h3 style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>{selectedAlbum.name}</h3>
           {selectedAlbum.is_private && (
             <span style={{ fontSize: 10, color: COLORS.w40, background: COLORS.w08, padding: '2px 8px', borderRadius: 4 }}>
-              🔒 Private
+              <Lock size={14} /> Private
             </span>
           )}
         </div>
@@ -290,7 +291,7 @@ export function AlbumGrid({ userId, isOwner, mode, chatPartnerId }: AlbumGridPro
                 <div style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>{album.name}</div>
                 <div style={{ fontSize: 11, color: COLORS.w40, marginTop: 2 }}>
                   {album.photo_count} photo{album.photo_count !== 1 ? 's' : ''}
-                  {album.is_private && ' · 🔒 Private'}
+                  {album.is_private && <span> · <Lock size={12} /> Private</span>}
                 </div>
               </div>
 
@@ -309,7 +310,7 @@ export function AlbumGrid({ userId, isOwner, mode, chatPartnerId }: AlbumGridPro
                     }}
                     title={album.is_private ? 'Make public' : 'Make private'}
                   >
-                    {album.is_private ? '🔒' : '🌐'}
+                    {album.is_private ? <Lock size={14} /> : <Globe size={14} />}
                   </button>
                 )}
 

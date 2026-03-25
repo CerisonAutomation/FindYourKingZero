@@ -3,6 +3,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { useState, useEffect, useCallback } from 'react';
+import { MapPin } from 'lucide-react';
 import { useNavStore, useAuthStore } from '@/store';
 import { api } from '@/services/api';
 import { COLORS, EVENT_COLORS, EVENT_EMOJI, type KingEvent, type EventType } from '@/types';
@@ -176,7 +177,7 @@ export default function EventsScreen() {
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8 }}>
-                      <span style={{ fontSize: 11, color: COLORS.w35 }}>📍 {event.location}</span>
+                      <span style={{ fontSize: 11, color: COLORS.w35 }}><MapPin size={14} style={{marginRight:4,verticalAlign:-1}} /> {event.location}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <span style={{ fontSize: 11, color: COLORS.w35 }}>{event.attendees?.length ?? 0} / {event.capacity} attending</span>

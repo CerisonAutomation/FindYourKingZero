@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { useEffect, useState } from 'react';
+import { ArrowRight, Brain, Check, Crown, Lock, Map, Mic, Radio } from 'lucide-react';
 import { useNavStore } from '@/store';
 import { COLORS } from '@/types';
 import { ParticleGrid } from '@/components/ui/ParticleGrid';
@@ -76,7 +77,7 @@ export default function LandingScreen() {
 
           {/* Feature pills */}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 32 }}>
-            {['🧠 On-Device AI', '🔒 E2EE Encrypted', '📡 P2P Native', '🗺️ H3 Proximity', '🎤 Voice Commands'].map((f) => (
+            {['<Brain size={16} /> On-Device AI', '<Lock size={16} /> E2EE Encrypted', '<Radio size={16} /> P2P Native', '<Map size={16} /> H3 Proximity', '<Mic size={16} /> Voice Commands'].map((f) => (
               <div key={f} style={{
                 padding: '4px 10px', background: COLORS.w04, border: `1px solid ${COLORS.w07}`,
                 fontSize: 11, color: COLORS.w35, fontWeight: 600,
@@ -97,7 +98,7 @@ export default function LandingScreen() {
                 border: 'none', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer',
                 boxShadow: '0 4px 20px rgba(229,25,46,.3)',
               }}>
-              👑 Start Free
+              <Crown size={20} /> Start Free
             </button>
             <button onClick={() => go('signin')}
               style={{
@@ -106,7 +107,7 @@ export default function LandingScreen() {
                 border: `1px solid ${COLORS.w12}`, color: COLORS.w60, fontSize: 13, fontWeight: 700,
                 cursor: 'pointer', backdropFilter: 'blur(10px)',
               }}>
-              Sign In →
+              Sign In <ArrowRight size={16} />
             </button>
           </div>
 
@@ -114,7 +115,7 @@ export default function LandingScreen() {
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 18px' }}>
             {['App Store 4.9★', 'GDPR Compliant', 'E2EE', 'On-Device AI', '18+ Only'].map((t) => (
               <div key={t} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                <span style={{ color: COLORS.green, fontSize: 13 }}>✓</span>
+                <Check size={14} color={COLORS.green} />
                 <span style={{ fontSize: 12, color: COLORS.w35 }}>{t}</span>
               </div>
             ))}

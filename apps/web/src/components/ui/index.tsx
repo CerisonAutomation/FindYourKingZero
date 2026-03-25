@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import React, { memo, type FC, type ReactNode } from 'react';
+import { ArrowLeft, MessageCircle, User } from 'lucide-react';
 import { useNavStore, useNotifStore } from '@/store';
 import { COLORS } from '@/types';
 
@@ -33,7 +34,7 @@ export const Avatar: FC<{
         position: 'absolute', top: -2, right: -2, width: 14, height: 14,
         background: COLORS.blue, display: 'flex', alignItems: 'center', justifyContent: 'center',
         fontSize: 9, color: '#fff', fontWeight: 700,
-      }}>✓</div>
+      }}></div>
     )}
   </div>
 ));
@@ -106,7 +107,7 @@ export const TopBar: FC<{
     <div style={{ display: 'flex', alignItems: 'center', padding: '0 14px', height: 52, position: 'relative' }}>
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: `linear-gradient(90deg,transparent,${COLORS.red},rgba(37,99,235,.5),transparent)` }} />
       {onBack && (
-        <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, marginRight: 6, color: COLORS.w60, fontSize: 16 }}>←</button>
+        <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, marginRight: 6, color: COLORS.w60, fontSize: 16 }}><ArrowLeft size={18} /></button>
       )}
       {typeof title === 'string' ? <div style={{ flex: 1, fontSize: 16, fontWeight: 700 }}>{title}</div> : <div style={{ flex: 1 }}>{title}</div>}
       {right}
@@ -124,9 +125,9 @@ export const BottomNav: FC = memo(() => {
   const tabs = [
     { id: 'discover' as const, icon: '🧭', label: 'Discover' },
     { id: 'right-now' as const, icon: '📡', label: 'Now' },
-    { id: 'messages' as const, icon: '💬', label: 'Messages' },
+    { id: 'messages' as const, icon: <MessageCircle size={14} />, label: 'Messages' },
     { id: 'events' as const, icon: '📅', label: 'Events' },
-    { id: 'profile' as const, icon: '👤', label: 'Profile' },
+    { id: 'profile' as const, icon: <User size={14} />, label: 'Profile' },
   ];
 
   return (

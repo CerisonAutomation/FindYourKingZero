@@ -3,6 +3,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { useState, useEffect, useCallback } from 'react';
+import { ArrowLeft, MapPin, Share2, Users } from 'lucide-react';
 import { useNavStore, useAuthStore, useNotifStore } from '@/store';
 import { api } from '@/services/api';
 import { COLORS, EVENT_COLORS, EVENT_EMOJI } from '@/types';
@@ -84,9 +85,9 @@ export default function EventDetailScreen() {
       }}>
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: `linear-gradient(90deg,transparent,${c},transparent)` }} />
         <div style={{ display: 'flex', alignItems: 'center', padding: '0 14px', height: 52 }}>
-          <button onClick={back} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, marginRight: 6, color: COLORS.w60, fontSize: 16 }}>←</button>
+          <button onClick={back} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, marginRight: 6, color: COLORS.w60, fontSize: 16 }}><ArrowLeft size={18} /></button>
           <div style={{ flex: 1, fontSize: 16, fontWeight: 700 }}>{event.title}</div>
-          <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, fontSize: 16 }}>📤</button>
+          <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, fontSize: 16 }}><Share2 size={18} /></button>
         </div>
       </div>
 
@@ -108,8 +109,8 @@ export default function EventDetailScreen() {
             {[
               { icon: '📅', label: 'Date', value: new Date(event.date).toLocaleDateString('en', { weekday: 'short', month: 'short', day: 'numeric' }) },
               { icon: '🕐', label: 'Time', value: event.time },
-              { icon: '📍', label: 'Location', value: event.location || 'TBA' },
-              { icon: '👥', label: 'Attending', value: `${attendeeCount} / ${event.capacity}` },
+              { icon: <MapPin size={14} />, label: 'Location', value: event.location || 'TBA' },
+              { icon: <Users size={14} />, label: 'Attending', value: `${attendeeCount} / ${event.capacity}` },
             ].map((m) => (
               <div key={m.label} style={{ background: COLORS.bg2, border: '1px solid rgba(255,255,255,.07)', padding: '11px 12px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 4 }}>
@@ -171,7 +172,7 @@ export default function EventDetailScreen() {
                 </button>
                 <button onClick={saveEdit} disabled={saving}
                   style={{ flex: 1, padding: '12px', background: `linear-gradient(135deg,${COLORS.green},#16A34A)`, border: 'none', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: saving ? 0.6 : 1 }}>
-                  {saving ? 'Saving…' : '✓ Save'}
+                  {saving ? 'Saving…' : 'Save'}
                 </button>
               </div>
             </div>
@@ -200,7 +201,7 @@ export default function EventDetailScreen() {
               padding: '15px 24px', background: `linear-gradient(135deg,${COLORS.red},#FF4020)`,
               border: 'none', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', width: '100%',
             }}>
-            ✓ Join Event
+            Join Event
           </button>
         )}
       </div>

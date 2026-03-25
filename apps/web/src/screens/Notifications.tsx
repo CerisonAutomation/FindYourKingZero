@@ -3,17 +3,18 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { useState, useEffect } from 'react';
+import { ArrowLeft, Bell, Check, Flame, Heart, MessageCircle, Star } from 'lucide-react';
 import { useNavStore, useNotifStore } from '@/store';
 import { COLORS, type NotificationType } from '@/types';
 
 const TYPE_CONFIG: Record<NotificationType, { color: string; icon: string }> = {
-  tap: { color: COLORS.red, icon: '❤️' },
-  woof: { color: COLORS.yellow, icon: '🔥' },
-  superlike: { color: COLORS.purple, icon: '⭐' },
+  tap: { color: COLORS.red, icon: '<Heart size={16} />' },
+  woof: { color: COLORS.yellow, icon: '<Flame size={16} />' },
+  superlike: { color: COLORS.purple, icon: '<Star size={16} />' },
   match: { color: COLORS.pink, icon: '💕' },
-  message: { color: COLORS.blue, icon: '💬' },
+  message: { color: COLORS.blue, icon: '<MessageCircle size={16} />' },
   event: { color: COLORS.yellow, icon: '📅' },
-  system: { color: COLORS.green, icon: '✓' },
+  system: { color: COLORS.green, icon: '<Check size={12} />' },
 };
 
 export default function NotificationsScreen() {
@@ -35,7 +36,7 @@ export default function NotificationsScreen() {
       }}>
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg,transparent,#E5192E,rgba(37,99,235,.5),transparent)' }} />
         <div style={{ display: 'flex', alignItems: 'center', padding: '0 14px', height: 52 }}>
-          <button onClick={back} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, marginRight: 6, color: COLORS.w60, fontSize: 16 }}>←</button>
+          <button onClick={back} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, marginRight: 6, color: COLORS.w60, fontSize: 16 }}><ArrowLeft size={18} /></button>
           <div style={{ flex: 1, fontSize: 16, fontWeight: 700 }}>Activity</div>
           {unread > 0 && (
             <button onClick={markAllRead}
@@ -72,7 +73,7 @@ export default function NotificationsScreen() {
       <div style={{ flex: 1, overflowY: 'auto' }}>
         {displayed.length === 0 && (
           <div style={{ textAlign: 'center', padding: '50px 24px' }}>
-            <div style={{ fontSize: 36, marginBottom: 16 }}>🔔</div>
+            <div style={{ fontSize: 36, marginBottom: 16 }}><Bell size={16} /></div>
             <p style={{ color: COLORS.w60, fontSize: 13 }}>No activity yet — go meet some kings!</p>
           </div>
         )}

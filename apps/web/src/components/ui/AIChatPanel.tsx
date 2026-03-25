@@ -1,5 +1,6 @@
 // AIChatPanel — AI-powered smart reply + toxicity panel
 import { useState, type FC } from 'react';
+import { Sparkles } from 'lucide-react';
 import { useAI } from '@/hooks/useAI';
 import { COLORS } from '@/types';
 
@@ -45,7 +46,7 @@ export const AIChatPanel: FC<AIChatPanelProps> = ({
           disabled={loading}
           style={{ padding: '6px 14px', background: `linear-gradient(135deg,${COLORS.purple},${COLORS.blue})`, border: 'none', color: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer', opacity: loading ? 0.6 : 1 }}
         >
-          {loading ? '...' : '✨ Smart Reply'}
+          {loading ? '...' : '<Sparkles size={16} color={COLORS.purple} /> Smart Reply'}
         </button>
         {replies.length > 0 && (
           <button onClick={() => setReplies([])} style={{ background: 'none', border: 'none', color: COLORS.w35, fontSize: 11, cursor: 'pointer' }}>Clear</button>

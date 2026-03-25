@@ -3,6 +3,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { useState, useCallback } from 'react';
+import { ArrowLeft, Check } from 'lucide-react';
 import { useNavStore, useAuthStore } from '@/store';
 import { api } from '@/services/api';
 import { COLORS } from '@/types';
@@ -58,11 +59,11 @@ export default function EditProfileScreen() {
         position: 'relative',
       }}>
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg,transparent,#E5192E,rgba(37,99,235,.5),transparent)' }} />
-        <button onClick={back} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, marginRight: 6, color: COLORS.w60, fontSize: 16 }}>←</button>
+        <button onClick={back} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, marginRight: 6, color: COLORS.w60, fontSize: 16 }}><ArrowLeft size={18} /></button>
         <div style={{ flex: 1, fontSize: 16, fontWeight: 700 }}>Edit Profile</div>
         <button onClick={save} disabled={saving}
           style={{ background: 'none', border: 'none', cursor: 'pointer', color: COLORS.red, fontWeight: 800, fontSize: 12, opacity: saving ? 0.6 : 1 }}>
-          {saving ? 'Saving…' : saved ? '✓ Saved' : 'Save'}
+          {saving ? 'Saving…' : saved ? 'Saved' : 'Save'}
         </button>
       </div>
 
@@ -144,7 +145,7 @@ export default function EditProfileScreen() {
               background: form.onPrEP ? COLORS.green : 'transparent',
               display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: '#fff',
             }}>
-              {form.onPrEP ? '✓' : ''}
+              {form.onPrEP ? '<Check size={12} />' : ''}
             </div>
             <span style={{ fontSize: 13, color: COLORS.w60 }}>On PrEP</span>
           </button>
@@ -155,7 +156,7 @@ export default function EditProfileScreen() {
               border: 'none', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer',
               width: '100%', opacity: saving ? 0.6 : 1, marginTop: 8,
             }}>
-            {saving ? 'Saving…' : saved ? '✓ Saved!' : '✓ Save Profile'}
+            {saving ? 'Saving…' : saved ? 'Saved!' : 'Save Profile'}
           </button>
           <div style={{ height: 20 }} />
         </div>

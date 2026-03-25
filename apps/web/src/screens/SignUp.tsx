@@ -3,13 +3,14 @@
 //
 // Flow:
 //   1. User enters name, email, password
-//   2. supabase.auth.signUp() → creates auth user
-//   3. If email confirmation required → show "check email" state
-//   4. If session returned → create profile row → navigate to onboarding
+//   2. supabase.auth.signUp() creates auth user
+//   3. If email confirmation required show "check email" state
+//   4. If session returned create profile row navigate to onboarding
 //
 // If Supabase not configured, shows error with setup instructions.
 // ═══════════════════════════════════════════════════════════════
 import { useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
 import { useNavStore, useAuthStore } from '@/store';
 import { supabase } from '@/lib/supabase';
 import { COLORS } from '@/types';
@@ -127,7 +128,7 @@ export default function SignUpScreen() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '48px 24px 40px' }}>
-      <button onClick={() => go('landing')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: COLORS.w35, marginBottom: 32, fontSize: 13 }}>← Back</button>
+      <button onClick={() => go('landing')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: COLORS.w35, marginBottom: 32, fontSize: 13 }}><ArrowLeft size={16} /> Back</button>
       <h1 style={{ fontSize: 26, fontWeight: 800, marginBottom: 8 }}>Create account</h1>
       <p style={{ color: COLORS.w35, fontSize: 13, marginBottom: 28 }}>Free forever. No credit card.</p>
 
@@ -168,7 +169,7 @@ export default function SignUpScreen() {
         disabled={loading}
         style={{ marginTop: 16, padding: '15px 24px', background: `linear-gradient(135deg,${COLORS.red},#FF4020)`, border: 'none', color: '#fff', fontSize: 13, fontWeight: 700, cursor: loading ? 'wait' : 'pointer', width: '100%', opacity: loading ? 0.6 : 1 }}
       >
-        {loading ? 'Creating account…' : 'Create Account →'}
+        {loading ? 'Creating account…' : 'Create Account'}
       </button>
 
       <p style={{ textAlign: 'center', marginTop: 16, fontSize: 13, color: COLORS.w35 }}>

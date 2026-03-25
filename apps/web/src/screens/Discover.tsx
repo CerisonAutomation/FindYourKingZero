@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { useEffect, useState, useCallback, useRef, memo } from 'react';
+import { Bell, Check, Heart, MapPin, MessageCircle, Settings, Star } from 'lucide-react';
 import { useNavStore, useAuthStore, useDiscoveryStore } from '@/store';
 import { useProximity } from '@/hooks/useProximity';
 import { useAI } from '@/hooks/useAI';
@@ -174,9 +175,9 @@ export default function DiscoverScreen() {
             )}
           </div>
           <button onClick={() => go('notifications')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, position: 'relative' }}>
-            🔔
+            <Bell size={16} />
           </button>
-          <button onClick={() => go('settings')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8 }}>⚙️</button>
+          <button onClick={() => go('settings')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8 }}><Settings size={16} /></button>
         </div>
 
         {/* Search */}
@@ -188,7 +189,7 @@ export default function DiscoverScreen() {
               {citySearch.map(c => (
                 <button key={c} onClick={() => { setSearch(c); setCitySearch([]); }}
                   style={{ display: 'block', width: '100%', padding: '10px 14px', background: 'none', border: 'none', color: COLORS.w60, fontSize: 13, textAlign: 'left', cursor: 'pointer' }}>
-                  📍 {c}
+                  <MapPin size={14} style={{marginRight:4,verticalAlign:-1}} /> {c}
                 </button>
               ))}
             </div>
@@ -412,7 +413,7 @@ function FilterPanel({ filters, setFilters, onClose }: {
               background: (filters as any)[t.key] ? 'rgba(22,163,74,.1)' : 'transparent',
               color: (filters as any)[t.key] ? COLORS.green : COLORS.w35, fontSize: 10, fontWeight: 700, cursor: 'pointer',
             }}>
-            {(filters as any)[t.key] ? '✓ ' : ''}{t.label}
+            {(filters as any)[t.key] ? <Check size={10} color={COLORS.green} /> : null}{t.label}
           </button>
         ))}
       </div>
@@ -438,14 +439,14 @@ const GridCard = memo(({ user, onClick, onFavorite, isFav }: {
       )}
       <button onClick={e => { e.stopPropagation(); onFavorite(user.id); }}
         style={{ position: 'absolute', top: 7, left: 7, background: 'rgba(6,6,16,.7)', border: 'none', cursor: 'pointer', padding: '4px 6px', fontSize: 14 }}>
-        {isFav ? '❤️' : '🤍'}
+        {isFav ? '<Heart size={16} />' : '<Heart size={16} />'}
       </button>
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '8px 10px 10px' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
           <span style={{ fontSize: 15, fontWeight: 800 }}>{user.name}</span>
           <span style={{ fontSize: 12, color: COLORS.w60 }}>{user.age}</span>
         </div>
-        <div style={{ fontSize: 10, color: COLORS.w35 }}>📍 {user.distance != null ? `${user.distance.toFixed(1)}km` : ''} · {user.city}</div>
+        <div style={{ fontSize: 10, color: COLORS.w35 }}><MapPin size={14} style={{marginRight:4,verticalAlign:-1}} /> {user.distance != null ? `${user.distance.toFixed(1)}km` : ''} · {user.city}</div>
       </div>
     </div>
   </div>
@@ -469,16 +470,16 @@ const ListCard = memo(({ user, onClick, onMessage, onFavorite, isFav }: {
         {user.online && <div style={{ width: 6, height: 6, borderRadius: '50%', background: COLORS.green }} />}
       </div>
       <div style={{ fontSize: 11, color: COLORS.w35 }}>{user.bio?.slice(0, 60)}…</div>
-      <div style={{ fontSize: 10, color: COLORS.w35, marginTop: 2 }}>📍 {user.distance?.toFixed(1)}km · {user.city}</div>
+      <div style={{ fontSize: 10, color: COLORS.w35, marginTop: 2 }}><MapPin size={14} style={{marginRight:4,verticalAlign:-1}} /> {user.distance?.toFixed(1)}km · {user.city}</div>
     </div>
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
       <button onClick={() => onFavorite(user.id)}
         style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', background: COLORS.w04, border: `1px solid ${COLORS.w07}`, cursor: 'pointer', fontSize: 14 }}>
-        {isFav ? '❤️' : '🤍'}
+        {isFav ? '<Heart size={16} />' : '<Heart size={16} />'}
       </button>
       <button onClick={onMessage}
         style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(229,25,46,.1)', border: '1px solid rgba(229,25,46,.3)', cursor: 'pointer', fontSize: 14 }}>
-        💬
+        <MessageCircle size={16} />
       </button>
     </div>
   </div>
@@ -503,11 +504,11 @@ const SwipeCard = memo(({ user, onSwipe, onFavorite, isFav, direction }: {
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top,rgba(6,6,16,.95) 0%,transparent 50%)' }} />
         <button onClick={() => onFavorite(user.id)}
           style={{ position: 'absolute', top: 14, right: 14, background: 'rgba(6,6,16,.7)', border: 'none', cursor: 'pointer', padding: '6px 8px', fontSize: 18 }}>
-          {isFav ? '❤️' : '🤍'}
+          {isFav ? '<Heart size={16} />' : '<Heart size={16} />'}
         </button>
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '16px 18px' }}>
           <div style={{ fontSize: 24, fontWeight: 900, marginBottom: 4 }}>{user.name}, {user.age}</div>
-          <div style={{ fontSize: 13, color: COLORS.w60, marginBottom: 4 }}>📍 {user.city} · {user.distance?.toFixed(1)}km</div>
+          <div style={{ fontSize: 13, color: COLORS.w60, marginBottom: 4 }}><MapPin size={14} style={{marginRight:4,verticalAlign:-1}} /> {user.city} · {user.distance?.toFixed(1)}km</div>
           {user.bio && <div style={{ fontSize: 12, color: COLORS.w35 }}>{user.bio.slice(0, 100)}</div>}
         </div>
       </div>
@@ -520,11 +521,11 @@ const SwipeCard = memo(({ user, onSwipe, onFavorite, isFav, direction }: {
       </button>
       <button onClick={() => onSwipe(user.id, 'superlike')}
         style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(124,58,237,.15)', border: `2px solid ${COLORS.purple}`, cursor: 'pointer', fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        ⭐
+        <Star size={16} />
       </button>
       <button onClick={() => onSwipe(user.id, 'like')}
         style={{ width: 56, height: 56, borderRadius: '50%', background: 'rgba(229,25,46,.15)', border: `2px solid ${COLORS.red}`, cursor: 'pointer', fontSize: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        ❤️
+        <Heart size={16} />
       </button>
     </div>
   </div>

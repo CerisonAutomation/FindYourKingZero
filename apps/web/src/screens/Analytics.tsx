@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { useState } from 'react';
-import { BarChart3, Eye, Heart, MessageCircle, TrendingUp, Clock, ArrowLeft, Crown } from 'lucide-react';
+import { BarChart3, Eye, Heart, MessageCircle, TrendingUp, Clock, ArrowLeft, Crown, Dumbbell, Music, Plane, UtensilsCrossed, Gamepad2, Palette } from 'lucide-react';
 import { useNavStore } from '@/store';
 import { COLORS } from '@/types';
 
@@ -25,12 +25,12 @@ const TRIBES = [
 ];
 
 const INTERESTS = [
-  { name: 'Fitness', emoji: '🏋️', matches: 89 },
-  { name: 'Music', emoji: '🎵', matches: 76 },
-  { name: 'Travel', emoji: '✈️', matches: 64 },
-  { name: 'Food', emoji: '🍽️', matches: 52 },
-  { name: 'Gaming', emoji: '🎮', matches: 41 },
-  { name: 'Art', emoji: '🎨', matches: 35 },
+  { name: 'Fitness', icon: Dumbbell, matches: 89 },
+  { name: 'Music', icon: Music, matches: 76 },
+  { name: 'Travel', icon: Plane, matches: 64 },
+  { name: 'Food', icon: UtensilsCrossed, matches: 52 },
+  { name: 'Gaming', icon: Gamepad2, matches: 41 },
+  { name: 'Art', icon: Palette, matches: 35 },
 ];
 
 export default function AnalyticsScreen() {
@@ -194,7 +194,7 @@ export default function AnalyticsScreen() {
               <div key={i.name} style={{
                 padding: '12px 10px', background: COLORS.bg1, border: `1px solid ${COLORS.w07}`, textAlign: 'center',
               }}>
-                <div style={{ fontSize: 20, marginBottom: 4 }}>{i.emoji}</div>
+                <i.icon size={20} color={COLORS.blue} style={{ marginBottom: 4 }} />
                 <div style={{ fontSize: 12, fontWeight: 700 }}>{i.name}</div>
                 <div style={{ fontSize: 10, color: COLORS.w35 }}>{i.matches} matches</div>
               </div>

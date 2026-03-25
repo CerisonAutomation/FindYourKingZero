@@ -222,7 +222,7 @@ export const SubscriptionSelection: FC<SubscriptionSelectionProps> = ({
       )}
 
       <p className="text-center text-xs text-white/25">
-        You can change or cancel your plan any time in Account → Settings.
+        You can change or cancel your plan any time in Account - Settings.
       </p>
     </div>
   );

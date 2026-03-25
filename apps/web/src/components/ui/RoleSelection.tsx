@@ -143,7 +143,7 @@ export const RoleSelection: FC<RoleSelectionProps> = ({ onSelectRole, selectedRo
       )}
 
       <p className="text-center text-xs text-white/25">
-        You can change your role later in Account → Settings.
+        You can change your role later in Account - Settings.
       </p>
     </div>
   );

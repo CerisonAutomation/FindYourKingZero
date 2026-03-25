@@ -3,6 +3,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { useState } from 'react';
+import { Settings, Pencil, Check, MapPin } from 'lucide-react';
 import { useNavStore, useAuthStore } from '@/store';
 import { TopBar } from '@/components/ui/index';
 import { Avatar } from '@/components/ui/index';
@@ -21,8 +22,8 @@ export default function ProfileScreen() {
         title="My Profile"
         right={
           <>
-            <button onClick={() => go('edit-profile')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8 }}>✏️</button>
-            <button onClick={() => go('settings')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8 }}>⚙️</button>
+            <button onClick={() => go('edit-profile')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8 }}><Pencil size={16} color={COLORS.w60} /></button>
+            <button onClick={() => go('settings')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8 }}><Settings size={16} color={COLORS.w60} /></button>
           </>
         }
       />
@@ -41,9 +42,9 @@ export default function ProfileScreen() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
             <h2 style={{ fontSize: 22, fontWeight: 900 }}>{user.name}</h2>
             <span style={{ fontSize: 18, color: COLORS.w60 }}>{user.age}</span>
-            {user.verified && <span style={{ color: COLORS.blue }}>✓</span>}
+            {user.verified && <Check size={18} style={{ color: COLORS.blue }} />}
           </div>
-          <div style={{ fontSize: 13, color: COLORS.w35, marginBottom: 14 }}>📍 {user.city || 'No city set'}</div>
+          <div style={{ fontSize: 13, color: COLORS.w35, marginBottom: 14, display: 'flex', alignItems: 'center', gap: 4 }}><MapPin size={14} /> {user.city || 'No city set'}</div>
 
           {/* Stats */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', border: `1px solid ${COLORS.w07}`, marginBottom: 18 }}>

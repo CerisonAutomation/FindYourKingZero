@@ -3,13 +3,14 @@
 //
 // Flow:
 //   1. User enters email + password
-//   2. supabase.auth.signInWithPassword() → session + user
+//   2. supabase.auth.signInWithPassword() session + user
 //   3. Fetch profile from Supabase DB
-//   4. Store in Zustand → navigate to discover
+//   4. Store in Zustand navigate to discover
 //
 // If Supabase not configured, shows error with setup instructions.
 // ═══════════════════════════════════════════════════════════════
 import { useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
 import { useNavStore, useAuthStore } from '@/store';
 import { supabase } from '@/lib/supabase';
 import { COLORS } from '@/types';
@@ -90,7 +91,7 @@ export default function SignInScreen() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '48px 24px 40px' }}>
-      <button onClick={() => go('landing')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: COLORS.w35, marginBottom: 32, fontSize: 13 }}>← Back</button>
+      <button onClick={() => go('landing')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: COLORS.w35, marginBottom: 32, fontSize: 13 }}><ArrowLeft size={16} /> Back</button>
       <h1 style={{ fontSize: 26, fontWeight: 800, marginBottom: 4 }}>Welcome back</h1>
       <p style={{ color: COLORS.w35, fontSize: 13, marginBottom: 28 }}>Sign in to your kingdom</p>
 
@@ -126,7 +127,7 @@ export default function SignInScreen() {
         disabled={loading}
         style={{ marginTop: 16, padding: '15px 24px', background: `linear-gradient(135deg,${COLORS.red},#FF4020)`, border: 'none', color: '#fff', fontSize: 13, fontWeight: 700, cursor: loading ? 'wait' : 'pointer', width: '100%', opacity: loading ? 0.6 : 1 }}
       >
-        {loading ? 'Signing in…' : 'Sign In →'}
+        {loading ? 'Signing in…' : 'Sign In'}
       </button>
 
       <button

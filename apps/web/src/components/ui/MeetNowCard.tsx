@@ -4,7 +4,7 @@
 // Upgraded:
 //   • Import path typo fixed (@/componentsui -> @/components/ui)
 //   • Native <img> with loading="lazy" replaces next/image
-//   • Expired post guard (> 2h old → disabled)
+//   • Expired post guard (> 2h old - disabled)
 //   • onAccept callback prop (was fire-and-forget)
 //   • ARIA: role="article", aria-label, button states
 //   • FYK dark-glass Tailwind theme, JSDoc

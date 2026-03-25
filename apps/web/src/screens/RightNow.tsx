@@ -3,6 +3,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { useEffect, useState, useRef, useCallback } from 'react';
+import { List, Map, MessageCircle } from 'lucide-react';
 import { useNavStore, useAuthStore, useDiscoveryStore } from '@/store';
 import { useProximity } from '@/hooks/useProximity';
 import { p2p, proximityRoomId } from '@/services/p2p';
@@ -138,7 +139,7 @@ export default function RightNowScreen() {
         right={
           <button onClick={() => setViewMode(v => v === 'list' ? 'map' : 'list')}
             style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8 }}>
-            {viewMode === 'map' ? '📋' : '🗺️'}
+            {viewMode === 'map' ? <List size={18} /> : <Map size={18} />}
           </button>
         }
       />
@@ -219,7 +220,7 @@ export default function RightNowScreen() {
               </div>
               <button onClick={() => go('chat', { chatUser: u })}
                 style={{ width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(229,25,46,.1)', border: '1px solid rgba(229,25,46,.3)', cursor: 'pointer' }}>
-                💬
+                <MessageCircle size={18} />
               </button>
             </div>
           ))}

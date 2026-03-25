@@ -3,6 +3,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { useState, useEffect, useCallback } from 'react';
+import { ArrowLeft, Flame, Heart, MessageSquare, Sparkles, Star } from 'lucide-react';
 import { useNavStore, useAuthStore, useNotifStore } from '@/store';
 import { api } from '@/services/api';
 import { COLORS } from '@/types';
@@ -36,11 +37,11 @@ export default function ViewProfileScreen() {
     if (!peer?.id) return;
     try {
       const { matched } = await api.matches.swipe(peer.id, type === 'tap' ? 'like' : type === 'superlike' ? 'superlike' : 'like');
-      if (type === 'tap') { setTapped(true); setToast('Tapped! 👑'); }
+      if (type === 'tap') { setTapped(true); setToast('Tapped!'); }
       if (type === 'woof') { setWoofed(true); setToast('Woof sent 🐾'); }
-      if (type === 'superlike') { setSuperliked(true); setToast('Super Like sent ⭐'); }
+      if (type === 'superlike') { setSuperliked(true); setToast('Super Like sent!'); }
       if (matched) {
-        setToast("🎉 It's a Match!");
+        setToast("It's a Match!");
         addNotif({ id: crypto.randomUUID(), type: 'match', text: `You matched with ${peer.name}!`, read: false, createdAt: Date.now() });
       }
       setTimeout(() => setToast(''), 2500);
@@ -70,7 +71,7 @@ export default function ViewProfileScreen() {
         {/* Back button */}
         <button onClick={back}
           style={{ position: 'absolute', top: 14, left: 14, width: 36, height: 36, background: 'rgba(6,6,16,.8)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff', fontSize: 16 }}>
-          ←
+          <ArrowLeft size={18} />
         </button>
 
         {profile.premium && (
@@ -86,7 +87,7 @@ export default function ViewProfileScreen() {
             <span style={{ fontSize: 20, color: COLORS.w60 }}>{profile.age}</span>
             {profile.verified && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 3, padding: '2px 6px', background: 'rgba(37,99,235,.15)', border: '1px solid rgba(37,99,235,.35)' }}>
-                <span style={{ fontSize: 9, fontWeight: 700, color: COLORS.blue }}>✓ VERIFIED</span>
+                <span style={{ fontSize: 9, fontWeight: 700, color: COLORS.blue }}>VERIFIED</span>
               </div>
             )}
           </div>
@@ -97,7 +98,7 @@ export default function ViewProfileScreen() {
                 <span style={{ fontSize: 12, color: COLORS.green, fontWeight: 600 }}>Online now</span>
               </>
             )}
-            <span style={{ fontSize: 12, color: COLORS.w35 }}>📍 {profile.city}</span>
+            <span style={{ fontSize: 12, color: COLORS.w35 }}></span>
           </div>
         </div>
       </div>
@@ -107,9 +108,9 @@ export default function ViewProfileScreen() {
         {!isMe && (
           <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,.07)' }}>
             {[
-              { type: 'tap' as const, label: 'TAP', icon: '❤️', c: COLORS.red, on: tapped },
-              { type: 'woof' as const, label: 'WOOF', icon: '🔥', c: COLORS.yellow, on: woofed },
-              { type: 'superlike' as const, label: 'SUPER', icon: '⭐', c: COLORS.purple, on: superliked },
+              { type: 'tap' as const, label: 'TAP', icon: <Heart size={16} />, c: COLORS.red, on: tapped },
+              { type: 'woof' as const, label: 'WOOF', icon: <Flame size={16} />, c: COLORS.yellow, on: woofed },
+              { type: 'superlike' as const, label: 'SUPER', icon: <Star size={16} />, c: COLORS.purple, on: superliked },
             ].map((a) => (
               <button key={a.type} onClick={() => interact(a.type)}
                 style={{
@@ -179,11 +180,11 @@ export default function ViewProfileScreen() {
               <button onClick={() => api.users.block(profile.id)}
                 style={{ flex: 1, padding: '8px', background: 'transparent', border: '1px solid rgba(255,255,255,.07)', color: COLORS.w35, fontSize: 11, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
                 🚫 Block
-              </button>
+              <ArrowLeft size={18} /></button>
               <button onClick={() => api.users.report(profile.id, 'other')}
                 style={{ flex: 1, padding: '8px', background: 'transparent', border: '1px solid rgba(255,255,255,.07)', color: COLORS.w35, fontSize: 11, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
                 🚩 Report
-              </button>
+              <ArrowLeft size={18} /></button>
             </div>
           )}
         </div>
@@ -203,8 +204,8 @@ export default function ViewProfileScreen() {
               border: `1px solid ${saved ? 'rgba(229,25,46,.5)' : 'rgba(255,255,255,.12)'}`,
               color: saved ? COLORS.red : COLORS.w60, fontSize: 18, cursor: 'pointer',
             }}>
-            ❤️
-          </button>
+            <Heart size={18} />
+          <ArrowLeft size={18} /></button>
           <button onClick={() => go('chat', { chatUser: profile })}
             style={{
               flex: 1, padding: '15px 24px',
@@ -212,8 +213,8 @@ export default function ViewProfileScreen() {
               border: 'none', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             }}>
-            💬 Message
-          </button>
+            <MessageSquare size={14} /> Message
+          <ArrowLeft size={18} /></button>
         </div>
       )}
 

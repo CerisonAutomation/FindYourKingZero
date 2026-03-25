@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { useState, useCallback } from 'react';
-import { Shield, Download, Trash2, Cookie, Lock, Eye, EyeOff, ArrowLeft, Check } from 'lucide-react';
+import { ArrowLeft, Check, Cookie, Download, Eye, EyeOff, FileText, Lock, Shield, Trash2, Clipboard as LucideClipboard } from 'lucide-react';
 import { useNavStore } from '@/store';
 import { COLORS } from '@/types';
 
@@ -211,14 +211,14 @@ export default function GDPRScreen() {
             display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%',
             padding: '12px 14px', background: COLORS.bg1, border: `1px solid ${COLORS.w07}`, cursor: 'pointer', marginBottom: 8,
           }}>
-            <span style={{ fontSize: 13, fontWeight: 700 }}>📜 Privacy Policy</span>
+            <span style={{ fontSize: 13, fontWeight: 700 }}><FileText size={14} /> Privacy Policy</span>
             <span style={{ color: COLORS.w12, fontSize: 16 }}>›</span>
           </button>
           <button onClick={() => go('terms-of-service')} style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%',
             padding: '12px 14px', background: COLORS.bg1, border: `1px solid ${COLORS.w07}`, cursor: 'pointer', marginBottom: 8,
           }}>
-            <span style={{ fontSize: 13, fontWeight: 700 }}>📋 Terms of Service</span>
+            <span style={{ fontSize: 13, fontWeight: 700 }}><LucideClipboard size={14} /> Terms of Service</span>
             <span style={{ color: COLORS.w12, fontSize: 16 }}>›</span>
           </button>
           <button onClick={() => go('community-guidelines')} style={{

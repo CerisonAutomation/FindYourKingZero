@@ -240,7 +240,7 @@ export class NetworkBoundary extends React.Component<
 
 /**
  * Drop-in triple-layer boundary:
- * NetworkBoundary → AsyncErrorBoundary → ErrorBoundary
+ * NetworkBoundary -> AsyncErrorBoundary -> ErrorBoundary
  *
  * @example
  * <AppBoundary onError={(e) => Sentry.captureException(e)}>

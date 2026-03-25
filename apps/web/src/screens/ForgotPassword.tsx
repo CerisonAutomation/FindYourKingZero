@@ -2,6 +2,7 @@
 // SCREEN: ForgotPassword — Supabase Auth password reset
 // ═══════════════════════════════════════════════════════════════
 import { useState } from 'react';
+import { ArrowLeft, Mail } from 'lucide-react';
 import { useNavStore } from '@/store';
 import { supabase } from '@/lib/supabase';
 import { COLORS } from '@/types';
@@ -34,7 +35,7 @@ export default function ForgotPasswordScreen() {
   if (sent) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', padding: '40px 24px', textAlign: 'center' }}>
-        <div style={{ fontSize: 48, marginBottom: 20 }}>📧</div>
+        <div style={{ fontSize: 48, marginBottom: 20 }}><Mail size={48} /></div>
         <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 10 }}>Check your email</h2>
         <p style={{ color: COLORS.w35, fontSize: 14, lineHeight: 1.6 }}>
           We sent a password reset link to <strong style={{ color: '#fff' }}>{email}</strong>.<br />
@@ -49,7 +50,7 @@ export default function ForgotPasswordScreen() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '48px 24px 40px' }}>
-      <button onClick={() => go('landing')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: COLORS.w35, marginBottom: 32, fontSize: 13 }}>← Back</button>
+      <button onClick={() => go('landing')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: COLORS.w35, marginBottom: 32, fontSize: 13 }}><ArrowLeft size={16} /> Back</button>
       <h1 style={{ fontSize: 26, fontWeight: 800, marginBottom: 8 }}>Forgot password</h1>
       <p style={{ color: COLORS.w35, fontSize: 13, marginBottom: 28 }}>Enter your email to reset your password</p>
 

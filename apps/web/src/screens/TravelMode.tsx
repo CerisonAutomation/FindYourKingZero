@@ -73,7 +73,7 @@ export default function TravelModeScreen() {
             <div style={{ fontSize: 20, fontWeight: 800, marginBottom: 4 }}>{selectedCity.emoji} {selectedCity.name}</div>
             <div style={{ fontSize: 12, color: COLORS.w60 }}>{selectedCity.country}</div>
             <div style={{ fontSize: 11, color: COLORS.w35, marginTop: 8 }}>
-              {arrivalDate} → {departureDate}
+              {arrivalDate} - {departureDate}
             </div>
             <button onClick={() => setEnabled(false)} style={{
               marginTop: 12, padding: '8px 24px', background: 'rgba(239,68,68,.08)',

@@ -1,5 +1,6 @@
 // SCREEN: Chat — P2P + E2EE + AI smart replies + autocomplete
 import { useEffect, useRef, useState, useCallback, memo } from 'react';
+import { Check, Lock, Sparkles } from 'lucide-react';
 import { useNavStore, useAuthStore, useChatStore } from '@/store';
 import { useAI } from '@/hooks/useAI';
 import { p2p, chatRoomId } from '@/services/p2p';
@@ -132,7 +133,7 @@ export default function ChatScreen() {
             <div>
               <div style={{ fontSize: 14, fontWeight: 800 }}>{peer.name}</div>
               <div style={{ fontSize: 11, color: p2pStatus === 'connected' ? COLORS.green : COLORS.w35 }}>
-                {p2pStatus === 'connected' ? '🔒 P2P Encrypted' : p2pStatus === 'connecting' ? 'Connecting…' : 'Offline'}
+                {p2pStatus === 'connected' ? '<Lock size={16} /> P2P Encrypted' : p2pStatus === 'connecting' ? 'Connecting…' : 'Offline'}
               </div>
             </div>
           </div>
@@ -144,11 +145,11 @@ export default function ChatScreen() {
           <div style={{ textAlign: 'center', padding: '32px 0' }}>
             <Avatar src={peer.avatar} size={64} />
             <p style={{ marginTop: 12, color: COLORS.w60, fontSize: 13 }}>Start your conversation with {peer.name}</p>
-            <p style={{ fontSize: 11, color: COLORS.w35, marginTop: 4 }}>🔒 E2E encrypted · Never stored on central servers</p>
+            <p style={{ fontSize: 11, color: COLORS.w35, marginTop: 4 }}><Lock size={12} /> E2E encrypted · Never stored on central servers</p>
             {aiReady && (
               <button onClick={loadAISuggestions}
                 style={{ marginTop: 16, padding: '8px 16px', background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.3)', color: COLORS.purple, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
-                ✨ Generate icebreaker
+                <Sparkles size={14} /> Generate icebreaker
               </button>
             )}
           </div>
@@ -230,7 +231,7 @@ const MessageBubble = memo(({ message, isMine, peer }: { message: Message; isMin
       </div>
       <div style={{ display: 'flex', justifyContent: isMine ? 'flex-end' : 'flex-start', gap: 4, marginTop: 3 }}>
         <span style={{ fontSize: 10, color: COLORS.w35 }}>{new Date(message.createdAt).toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit' })}</span>
-        {isMine && <span style={{ fontSize: 10, color: message.read ? COLORS.blue : COLORS.w35 }}>{message.read ? '✓✓' : '✓'}</span>}
+        {isMine && <span style={{ fontSize: 10, color: message.read ? COLORS.blue : COLORS.w35 }}>{message.read ? <Check size={12} color={COLORS.blue} /> : <Check size={12} color={COLORS.w35} />}</span>}
       </div>
     </div>
   </div>

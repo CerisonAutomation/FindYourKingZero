@@ -1,5 +1,7 @@
 // UI: AI Button — Futuristic pulsing glow with status states
 import { useState, useEffect, type FC } from 'react';
+import { Sparkles } from 'lucide-react';
+import { COLORS } from '@/types';
 
 interface AIButtonProps {
   onClick: () => void;
@@ -33,7 +35,7 @@ export const AIButton: FC<AIButtonProps> = ({ onClick, loading, active, size = '
       <div style={{ position: 'absolute', inset: -3, borderRadius: '50%', background: loading ? `conic-gradient(from 0deg,#E5192E,#7C3AED,#2563EB,#E5192E)` : active ? `conic-gradient(from ${pulse ? 0 : 180}deg,#E5192E,#7C3AED,#2563EB,#E5192E)` : `linear-gradient(135deg,rgba(229,25,46,.4),rgba(124,58,237,.4))`, animation: loading ? 'spin 1s linear infinite' : active ? 'spin 3s linear infinite' : 'none', opacity: active || loading ? 1 : 0.5, transition: 'opacity .3s' }} />
       <div style={{ position: 'absolute', inset: 2, borderRadius: '50%', background: 'radial-gradient(circle at 30% 30%,#1a1a2e,#0a0a1a)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ fontSize: s * 0.4, filter: active || loading ? `drop-shadow(0 0 8px rgba(124,58,237,.8)) drop-shadow(0 0 16px rgba(229,25,46,.4))` : 'none', transition: 'filter .3s', animation: loading ? 'pulse 1s ease-in-out infinite' : 'none' }}>
-          {loading ? <div style={{ width: s * 0.35, height: s * 0.35, border: '2px solid rgba(255,255,255,.15)', borderTop: '2px solid #7C3AED', borderRadius: '50%', animation: 'spin .6s linear infinite' }} /> : '✨'}
+          {loading ? <div style={{ width: s * 0.35, height: s * 0.35, border: '2px solid rgba(255,255,255,.15)', borderTop: '2px solid #7C3AED', borderRadius: '50%', animation: 'spin .6s linear infinite' }} /> : <Sparkles size={20} color={COLORS.purple} />}
         </div>
       </div>
       {(active || loading) && [0, 1, 2].map(i => (

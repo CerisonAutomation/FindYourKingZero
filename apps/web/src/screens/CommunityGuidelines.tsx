@@ -3,17 +3,17 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { useState } from 'react';
-import { Heart, ArrowLeft, ChevronDown, ChevronUp, AlertTriangle, CheckCircle, XCircle, Shield, Flag } from 'lucide-react';
+import { AlertTriangle, ArrowLeft, ArrowRight, Check, CheckCircle, ChevronDown, ChevronUp, DollarSign, Flag, Heart, Lock, Shield, User, XCircle } from 'lucide-react';
 import { useNavStore } from '@/store';
 import { COLORS } from '@/types';
 
 const RULES = [
-  { id: 'r1', icon: '👤', title: 'Be Authentic', desc: 'Use real photos and accurate information about yourself. Catfishing and impersonation are strictly prohibited.' },
+  { id: 'r1', icon: <User size={16} />, title: 'Be Authentic', desc: 'Use real photos and accurate information about yourself. Catfishing and impersonation are strictly prohibited.' },
   { id: 'r2', icon: '🤝', title: 'Be Respectful', desc: 'Treat everyone with dignity. No harassment, hate speech, bullying, or discrimination of any kind.' },
-  { id: 'r3', icon: '🔒', title: 'Respect Boundaries', desc: 'No means no. If someone isn\'t interested, move on gracefully. Persistent unwanted contact is harassment.' },
+  { id: 'r3', icon: <Lock size={16} />, title: 'Respect Boundaries', desc: 'No means no. If someone isn\'t interested, move on gracefully. Persistent unwanted contact is harassment.' },
   { id: 'r4', icon: '🔞', title: '18+ Only', desc: 'You must be 18 or older. Any indication of underage users is reported immediately to authorities.' },
-  { id: 'r5', icon: '💰', title: 'No Solicitation', desc: 'No selling, promoting businesses, requesting money, or financial scams of any kind.' },
-  { id: 'r6', icon: '🛡️', title: 'Protect Privacy', desc: 'Never share someone else\'s personal information, photos, or conversations without explicit consent.' },
+  { id: 'r5', icon: <DollarSign size={16} />, title: 'No Solicitation', desc: 'No selling, promoting businesses, requesting money, or financial scams of any kind.' },
+  { id: 'r6', icon: <Shield size={16} />, title: 'Protect Privacy', desc: 'Never share someone else\'s personal information, photos, or conversations without explicit consent.' },
   { id: 'r7', icon: '🚫', title: 'No Illegal Activity', desc: 'Drug dealing, solicitation of illegal services, and any criminal activity will result in an immediate ban.' },
   { id: 'r8', icon: '📸', title: 'Photo Standards', desc: 'No nudity in public photos. Private albums are consensual. No photos of minors. No non-consensual intimate images.' },
 ];
@@ -72,7 +72,7 @@ export default function CommunityGuidelinesScreen() {
       {/* Tab bar */}
       <div style={{ display: 'flex', overflowX: 'auto', borderBottom: `1px solid ${COLORS.w07}`, padding: '0 14px', whiteSpace: 'nowrap' }}>
         {([
-          { key: 'rules', label: '✅ Rules' },
+          { key: 'rules', label: '<Check size={14} color="green" /> Rules' },
           { key: 'prohibited', label: '🚫 Prohibited' },
           { key: 'consequences', label: '⚖️ Consequences' },
           { key: 'reporting', label: '🚩 Reporting' },
@@ -203,7 +203,7 @@ export default function CommunityGuidelinesScreen() {
                 Report Channels
               </div>
               {[
-                { label: 'In-App Report', desc: 'Profile menu → Report (fastest)' },
+                { label: 'In-App Report', desc: 'Profile menu <ArrowRight size={16} /> Report (fastest)' },
                 { label: 'Email', desc: 'safety@findyourking.app' },
                 { label: 'Emergency', desc: 'safety@findyourking.app (urgent — 2hr response)' },
                 { label: 'Law Enforcement', desc: 'legal@findyourking.app (for official requests)' },

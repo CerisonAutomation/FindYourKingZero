@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { useState } from 'react';
+import { ArrowLeft, Crown, Check } from 'lucide-react';
 import { useNavStore } from '@/store';
 import { haptic } from '@/services/haptics';
 import { COLORS } from '@/types';
@@ -98,8 +99,8 @@ export default function SubscriptionScreen() {
       }}>
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg,transparent,#E5192E,#D97706,transparent)' }} />
         <div style={{ display: 'flex', alignItems: 'center', padding: '0 14px', height: 52 }}>
-          <button onClick={back} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, marginRight: 6, color: COLORS.w60, fontSize: 16 }}>←</button>
-          <div style={{ flex: 1, fontSize: 16, fontWeight: 700 }}>👑 King Subscription</div>
+          <button onClick={back} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, marginRight: 6, color: COLORS.w60, fontSize: 16 }}><ArrowLeft size={18} /></button>
+          <div style={{ flex: 1, fontSize: 16, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}><Crown size={16} color={COLORS.yellow} /> King Subscription</div>
         </div>
       </div>
 
@@ -158,7 +159,7 @@ export default function SubscriptionScreen() {
               </div>
               {tier.features.map((f, _i) => (
                 <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 4 }}>
-                  <span style={{ color: tier.c, fontSize: 12 }}>✓</span>
+                  <Check size={12} style={{ color: tier.c }} />
                   <span style={{ fontSize: 12, color: COLORS.w60 }}>{f}</span>
                 </div>
               ))}
@@ -175,7 +176,7 @@ export default function SubscriptionScreen() {
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             boxShadow: '0 4px 20px rgba(229,25,46,.3)',
           }}>
-          👑 Start {selectedTier?.name} {billing === 'yearly' ? '(Yearly)' : '(Monthly)'}
+          <Crown size={16} /> Start {selectedTier?.name} {billing === 'yearly' ? '(Yearly)' : '(Monthly)'}
         </button>
 
         <p style={{ textAlign: 'center', marginTop: 12, fontSize: 11, color: COLORS.w35 }}>
@@ -186,11 +187,11 @@ export default function SubscriptionScreen() {
         <div style={{ marginTop: 20, padding: '12px 14px', background: COLORS.bg1, border: '1px solid rgba(255,255,255,.07)' }}>
           <div style={{ fontSize: 9, fontWeight: 700, color: COLORS.w35, letterSpacing: '.14em', marginBottom: 8 }}>COMPARED TO COMPETITORS</div>
           <div style={{ fontSize: 11, color: COLORS.w35, lineHeight: 1.6 }}>
-            ✓ Grindr XTRA: €14.99/mo — We offer more at €9.99<br />
-            ✓ Romeo Plus: €9.90/mo — We match + add AI features<br />
-            ✓ MachoBB Premium: €12.99/mo — We beat with on-device AI<br />
-            ✓ All competitors: server-side AI = privacy risk<br />
-            ✓ Us: 100% on-device AI = zero data leaves your phone
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}><Check size={12} style={{ color: COLORS.green }} /> Grindr XTRA: €14.99/mo — We offer more at €9.99</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}><Check size={12} style={{ color: COLORS.green }} /> Romeo Plus: €9.90/mo — We match + add AI features</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}><Check size={12} style={{ color: COLORS.green }} /> MachoBB Premium: €12.99/mo — We beat with on-device AI</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}><Check size={12} style={{ color: COLORS.green }} /> All competitors: server-side AI = privacy risk</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}><Check size={12} style={{ color: COLORS.green }} /> Us: 100% on-device AI = zero data leaves your phone</div>
           </div>
         </div>
         <div style={{ height: 20 }} />
