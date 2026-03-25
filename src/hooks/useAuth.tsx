@@ -2,17 +2,9 @@
 // useAuth.tsx v4.1 — Rate-limited, profile-creation-on-signup, PKCE-aware
 // Fixes: no profile creation after signup, no client-side rate limiting
 // =============================================================================
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react';
-import type { AuthError, Session, User } from '@supabase/supabase-js';
-import { supabase, supabaseAuth, classifyAuthError, AuthErrorCode, healthCheck } from '@/integrations/supabase/client';
+import {createContext, type ReactNode, useCallback, useContext, useEffect, useRef, useState,} from 'react';
+import type {AuthError, Session, User} from '@supabase/supabase-js';
+import {AuthErrorCode, classifyAuthError, supabase, supabaseAuth} from '@/integrations/supabase/client';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface AuthContextType {

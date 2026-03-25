@@ -22,13 +22,13 @@
  * @license Enterprise
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 // @ts-ignore - trystero types not available
-import { selfId, joinRoom as joinTrysteroRoom } from 'trystero';
+import {joinRoom as joinTrysteroRoom, selfId} from 'trystero';
 import * as Y from 'yjs';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '../useAuth';
-import { useToast } from '../use-toast';
+import {supabase} from '@/integrations/supabase/client';
+import {useAuth} from '../useAuth';
+import {useToast} from '../use-toast';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TYPES & INTERFACES

@@ -3,7 +3,7 @@
 // Uses WebAuthn (navigator.credentials) on supported browsers
 // Falls back to Capacitor Biometric plugin on native
 // =====================================================
-import { useCallback, useState } from 'react';
+import {useCallback, useState} from 'react';
 
 export interface BiometricResult {
   success: boolean;

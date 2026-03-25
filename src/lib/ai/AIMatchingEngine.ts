@@ -11,7 +11,7 @@
  * @version 4.0.0
  */
 
-import { UserProfile, LocationData } from '../types'
+import {LocationData, UserProfile} from '../types'
 
 export type MatchScore  = {
   score: number // 0-100

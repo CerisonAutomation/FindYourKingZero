@@ -2,7 +2,7 @@
 // VIRTUAL SCROLL HOOK — Render only visible items
 // For long message lists with efficient memory usage
 // =====================================================
-import { useRef, useState, useCallback, useEffect, type RefObject } from 'react';
+import {type RefObject, useCallback, useEffect, useRef, useState} from 'react';
 
 export interface UseVirtualScrollOptions {
   /** Height of each item in px (fixed) */

@@ -21,7 +21,7 @@ import {
   Paperclip,
   ShieldCheck,
 } from 'lucide-react';
-import { Conversation, Message, useMessages, useSendMessage } from '@/hooks/useMessages';
+import { useChat, type Conversation, type ChatMessage as Message } from '@/hooks/unified/useChat';
 import { useConversationPresence } from '@/hooks/usePresence';
 import { REACTION_EMOJIS, useReactions } from '@/hooks/useReactions';
 import { useAuth } from '@/hooks/useAuth';
@@ -157,7 +157,7 @@ function MessageReactionsRow({ messageId }: { messageId: string }) {
 
 function MessageStatus({ message, isOwn }: { message: Message; isOwn: boolean }) {
   if (!isOwn) return null;
-  const isRead = message.is_read || (message as any).status === 'read';
+  const isRead = message.isRead || (message as any).status === 'read';
   const isDelivered = (message as any).status === 'delivered' || (message as any).status === 'sent';
   if (isRead) return <CheckCheck className="w-3 h-3 text-primary shrink-0" />;
   if (isDelivered) return <Check className="w-3 h-3 text-muted-foreground/50 shrink-0" />;
@@ -323,7 +323,7 @@ function MessageBubble({
                 <span className={cn('w-1.5 h-1.5 rounded-full shrink-0', SENTIMENT_COLOUR[sentiment])} />
               )}
               <span className={cn('text-[10px]', isOwn ? 'text-white/55' : 'text-muted-foreground/60')}>
-                {formatTime(message.created_at)}
+                {formatTime(message.createdAt)}
               </span>
               <MessageStatus message={message} isOwn={isOwn} />
             </div>
@@ -463,37 +463,41 @@ export function UnifiedChatWindow({
     if (!mockMode) return [];
     return [
       {
-        id: '1', conversation_id: conversation.id, sender_id: 'other',
+        id: '1', conversationId: conversation.id, senderId: 'other',
         content: 'Hey! Want to meet up tonight? I\'m free from 8pm 🔥',
-        message_type: 'text', media_url: null, is_read: true, read_at: null,
-        created_at: new Date(Date.now() - 3600000).toISOString(),
+        type: 'text', mediaUrl: null, metadata: {}, replyToId: null,
+        isRead: true, readAt: null, isEdited: false, isDeleted: false,
+        isPinned: false, isP2P: false, expiresAt: null, scheduledAt: null,
+        createdAt: new Date(Date.now() - 3600000).toISOString(),
+        updatedAt: new Date(Date.now() - 3600000).toISOString(),
       },
       {
-        id: '2', conversation_id: conversation.id, sender_id: 'current-user',
+        id: '2', conversationId: conversation.id, senderId: 'current-user',
         content: 'Sounds amazing! Where were you thinking?',
-        message_type: 'text', media_url: null, is_read: true, read_at: null,
-        created_at: new Date(Date.now() - 3500000).toISOString(),
+        type: 'text', mediaUrl: null, metadata: {}, replyToId: null,
+        isRead: true, readAt: null, isEdited: false, isDeleted: false,
+        isPinned: false, isP2P: false, expiresAt: null, scheduledAt: null,
+        createdAt: new Date(Date.now() - 3500000).toISOString(),
+        updatedAt: new Date(Date.now() - 3500000).toISOString(),
       },
     ];
   }, [mockMode, conversation.id]);
 
-  const { messages: liveMessages, isLoading } = mockMode
-    ? { messages: mockMessages, isLoading: false }
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    : useMessages(conversation.id);
+  const chat = useChat(conversation.id);
+  const { messages: liveMessages, isLoadingMessages: isLoading, sendMessage: sendChatMessage } = chat;
 
   const messages = mockMode ? mockMessages : liveMessages;
-  const sendMessage = useSendMessage();
+  const sendMessage = { mutate: sendChatMessage, isPending: false };
   const { setTyping, isUserTyping } = useConversationPresence(conversation.id);
 
-  const otherUserId = conversation.participant_one === user?.id
-    ? conversation.participant_two
-    : conversation.participant_one;
+  const otherUserId = conversation.participantOne === user?.id
+    ? conversation.participantTwo
+    : conversation.participantOne;
 
   const isOtherTyping = isUserTyping(otherUserId);
-  const otherUser = conversation.other_user;
-  const displayName = otherUser?.display_name || (conversation as any).participant?.name || 'User';
-  const avatarUrl = otherUser?.avatar_url || (conversation as any).participant?.avatar || '';
+  const otherUser = conversation.otherUser;
+  const displayName = otherUser?.displayName || (conversation as any).participant?.name || 'User';
+  const avatarUrl = otherUser?.avatarUrl || (conversation as any).participant?.avatar || '';
 
   // ── Scroll ────────────────────────────────────────────────
   useEffect(() => {
@@ -517,7 +521,7 @@ export function UnifiedChatWindow({
     if (!finalConfig.enableQuickReplies || messages.length === 0) return;
     const context = messages.slice(-6).map(m => ({
       content: m.content,
-      isOwn: m.sender_id === user?.id,
+      isOwn: m.senderId === user?.id,
     }));
     const replies = chatAI.getContextualQuickReplies(context, 3);
     setAiReplies(replies);
@@ -526,7 +530,7 @@ export function UnifiedChatWindow({
   // ── ChatAI: meet intent detection ─────────────────────────
   useEffect(() => {
     if (!finalConfig.enableMeetIntent) return;
-    const lastInbound = [...messages].reverse().find(m => m.sender_id !== user?.id);
+    const lastInbound = [...messages].reverse().find(m => m.senderId !== user?.id);
     if (!lastInbound || lastInbound.id === meetIntentChecked) return;
     setMeetIntentChecked(lastInbound.id);
     if (chatAI.isMeetNowIntent(lastInbound.content)) {
@@ -579,7 +583,7 @@ export function UnifiedChatWindow({
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
 
     if (!mockMode) {
-      sendMessage.mutate({ conversationId: conversation.id, content });
+      sendChatMessage(conversation.id, content);
     }
   }, [draft, sendMessage, conversation.id, finalConfig.maxMessageLength, mockMode, safetyResult]);
 
@@ -640,7 +644,7 @@ export function UnifiedChatWindow({
               <AvatarImage src={avatarUrl} />
               <AvatarFallback className="text-[11px] font-black bg-secondary">{displayName[0]}</AvatarFallback>
             </Avatar>
-            {(otherUser?.is_online || (conversation as any).participant?.isOnline) && (
+            {(otherUser?.isOnline || (conversation as any).participant?.isOnline) && (
               <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-background bg-status-online">
                 <span className="absolute inset-0 rounded-full bg-status-online animate-ping opacity-70" />
               </span>
@@ -657,7 +661,7 @@ export function UnifiedChatWindow({
                 <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-primary font-semibold">
                   typing…
                 </motion.span>
-              ) : otherUser?.is_online ? (
+              ) : otherUser?.isOnline ? (
                 <span className="text-status-online font-semibold">Online</span>
               ) : (
                 'Offline'
@@ -729,8 +733,8 @@ export function UnifiedChatWindow({
         ) : (
           <AnimatePresence initial={false}>
             {messages.map((message, i) => {
-              const isOwn = message.sender_id === user?.id;
-              const showAvatar = !isOwn && (i === 0 || messages[i - 1]?.sender_id !== message.sender_id);
+              const isOwn = message.senderId === user?.id;
+              const showAvatar = !isOwn && (i === 0 || messages[i - 1]?.senderId !== message.senderId);
               return (
                 <MessageBubble
                   key={message.id}

@@ -3,7 +3,7 @@
 // =====================================================
 // Senior-level GraphQL API with full type safety
 
-import { gql } from 'graphql-tag';
+import {gql} from 'graphql-tag';
 
 export const typeDefs = gql`
   # =====================================================

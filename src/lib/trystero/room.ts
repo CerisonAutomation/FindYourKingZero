@@ -12,8 +12,8 @@
 
 'use client'
 
-import { joinRoom } from 'trystero/nostr'
-import type { Room } from 'trystero'
+import {joinRoom} from 'trystero/nostr'
+import type {Room} from 'trystero'
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TYPES

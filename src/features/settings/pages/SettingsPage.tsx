@@ -1,6 +1,17 @@
 import {useNavigate} from 'react-router-dom';
 import {motion} from 'framer-motion';
-import {Bell, ChevronRight, CreditCard, Crown, Fingerprint, HelpCircle, LogOut, Settings, Shield, User,} from 'lucide-react';
+import {
+    Bell,
+    ChevronRight,
+    CreditCard,
+    Crown,
+    Fingerprint,
+    HelpCircle,
+    LogOut,
+    Settings,
+    Shield,
+    User,
+} from 'lucide-react';
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 import {useAuth} from '@/hooks/useAuth';
 import {useProfile} from '@/hooks/useProfile';

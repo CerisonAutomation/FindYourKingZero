@@ -10,7 +10,7 @@
  * @version 1.0.0
  */
 
-import { Response } from 'express'
+import {Response} from 'express'
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // 🏥 HEALTH ENDPOINT - Production Monitoring

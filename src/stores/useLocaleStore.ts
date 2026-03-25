@@ -1,5 +1,5 @@
 import {create} from 'zustand';
-import {initLocale, Locale, setLocale, t as translate} from '@/lib/i18n';
+import {initLocale, type Locale, setLocale, t as translate} from '@/lib/i18n';
 
 interface LocaleStore {
     locale: Locale;

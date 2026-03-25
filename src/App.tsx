@@ -6,9 +6,15 @@ import {AuthProvider, useAuth} from "./hooks/useAuth";
 import {ErrorBoundary} from "./components/ui/ErrorBoundary";
 import {OfflineBanner} from "@/components/ui/OfflineBanner";
 import {lazy, Suspense, useEffect} from "react";
-import {log} from '@/lib/enterprise/Logger';
+import {log} from '@/lib/logger';
 import {VoiceAssistantButton} from "@/components/voice/VoiceAssistantButton";
 import {registerDeepLinkListener} from "@/lib/deeplinks";
+// Eager loaded critical components
+import HomePage from "./pages/HomePage";
+import ConnectPage from "./pages/ConnectPage";
+import AppLayout from "./pages/AppLayout";
+import NotFound from "./pages/NotFound";
+import InstallPage from "./pages/InstallPage";
 
 // Constants for route configuration
 const ROUTES = {
@@ -36,13 +42,6 @@ const ROUTES = {
   ONBOARDING: "/onboarding",
   APP: "/app"
 } as const;
-
-// Eager loaded critical components
-import HomePage from "./pages/HomePage";
-import ConnectPage from "./pages/ConnectPage";
-import AppLayout from "./pages/AppLayout";
-import NotFound from "./pages/NotFound";
-import InstallPage from "./pages/InstallPage";
 
 // Lazy loaded components for performance
 const LazyComponents = {
@@ -179,7 +178,7 @@ const LoadingSpinner = ({message = "Loading"}: {message?: string}) => (
 // Route prefetch utility — preloads likely next chunks on idle/idle-hover
 const prefetchRoute = (importFn: () => Promise<unknown>) => {
     if (typeof window !== "undefined" && "requestIdleCallback" in window) {
-        (window as any).requestIdleCallback(() => importFn());
+        window.requestIdleCallback(() => importFn());
     } else {
         setTimeout(() => importFn(), 200);
     }

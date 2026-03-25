@@ -4,12 +4,12 @@
  * Production-ready service orchestration with enterprise patterns
  */
 
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { EventEmitter } from 'events';
-import { ZeroKnowledgeEncryption } from './encryption/ZeroKnowledgeEncryption';
-import { PerformanceMonitor } from './performance/PerformanceMonitor';
-import { AccessibilityManager } from './accessibility/AccessibilityManager';
-import { AIMatchingEngine, AIContentModeration, AIRecommendationEngine } from './ai/MLServices';
+import {createClient, SupabaseClient} from '@supabase/supabase-js';
+import {EventEmitter} from 'events';
+import {ZeroKnowledgeEncryption} from './encryption/ZeroKnowledgeEncryption';
+import {PerformanceMonitor} from './performance/PerformanceMonitor';
+import {AccessibilityManager} from './accessibility/AccessibilityManager';
+import {AIContentModeration, AIMatchingEngine, AIRecommendationEngine} from './ai/MLServices';
 
 // ── ENTERPRISE SERVICE INTERFACES ────────────────────────────────────────
 export type ServiceConfig  = {

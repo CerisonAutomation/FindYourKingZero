@@ -19,13 +19,21 @@
  */
 
 import EventEmitter from 'events'
-import { createClient, SupabaseClient, Session, User } from '@supabase/supabase-js'
-import { ZeroKnowledgeEncryption, EncryptionKeyPair } from './encryption/ZeroKnowledgeEncryption'
-import { AIMatchingEngine, MatchScore } from './ai/AIMatchingEngine'
-import { PerformanceMonitor } from './performance/PerformanceMonitor'
-import { AccessibilityManager } from './accessibility/AccessibilityManager'
-import { SignalingStrategy, BitTorrentStrategy, NostrStrategy, MQTTStrategy, IPFSStrategy, WebRTCStrategy, SupabaseRealtimeStrategy } from './p2p/SignalingStrategy'
-import { UserProfile, P2PConfig, P2PMessage, P2PCall, LocationData } from '../types'
+import {createClient, Session, SupabaseClient, User} from '@supabase/supabase-js'
+import {EncryptionKeyPair, ZeroKnowledgeEncryption} from './encryption/ZeroKnowledgeEncryption'
+import {AIMatchingEngine, MatchScore} from './ai/AIMatchingEngine'
+import {PerformanceMonitor} from './performance/PerformanceMonitor'
+import {AccessibilityManager} from './accessibility/AccessibilityManager'
+import {
+  BitTorrentStrategy,
+  IPFSStrategy,
+  MQTTStrategy,
+  NostrStrategy,
+  SignalingStrategy,
+  SupabaseRealtimeStrategy,
+  WebRTCStrategy
+} from './p2p/SignalingStrategy'
+import {LocationData, P2PCall, P2PConfig, P2PMessage, UserProfile} from '../types'
 import ngeohash from 'ngeohash'
 
 export type HybridEngineConfig  = {

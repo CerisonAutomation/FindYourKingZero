@@ -1,9 +1,8 @@
-import { openai } from '@ai-sdk/openai';
-import { createOpenAI } from '@ai-sdk/openai';
-import { streamText, generateText, generateObject } from 'ai';
-import { z } from 'zod';
-import { supabase } from '@/integrations/supabase/client';
-import type { Profile, Message, MatchingCandidate } from '@/types';
+import {openai} from '@ai-sdk/openai';
+import {generateObject, generateText, streamText} from 'ai';
+import {z} from 'zod';
+import {supabase} from '@/integrations/supabase/client';
+import type {MatchingCandidate, Profile} from '@/types';
 
 // AI Configuration
 const aiConfig = {

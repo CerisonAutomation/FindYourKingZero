@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { useState, useEffect } from 'react';
+import {z} from 'zod';
+import {useEffect, useState} from 'react';
 
 // Configuration schema with validation
 const EnterpriseConfigSchema = z.object({

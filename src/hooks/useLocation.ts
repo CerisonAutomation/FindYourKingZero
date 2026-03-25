@@ -10,9 +10,9 @@
  * @version 2.0.0
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react'
-import { supabase } from '@/integrations/supabase/client'
-import { useAuth } from '@/hooks/useAuth'
+import {useCallback, useEffect, useRef, useState} from 'react'
+import {supabase} from '@/integrations/supabase/client'
+import {useAuth} from '@/hooks/useAuth'
 
 export type LocationCoordinates  = {
   latitude: number

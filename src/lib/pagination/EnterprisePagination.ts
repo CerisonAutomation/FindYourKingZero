@@ -1,5 +1,5 @@
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { z } from 'zod';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {z} from 'zod';
 
 // Configuration schema with enterprise defaults
 const PaginationConfigSchema = z.object({

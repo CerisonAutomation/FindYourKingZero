@@ -24,7 +24,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
-import { useGeolocation } from '@/hooks/useGeolocation';
+import { useLocation } from '@/hooks/unified/useLocation';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { formatDistanceMiles } from '@/lib/formatters';
@@ -63,7 +63,10 @@ export function LiveLocationMap({
   onUserSelect 
 }: LiveLocationMapProps) {
   const { user } = useAuth();
-  const { latitude, longitude, accuracy, getCurrentPosition } = useGeolocation();
+  const { location, getCurrentPosition } = useLocation();
+  const latitude = location?.latitude;
+  const longitude = location?.longitude;
+  const accuracy = location?.accuracy;
   
   // State
   const [isSharing, setIsSharing] = useState(false);

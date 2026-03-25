@@ -1,13 +1,11 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Mic, MicOff, Volume2, Settings, Play, Pause, RotateCcw, Download, Share2, Brain, MessageCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
-import { Slider } from '@/components/ui/slider';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {Brain, Download, MessageCircle, Mic, MicOff, Pause, Play, Share2, Volume2} from 'lucide-react';
+import {Button} from '@/components/ui/button';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Badge} from '@/components/ui/badge';
+import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
+import {Slider} from '@/components/ui/slider';
 
 interface VoiceCommand {
   id: string;

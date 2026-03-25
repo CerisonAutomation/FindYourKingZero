@@ -8,11 +8,7 @@
  * Supported backends: WebGPU → WASM (auto-detected).
  */
 
-import {
-  env,
-  pipeline,
-  type PipelineType,
-} from '@huggingface/transformers';
+import {env, pipeline, type PipelineType,} from '@huggingface/transformers';
 
 // ---------------------------------------------------------------------------
 // Configuration

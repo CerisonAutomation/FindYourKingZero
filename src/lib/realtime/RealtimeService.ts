@@ -2,8 +2,8 @@
 // RealtimeService — Supabase Realtime + Trystero P2P
 // Proven patterns from official Supabase docs
 // =====================================================
-import { supabase } from '@/integrations/supabase/client';
-import type { RealtimeChannel } from '@supabase/supabase-js';
+import {supabase} from '@/integrations/supabase/client';
+import type {RealtimeChannel} from '@supabase/supabase-js';
 
 // ── Channel Management ──────────────────────────────
 const channels = new Map<string, RealtimeChannel>();

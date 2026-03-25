@@ -2,7 +2,7 @@
 // SWIPE GESTURE HOOK — Touch-based gesture detection
 // Swipe right = like, left = pass, down = close
 // =====================================================
-import { useRef, useState, useCallback, type RefObject } from 'react';
+import {type RefObject, useCallback, useRef, useState} from 'react';
 
 export type SwipeDirection = 'left' | 'right' | 'up' | 'down';
 

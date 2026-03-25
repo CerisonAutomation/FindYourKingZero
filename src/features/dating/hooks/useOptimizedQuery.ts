@@ -1,6 +1,6 @@
 // ⚡ Optimized React Query Hook
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Profile, FilterState } from '../types';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
+import type {FilterState, Profile} from '../types';
 
 // Query Keys Factory
 export const datingKeys = {

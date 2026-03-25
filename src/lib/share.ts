@@ -2,7 +2,7 @@
 // SHARE SHEET — Native navigator.share() with fallback
 // Falls back to clipboard copy on unsupported platforms
 // =====================================================
-import { haptics } from './haptics';
+import {haptics} from './haptics';
 
 export interface ShareData {
   title?: string;

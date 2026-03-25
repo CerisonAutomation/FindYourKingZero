@@ -9,9 +9,9 @@ export type { LocalAIStatus, GenerateOptions, IntentType } from './LocalAI';
 // useLocalAI — React hook
 // ---------------------------------------------------------------------------
 
-import { useEffect, useRef, useSyncExternalStore } from 'react';
-import { LocalAI, getLocalAI } from './LocalAI';
-import type { LocalAIStatus } from './LocalAI';
+import {useEffect, useRef, useSyncExternalStore} from 'react';
+import type {LocalAIStatus} from './LocalAI';
+import {getLocalAI, LocalAI} from './LocalAI';
 
 /**
  * React hook that provides a ready-to-use LocalAI instance with reactive

@@ -1,26 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Mic, MicOff, Volume2, VolumeX, Settings, HelpCircle } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useVoiceNavigation } from '@/hooks/voice/useVoiceNavigation';
-import { useVoiceAutoReply, AutoReplyConfig } from '@/hooks/voice/useAutoReply';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from '@/components/ui/popover';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { log } from '@/lib/enterprise/Logger';
+import React, {useEffect, useState} from 'react';
+import {HelpCircle, Mic, MicOff, Settings, Volume2, VolumeX} from 'lucide-react';
+import {cn} from '@/lib/utils';
+import {useVoiceNavigation} from '@/hooks/voice/useVoiceNavigation';
+import {type AutoReplyConfig, useVoiceAutoReply} from '@/hooks/voice/useAutoReply';
+import {Button} from '@/components/ui/button';
+import {Badge} from '@/components/ui/badge';
+import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover';
+import {Switch} from '@/components/ui/switch';
+import {Label} from '@/components/ui/label';
+import {Slider} from '@/components/ui/slider';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from '@/components/ui/select';
+import {log} from '@/lib/enterprise/Logger';
 
 interface VoiceAssistantButtonProps {
   className?: string;

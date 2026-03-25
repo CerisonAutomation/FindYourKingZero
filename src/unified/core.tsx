@@ -3,8 +3,8 @@
 // Single source of truth for all data, auth, and business logic
 // =============================================================================
 
-import { useState, useEffect, useCallback, useRef, createContext, useContext } from 'react';
-import { createClient, type Session, type User } from '@supabase/supabase-js';
+import {createContext, useCallback, useContext, useEffect, useState} from 'react';
+import {createClient, type Session, type User} from '@supabase/supabase-js';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // SECTION 1: BACKEND — Supabase Client + Auth + DB + Realtime + Geo

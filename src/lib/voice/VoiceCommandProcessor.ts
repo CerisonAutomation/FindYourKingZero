@@ -1,4 +1,4 @@
-import { log } from '@/lib/enterprise/Logger';
+import {log} from '@/lib/enterprise/Logger';
 
 // Voice command event types
 export type VoiceCommandEvent  = {

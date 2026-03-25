@@ -23,9 +23,9 @@
  * @license Enterprise
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '../useAuth';
+import {useCallback, useEffect, useRef, useState} from 'react';
+import {supabase} from '@/integrations/supabase/client';
+import {useAuth} from '../useAuth';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TYPES & INTERFACES

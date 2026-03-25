@@ -11,7 +11,7 @@ export type Notification = {
     title: string;
     body: string | null;
     data: Record<string, unknown> | null;
-    is_read: boolean;
+    read: boolean;
     created_at: string;
 }
 
@@ -27,7 +27,7 @@ export const useNotifications = () => {
 
             const {data, error} = await supabase
                 .from('notifications')
-                .select('*')
+                .select('id, user_id, type, title, body, data, read, created_at')
                 .eq('user_id', user.id)
                 .order('created_at', {ascending: false})
                 .limit(50);
@@ -74,7 +74,7 @@ export const useNotifications = () => {
         mutationFn: async (notificationId: string) => {
             const {error} = await supabase
                 .from('notifications')
-                .update({is_read: true})
+                .update({read: true})
                 .eq('id', notificationId);
 
             if (error) throw error;
@@ -90,9 +90,9 @@ export const useNotifications = () => {
 
             const {error} = await supabase
                 .from('notifications')
-                .update({is_read: true})
+                .update({read: true})
                 .eq('user_id', user.id)
-                .eq('is_read', false);
+                .eq('read', false);
 
             if (error) throw error;
         },
@@ -115,7 +115,7 @@ export const useNotifications = () => {
         },
     });
 
-    const unreadCount = notifications.filter((n) => !n.is_read).length;
+    const unreadCount = notifications.filter((n) => !n.read).length;
 
     return {
         notifications,
@@ -215,3 +215,5 @@ function arrayBufferToBase64(buffer: ArrayBuffer | null): string {
     }
     return window.btoa(binary);
 }
+
+export { urlBase64ToUint8Array, arrayBufferToBase64 };

@@ -47,6 +47,37 @@ export {
   type AudioState
 } from './useAudio';
 
+// Chat - Unified hook consolidating useMessages, useConversations, useChatRooms, useP2PChat
+export {
+  useChat,
+  default as useChatDefault,
+  type ChatMessage,
+  type ChatRoom,
+  type RoomMember,
+  type Conversation,
+  type P2PPeer,
+  type ChatState,
+  type RoomType,
+  type MsgType,
+  type ConnectionQuality,
+  type ReactionSummary
+} from './useChat';
+
+// Location - Unified hook consolidating useGeolocation, useRealtimeLocationTracking, useLocation
+export {
+  useLocation,
+  useTravelMode,
+  calculateDistance,
+  default as useLocationDefault,
+  type LocationCoordinates,
+  type NearbyProfile,
+  type DeviceInfo,
+  type SOSAlert,
+  type WebRTCState,
+  type LocationState,
+  type LocationOptions
+} from './useLocation';
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // BACKWARD COMPATIBILITY ALIASES (Legacy support - migrate away from these)
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -70,24 +101,22 @@ export { default as useOmniAudio } from './useAudio';
 // ═══════════════════════════════════════════════════════════════════════════════
 export { useAuth } from '../useAuth';
 export { useToast } from '../use-toast';
-export { useIsMobile } from '../use-mobile';
+export { useIsMobile } from '../useMobile';
 export { useDebounce } from '../useDebounce';
 export { useLocalStorage } from '../useLocalStorage';
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// P2P & COMMUNICATION HOOKS
+// P2P & COMMUNICATION HOOKS (use unified useChat above)
 // ═══════════════════════════════════════════════════════════════════════════════
-export { useP2PChat, useP2PChatWithProfile, useMultiP2PChat } from '../useP2PChat';
-export { useChatRoom } from '../useChatRooms';
-export { useConversations } from '../useConversations';
-export { useMessages } from '../useMessages';
+// Legacy exports for backward compatibility - migrate to unified useChat
+export { useChat } from './useChat';
 export { useReactions } from '../useReactions';
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// LOCATION & MAPS HOOKS
+// LOCATION & MAPS HOOKS (use unified useLocation above)
 // ═══════════════════════════════════════════════════════════════════════════════
-export { useLocation, useTravelMode } from '../useLocation';
-export { useRealtimeLocationTracking } from '../useRealtimeLocationTracking';
+// Legacy exports for backward compatibility - migrate to unified useLocation
+export { useLocation, useTravelMode, calculateDistance } from './useLocation';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // AI FEATURES HOOKS
@@ -143,7 +172,7 @@ export { usePayments } from '../usePayments';
 // ═══════════════════════════════════════════════════════════════════════════════
 // NOTIFICATIONS & UTILITIES HOOKS
 // ═══════════════════════════════════════════════════════════════════════════════
-export { useNotifications } from '../useNotifications';
+export { useNotifications, type Notification } from '../useNotifications';
 export { useFileUpload } from '../useFileUpload';
 
 // ═══════════════════════════════════════════════════════════════════════════════

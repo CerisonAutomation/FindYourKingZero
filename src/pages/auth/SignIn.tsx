@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import {motion} from 'framer-motion';
-import {ArrowRight, ChevronRight, Crown, Eye, EyeOff, Lock, Mail, AlertCircle, Shield, Sparkles} from 'lucide-react';
+import {AlertCircle, ArrowRight, ChevronRight, Crown, Eye, EyeOff, Lock, Mail, Shield, Sparkles} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';

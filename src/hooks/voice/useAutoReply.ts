@@ -1,8 +1,8 @@
-import { useState, useCallback, useRef } from 'react';
-import { generateObject } from 'ai';
-import { openai } from '@ai-sdk/openai';
-import { z } from 'zod';
-import { log } from '@/lib/enterprise/Logger';
+import {useCallback, useRef, useState} from 'react';
+import {generateObject} from 'ai';
+import {openai} from '@ai-sdk/openai';
+import {z} from 'zod';
+import {log} from '@/lib/enterprise/Logger';
 
 // Auto-reply types
 export type AutoReplyConfig = {
@@ -56,76 +56,8 @@ export const useAutoReply = (config: AutoReplyConfig) => {
     }))
   });
 
-  // Generate auto-reply suggestions
-  const generateReplies = useCallback(async (
-    incomingMessage: string,
-    context: MessageContext
-  ): Promise<AutoReplySuggestion[]> => {
-    if (!config.enabled) {
-      return [];
-    }
-
-    setIsGenerating(true);
-    setError(null);
-
-    // Cancel any ongoing generation
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-
-    abortControllerRef.current = new AbortController();
-
-    try {
-      // Build context prompt
-      const contextPrompt = buildContextPrompt(incomingMessage, context);
-
-      log.info('AUTO_REPLY', 'Generating replies', {
-        messageLength: incomingMessage.length,
-        personality: config.personality
-      });
-
-      const result = await generateObject({
-        model: openai('gpt-4o-mini'),
-        schema: replySchema,
-        prompt: contextPrompt,
-        temperature: 0.7,
-        maxTokens: 500,
-        abortSignal: abortControllerRef.current.signal
-      });
-
-      // Filter suggestions by confidence threshold
-      const filteredSuggestions = result.object.suggestions.filter(
-        suggestion => suggestion.confidence >= config.confidenceThreshold
-      );
-
-      log.info('AUTO_REPLY', 'Generated suggestions', {
-        count: filteredSuggestions.length,
-        topConfidence: filteredSuggestions[0]?.confidence || 0
-      });
-
-      setSuggestions(filteredSuggestions);
-      return filteredSuggestions;
-
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') {
-        log.info('AUTO_REPLY', 'Generation aborted');
-        return [];
-      }
-
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      log.error('AUTO_REPLY', 'Failed to generate replies', { errorMessage: errorMessage });
-      setError(errorMessage);
-
-      // Fallback to basic replies
-      return getFallbackReplies(incomingMessage, context);
-    } finally {
-      setIsGenerating(false);
-      abortControllerRef.current = null;
-    }
-  }, [config]);
-
-  // Build context-aware prompt for LLM
-  const buildContextPrompt = (message: string, context: MessageContext): string => {
+  // Build context-aware prompt for LLM (must be defined before generateReplies)
+  const buildContextPrompt = useCallback((message: string, context: MessageContext): string => {
     const personalityInstructions = {
       friendly: 'Be warm, approachable, and enthusiastic. Use emojis occasionally.',
       professional: 'Be respectful, articulate, and maintain appropriate boundaries.',
@@ -176,10 +108,10 @@ Generate 3 diverse reply options that match the personality and length requireme
 Focus on being authentic, engaging, and appropriate for a dating context.`;
 
     return prompt;
-  };
+  }, [config.context, config.personality, config.responseLength]);
 
-  // Fallback basic replies when LLM fails
-  const getFallbackReplies = (message: string, context: MessageContext): AutoReplySuggestion[] => {
+  // Fallback basic replies when LLM fails (must be defined before generateReplies)
+  const getFallbackReplies = useCallback((message: string, context: MessageContext): AutoReplySuggestion[] => {
     const messageLower = message.toLowerCase();
 
     const fallbacks: AutoReplySuggestion[] = [];
@@ -237,7 +169,75 @@ Focus on being authentic, engaging, and appropriate for a dating context.`;
     }
 
     return fallbacks.slice(0, 3);
-  };
+  }, []);
+
+  // Generate auto-reply suggestions (uses buildContextPrompt and getFallbackReplies defined above)
+  const generateReplies = useCallback(async (
+    incomingMessage: string,
+    context: MessageContext
+  ): Promise<AutoReplySuggestion[]> => {
+    if (!config.enabled) {
+      return [];
+    }
+
+    setIsGenerating(true);
+    setError(null);
+
+    // Cancel any ongoing generation
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    abortControllerRef.current = new AbortController();
+
+    try {
+      // Build context prompt
+      const contextPrompt = buildContextPrompt(incomingMessage, context);
+
+      log.info('AUTO_REPLY', 'Generating replies', {
+        messageLength: incomingMessage.length,
+        personality: config.personality
+      });
+
+      const result = await generateObject({
+        model: openai('gpt-4o-mini'),
+        schema: replySchema,
+        prompt: contextPrompt,
+        temperature: 0.7,
+        maxTokens: 500,
+        abortSignal: abortControllerRef.current.signal
+      });
+
+      // Filter suggestions by confidence threshold
+      const filteredSuggestions = result.object.suggestions.filter(
+        suggestion => suggestion.confidence >= config.confidenceThreshold
+      );
+
+      log.info('AUTO_REPLY', 'Generated suggestions', {
+        count: filteredSuggestions.length,
+        topConfidence: filteredSuggestions[0]?.confidence || 0
+      });
+
+      setSuggestions(filteredSuggestions);
+      return filteredSuggestions;
+
+    } catch (_err) {
+      if (_err instanceof Error && _err.name === 'AbortError') {
+        log.info('AUTO_REPLY', 'Generation aborted');
+        return [];
+      }
+
+      const errorObj = _err instanceof Error ? _err : new Error(String(_err));
+      log.error('AUTO_REPLY', 'Failed to generate replies', errorObj);
+      setError(errorObj.message);
+
+      // Fallback to basic replies
+      return getFallbackReplies(incomingMessage, context);
+    } finally {
+      setIsGenerating(false);
+      abortControllerRef.current = null;
+    }
+  }, [config, buildContextPrompt, getFallbackReplies, replySchema]);
 
   // Auto-send reply if enabled and confidence is high
   const autoSendReply = useCallback(async (
@@ -265,7 +265,8 @@ Focus on being authentic, engaging, and appropriate for a dating context.`;
         });
         return true;
       } catch (error) {
-        log.error('AUTO_REPLY', 'Failed to auto-send reply', { errorMessage: String(error) });
+        const err = error instanceof Error ? error : new Error(String(error));
+        log.error('AUTO_REPLY', 'Failed to auto-send reply', err);
         return false;
       }
     }
@@ -289,6 +290,7 @@ Focus on being authentic, engaging, and appropriate for a dating context.`;
   }, []);
 
   return {
+    config,
     isGenerating,
     suggestions,
     error,

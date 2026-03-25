@@ -3,12 +3,12 @@
 // Fixes: old code called getSession() before exchangeCodeForSession (wrong order for PKCE)
 // Handles: email confirmation, OAuth, magic link — all via code exchange
 // =============================================================================
-import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Crown, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
-import { supabase, supabaseAuth } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import {useEffect, useState} from 'react';
+import {useNavigate, useSearchParams} from 'react-router-dom';
+import {motion} from 'framer-motion';
+import {AlertCircle, CheckCircle2, Crown, Loader2} from 'lucide-react';
+import {supabase, supabaseAuth} from '@/integrations/supabase/client';
+import {useToast} from '@/hooks/use-toast';
 
 export default function Callback() {
   const navigate = useNavigate();

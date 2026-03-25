@@ -3,8 +3,8 @@
  * Advanced matching and interaction patterns
  */
 
-import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '@/integrations/supabase/client'
+import {useCallback, useEffect, useState} from 'react'
+import {supabase} from '@/integrations/supabase/client'
 
 export type GameChangerProfile  = {
   id: string

@@ -1,6 +1,6 @@
-import { useState, useCallback, useRef } from 'react';
-import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import {useCallback, useRef, useState} from 'react';
+import {useToast} from '@/hooks/use-toast';
+import {supabase} from '@/integrations/supabase/client';
 
 // AI Configuration Interface
 interface AIConfig {

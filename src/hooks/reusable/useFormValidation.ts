@@ -1,6 +1,6 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
-import { z } from 'zod';
-import { useToast } from '@/hooks/use-toast';
+import {useCallback, useEffect, useRef, useState} from 'react';
+import {z} from 'zod';
+import {useToast} from '@/hooks/use-toast';
 
 // Validation rule interface
 export interface ValidationRule <T = any> {

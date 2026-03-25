@@ -4,10 +4,10 @@
  * Integrated from external/meateor-patterns with enhanced React patterns
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { useToast } from './use-toast'
-import { useAuth } from './useAuth'
-import { useP2PMatchmaking } from './useP2PMatchmaking'
+import {useCallback, useEffect, useRef, useState} from 'react'
+import {useToast} from './use-toast'
+import {useAuth} from './useAuth'
+import {useP2PMatchmaking} from './useP2PMatchmaking'
 
 export type MeateorProfile  = {
   displayName: string

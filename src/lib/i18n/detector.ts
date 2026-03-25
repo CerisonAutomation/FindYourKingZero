@@ -1,8 +1,8 @@
 // =====================================================
 // Language/Currency Auto-Detector
 // =====================================================
-import { CURRENCIES, DEFAULT_CURRENCY } from './currencies';
-import { LANGUAGES, DEFAULT_LANGUAGE } from './languages';
+import {CURRENCIES, DEFAULT_CURRENCY} from './currencies';
+import {DEFAULT_LANGUAGE, LANGUAGES} from './languages';
 
 // Timezone → currency mapping
 const TIMEZONE_CURRENCY: Record<string, string> = {

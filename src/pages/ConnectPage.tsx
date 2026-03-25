@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {Link, useSearchParams, useNavigate} from 'react-router-dom';
+import {Link, useNavigate, useSearchParams} from 'react-router-dom';
 import {AnimatePresence, motion} from 'framer-motion';
 import {
     ArrowRight,
@@ -12,10 +12,10 @@ import {
     Mail,
     Radio,
     Shield,
+    SkipForward,
     Sparkles,
     Trophy,
     Zap,
-    SkipForward,
 } from 'lucide-react';
 import {Input} from '@/components/ui/input';
 import {supabase} from '@/integrations/supabase/client';

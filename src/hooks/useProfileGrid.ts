@@ -2,10 +2,10 @@
 // Profile Grid Hook — Ensures profiles appear everywhere
 // after creation (grid, map, feed, search, matches)
 // =====================================================
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import type { Database } from '@/integrations/supabase/types';
+import {useCallback, useEffect, useRef, useState} from 'react';
+import {supabase} from '@/integrations/supabase/client';
+import {useToast} from '@/hooks/use-toast';
+import type {Database} from '@/integrations/supabase/types';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 

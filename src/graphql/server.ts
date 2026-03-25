@@ -3,16 +3,14 @@
 // =====================================================
 // Senior-level Apollo Server with enterprise features
 
-import { ApolloServer } from '@apollo/server';
-import { startServerAndCreateLambda } from '@apollo/server/standalone';
-import { GraphQLUpload } from 'graphql-upload/GraphQLUpload.js';
-import { GraphQLJSON } from 'graphql-type-json';
-import { GraphQLScalarType } from 'graphql';
-import { PubSub } from 'graphql-subscriptions';
-import { withFilter } from 'graphql-subscriptions';
-import { typeDefs } from './schema';
-import { resolvers, subscriptionResolvers } from './resolvers';
-import { supabase } from '@/integrations/supabase/client';
+import {ApolloServer} from '@apollo/server';
+import {GraphQLUpload} from 'graphql-upload/GraphQLUpload.js';
+import {GraphQLJSON} from 'graphql-type-json';
+import {GraphQLScalarType} from 'graphql';
+import {PubSub, withFilter} from 'graphql-subscriptions';
+import {typeDefs} from './schema';
+import {resolvers, subscriptionResolvers} from './resolvers';
+import {supabase} from '@/integrations/supabase/client';
 import * as Sentry from '@sentry/node';
 
 // =====================================================

@@ -3,7 +3,7 @@ import {motion} from 'framer-motion';
 import {CheckCircle, ChevronLeft, Clock, ExternalLink, Flag, XCircle} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Badge} from '@/components/ui/badge';
-import {useState, useEffect} from 'react';
+import {useEffect, useState} from 'react';
 
 interface Report {
     id: string;

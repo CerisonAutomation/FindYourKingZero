@@ -1,7 +1,7 @@
-import {useState, useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
 import {motion} from 'framer-motion';
-import {ArrowLeft, CheckCircle2, Crown, Mail, AlertCircle} from 'lucide-react';
+import {AlertCircle, ArrowLeft, CheckCircle2, Crown, Mail} from 'lucide-react';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Alert, AlertDescription} from '@/components/ui/alert';

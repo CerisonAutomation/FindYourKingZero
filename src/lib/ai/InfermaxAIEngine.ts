@@ -4,8 +4,8 @@
  */
 
 import * as tf from '@tensorflow/tfjs';
-import { pipeline, AutoTokenizer, AutoModel } from '@xenova/transformers';
-import { EventEmitter } from 'events';
+import {AutoModel, AutoTokenizer, pipeline} from '@xenova/transformers';
+import {EventEmitter} from 'events';
 
 export type UserProfile  = {
   id: string;

@@ -3,7 +3,7 @@ import {Bell, Calendar, Check, CheckCheck, Crown, Eye, Heart, MessageSquare, Tra
 import {Button} from '@/components/ui/button';
 import {ScrollArea} from '@/components/ui/scroll-area';
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from '@/components/ui/sheet';
-import {Notification, useNotifications} from '@/hooks/useNotifications';
+import {type Notification, useNotifications} from '@/hooks/useNotifications';
 import {formatDistanceToNow} from 'date-fns';
 import {cn} from '@/lib/utils';
 

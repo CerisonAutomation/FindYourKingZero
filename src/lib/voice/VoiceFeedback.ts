@@ -1,4 +1,4 @@
-import { log } from '@/lib/enterprise/Logger';
+import {log} from '@/lib/enterprise/Logger';
 
 // Voice feedback types
 export type VoiceFeedbackConfig  = {

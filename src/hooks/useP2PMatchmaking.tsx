@@ -4,10 +4,10 @@
  * Features: Direct messaging, video calls, file sharing, decentralized matching
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { supabase } from '@/integrations/supabase/client'
-import { useToast } from './use-toast'
-import { useAuth } from './useAuth'
+import {useCallback, useEffect, useRef, useState} from 'react'
+import {supabase} from '@/integrations/supabase/client'
+import {useToast} from './use-toast'
+import {useAuth} from './useAuth'
 
 // WebRTC configuration
 export const WEBRTC_CONFIG = {

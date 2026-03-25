@@ -6,12 +6,12 @@
    ═══════════════════════════════════════════════════════════════════════════════
  */
 
-import { joinRoom, type Room } from 'trystero';
-import type { Session, User } from '@supabase/supabase-js';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { EventEmitter } from 'events';
+import {type Room} from 'trystero';
+import type {Session, User} from '@supabase/supabase-js';
+import {createClient, SupabaseClient} from '@supabase/supabase-js';
+import {EventEmitter} from 'events';
 import ngeohash from 'ngeohash';
-import { ZeroKnowledgeEncryption } from './encryption/ZeroKnowledgeEncryption';
+import {ZeroKnowledgeEncryption} from './encryption/ZeroKnowledgeEncryption';
 
 // ── QUANTUM INTERFACES ────────────────────────────────────────────────────────
 export type QuantumP2PDatingConfig = {

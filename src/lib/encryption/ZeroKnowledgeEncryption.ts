@@ -3,7 +3,7 @@
  * Military-grade end-to-end encryption with perfect forward secrecy
  */
 
-import { createHash, randomBytes, createCipheriv, createDecipheriv, scrypt } from 'crypto';
+import {createCipheriv, createDecipheriv, createHash, randomBytes, scrypt} from 'crypto';
 
 export type EncryptionKeyPair  = {
   publicKey: string;

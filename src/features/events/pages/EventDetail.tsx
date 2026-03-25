@@ -1,17 +1,17 @@
 import {useNavigate, useParams} from 'react-router-dom';
 import {
-  AlertTriangle,
-  Bell,
-  Calendar,
-  Check,
-  ChevronLeft,
-  Clock,
-  Crown,
-  Lock,
-  MapPin,
-  Shield,
-  Users,
-  X
+    AlertTriangle,
+    Bell,
+    Calendar,
+    Check,
+    ChevronLeft,
+    Clock,
+    Crown,
+    Lock,
+    MapPin,
+    Shield,
+    Users,
+    X
 } from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Badge} from '@/components/ui/badge';

@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import {motion} from 'framer-motion';
 import {RotateCcw} from 'lucide-react';
-import {FilterPreferences} from '@/types';
+import type { FilterPreferences } from '@/hooks/useDating';
 import {LOOKING_FOR, TRIBES} from '@/data/mockData';
 import {Sheet, SheetContent, SheetHeader, SheetTitle} from '@/components/ui/sheet';
 import {Slider} from '@/components/ui/slider';

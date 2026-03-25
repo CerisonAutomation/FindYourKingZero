@@ -21,7 +21,7 @@
  * @license Enterprise
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TYPES & INTERFACES

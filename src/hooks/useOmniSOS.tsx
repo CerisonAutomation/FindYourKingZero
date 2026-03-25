@@ -4,7 +4,7 @@
  * Integrated with useRealtimeLocationTracking and enhanced with visual effects
  */
 
-import { useCallback, useEffect, useState } from 'react'
+import {useCallback, useEffect, useState} from 'react'
 
 export type SOSAlert  = {
   id: string

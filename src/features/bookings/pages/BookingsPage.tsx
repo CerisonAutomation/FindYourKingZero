@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Calendar, Clock, MapPin, Users, DollarSign, Star, Filter, Search } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {Calendar, Clock, MapPin, Search, Star, Users} from 'lucide-react';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import {Card, CardContent} from '@/components/ui/card';
+import {Badge} from '@/components/ui/badge';
+import {Tabs, TabsList, TabsTrigger} from '@/components/ui/tabs';
+import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 
 interface Booking {
   id: string;

@@ -1,16 +1,15 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, Mic, MicOff, Volume2, Sparkles, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useVoiceNavigation } from '@/hooks/voice/useVoiceNavigation';
-import { useVoiceAutoReply, AutoReplyConfig } from '@/hooks/voice/useAutoReply';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { log } from '@/lib/enterprise/Logger';
+import React, {useEffect, useRef, useState} from 'react';
+import {Loader2, Mic, MicOff, Send, Sparkles} from 'lucide-react';
+import {cn} from '@/lib/utils';
+import {useVoiceNavigation} from '@/hooks/voice/useVoiceNavigation';
+import {type AutoReplyConfig, useVoiceAutoReply} from '@/hooks/voice/useAutoReply';
+import {Button} from '@/components/ui/button';
+import {Textarea} from '@/components/ui/textarea';
+import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
+import {Badge} from '@/components/ui/badge';
+import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
+import {ScrollArea} from '@/components/ui/scroll_area';
+import {log} from '@/lib/enterprise/Logger';
 
 interface Message {
   id: string;
@@ -39,7 +38,7 @@ interface VoiceChatInterfaceProps {
 export const VoiceChatInterface: React.FC<VoiceChatInterfaceProps> = ({
   className,
   autoReplyConfig,
-  onAutoReplyConfigChange,
+  _onAutoReplyConfigChange,
   onMessageSend,
   messages = [],
   currentUserName = 'You',
@@ -56,6 +55,7 @@ export const VoiceChatInterface: React.FC<VoiceChatInterfaceProps> = ({
   const [localMessages, setLocalMessages] = useState<Message[]>(messages);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const handleSendMessageRef = useRef<(text?: string) => Promise<void>>();
 
   const voiceNav = useVoiceNavigation();
   const voiceAutoReply = useVoiceAutoReply(autoReplyConfig || {
@@ -81,7 +81,7 @@ export const VoiceChatInterface: React.FC<VoiceChatInterfaceProps> = ({
   useEffect(() => {
     if (voiceNav.transcript && !voiceNav.isListening) {
       setInputText(voiceNav.transcript);
-      
+
       // Add voice message
       const voiceMessage: Message = {
         id: `voice-${Date.now()}`,
@@ -91,10 +91,15 @@ export const VoiceChatInterface: React.FC<VoiceChatInterfaceProps> = ({
         isVoice: true,
         confidence: voiceNav.confidence
       };
-      
+
       setLocalMessages(prev => [...prev, voiceMessage]);
     }
   }, [voiceNav.transcript, voiceNav.isListening, voiceNav.confidence]);
+
+  // Store handleSendMessage in ref for useEffect access
+  useEffect(() => {
+    handleSendMessageRef.current = handleSendMessage;
+  }, [handleSendMessage]);
 
   // Handle auto-reply suggestions
   useEffect(() => {
@@ -103,14 +108,14 @@ export const VoiceChatInterface: React.FC<VoiceChatInterfaceProps> = ({
       if (voiceAutoReply.config.autoSend) {
         const topSuggestion = voiceAutoReply.suggestions[0];
         if (topSuggestion.confidence >= 0.8) {
-          handleSendMessage(topSuggestion.content);
+          handleSendMessageRef.current?.(topSuggestion.content);
         }
       }
     }
   }, [voiceAutoReply.suggestions, voiceAutoReply.config.autoSend, showAutoReply]);
 
   // Handle sending messages
-  const handleSendMessage = async (text: string = inputText) => {
+  const handleSendMessage = useCallback(async (text: string = inputText) => {
     if (!text.trim()) return;
 
     const message: Message = {
@@ -126,20 +131,21 @@ export const VoiceChatInterface: React.FC<VoiceChatInterfaceProps> = ({
 
     try {
       await onMessageSend?.(text.trim());
-      
+
       // Generate auto-reply if enabled
       if (voiceAutoReply.config.enabled && showAutoReply) {
         await generateAutoReply(text.trim());
       }
     } catch (error) {
-      log.error('VOICE_CHAT', 'Failed to send message', { errorMessage: String(error) });
+      const err = error instanceof Error ? error : new Error(String(error));
+      log.error('VOICE_CHAT', 'Failed to send message', err);
     } finally {
       setIsProcessing(false);
     }
-  };
+  }, [inputText, onMessageSend, voiceAutoReply.config.enabled, showAutoReply, generateAutoReply]);
 
   // Generate auto-reply
-  const generateAutoReply = async (userMessage: string) => {
+  const generateAutoReply = useCallback(async (userMessage: string) => {
     try {
       const suggestions = await voiceAutoReply.generateReplies(userMessage, {
         senderName: otherUserName,
@@ -152,7 +158,7 @@ export const VoiceChatInterface: React.FC<VoiceChatInterfaceProps> = ({
 
       if (suggestions.length > 0) {
         const topSuggestion = suggestions[0];
-        
+
         const replyMessage: Message = {
           id: `reply-${Date.now()}`,
           content: topSuggestion.content,
@@ -164,9 +170,10 @@ export const VoiceChatInterface: React.FC<VoiceChatInterfaceProps> = ({
         setLocalMessages(prev => [...prev, replyMessage]);
       }
     } catch (error) {
-      log.error('VOICE_CHAT', 'Failed to generate auto-reply', { errorMessage: String(error) });
+      const err = error instanceof Error ? error : new Error(String(error));
+      log.error('VOICE_CHAT', 'Failed to generate auto-reply', err);
     }
-  };
+  }, [voiceAutoReply, otherUserName, currentUserName, localMessages]);
 
   // Handle voice recording
   const handleVoiceToggle = () => {
@@ -213,7 +220,7 @@ export const VoiceChatInterface: React.FC<VoiceChatInterfaceProps> = ({
               </Badge>
             )}
           </CardTitle>
-          
+
           {showVoiceControls && (
             <div className="flex items-center gap-2">
               {voiceNav.isListening && (
@@ -245,7 +252,7 @@ export const VoiceChatInterface: React.FC<VoiceChatInterfaceProps> = ({
                 userAvatar={message.sender === 'user' ? undefined : otherUserAvatar}
               />
             ))}
-            
+
             {isProcessing && (
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -292,7 +299,7 @@ export const VoiceChatInterface: React.FC<VoiceChatInterfaceProps> = ({
               className="min-h-[40px] max-h-[120px] resize-none pr-12"
               disabled={isProcessing}
             />
-            
+
             {/* Voice input indicator */}
             {isRecording && (
               <div className="absolute right-2 bottom-2">
@@ -369,26 +376,26 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
           <AvatarFallback>{userName[0]}</AvatarFallback>
         </Avatar>
       )}
-      
+
       <div className={cn(
         "max-w-[70%] space-y-1",
         isUser && "text-right"
       )}>
         <div className={cn(
           "inline-block px-3 py-2 rounded-lg text-sm",
-          isUser 
-            ? "bg-primary text-primary-foreground" 
+          isUser
+            ? "bg-primary text-primary-foreground"
             : "bg-muted"
         )}>
           {message.content}
         </div>
-        
+
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           {message.isVoice && <Mic className="h-3 w-3" />}
           {message.sender === 'assistant' && <Sparkles className="h-3 w-3" />}
-          <span>{message.timestamp.toLocaleTimeString([], { 
-            hour: '2-digit', 
-            minute: '2-digit' 
+          <span>{message.timestamp.toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit'
           })}</span>
           {message.confidence && (
             <span>({Math.round(message.confidence * 100)}%)</span>

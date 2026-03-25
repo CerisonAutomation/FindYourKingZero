@@ -1,5 +1,5 @@
 import { defineConfig, loadEnv } from "vite";
-import react from "@vitejs/plugin-react";
+import react from "@vitejs/plugin-react-swc";
 import { resolve } from "path";
 
 export default defineConfig(({ mode }) => {
@@ -25,21 +25,21 @@ export default defineConfig(({ mode }) => {
     },
 
     build: {
-      target: "es2020",
+      target: "es2022",
       outDir: "dist",
-      sourcemap: false,
+      sourcemap: mode === "development",
       cssCodeSplit: true,
       chunkSizeWarningLimit: 800,
       minify: "terser",
       terserOptions: {
         compress: {
-          drop_console: true,
+          drop_console: mode === "production",
           drop_debugger: true,
-          passes: 2,
-          pure_funcs: ["console.log", "console.debug", "console.info"],
+          passes: 3,
+          pure_funcs: ["console.log", "console.debug", "console.info", "console.warn"],
         },
         mangle: {
-          safari10: true,
+          safari10: false,
         },
         format: {
           comments: false,
@@ -48,26 +48,10 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           manualChunks: {
-            "react-vendor": [
-              "react",
-              "react-dom",
-              "react-router-dom",
-            ],
-            "ui-vendor": [
-              "framer-motion",
-              "lucide-react",
-              "@radix-ui/react-dialog",
-              "@radix-ui/react-dropdown-menu",
-              "@radix-ui/react-slot",
-              "@radix-ui/react-toast",
-            ],
-            "supabase-vendor": [
-              "@supabase/supabase-js",
-            ],
-            "map-vendor": [
-              "leaflet",
-              "maplibre-gl",
-            ],
+            "react-vendor": ["react", "react-dom", "react-router-dom"],
+            "ui-vendor": ["framer-motion", "lucide-react", "@radix-ui/react-dialog", "@radix-ui/react-dropdown-menu", "@radix-ui/react-slot", "@radix-ui/react-toast"],
+            "data-vendor": ["@supabase/supabase-js", "@tanstack/react-query"],
+            "p2p-vendor": ["trystero", "yjs", "y-webrtc"],
           },
         },
       },

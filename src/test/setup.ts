@@ -3,8 +3,8 @@
  * Global test utilities and mocks
  */
 
-import { vi, afterEach } from 'vitest';
-import { cleanup } from '@testing-library/react';
+import {afterEach, vi} from 'vitest';
+import {cleanup} from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 // Mock Supabase

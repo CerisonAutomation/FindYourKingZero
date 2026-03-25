@@ -3,7 +3,7 @@
 // Detects keyboard open/close, scrolls focused input
 // into view, hides bottom nav when keyboard is visible
 // =====================================================
-import { useEffect, useState, useCallback, useRef } from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 
 export interface UseKeyboardReturn {
   /** Whether the virtual keyboard is currently open */

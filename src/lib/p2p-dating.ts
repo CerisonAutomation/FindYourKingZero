@@ -3,8 +3,8 @@
  * Real-time P2P connections for dating platform
  */
 
-import { Room, Peer } from 'peerjs'
-import { useEffect, useState, useCallback, useRef } from 'react'
+import {Peer, Room} from 'peerjs'
+import {useCallback, useEffect, useRef, useState} from 'react'
 
 // Types
 export type P2PProfile = {

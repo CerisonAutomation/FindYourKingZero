@@ -2,7 +2,7 @@ import {useNavigate} from 'react-router-dom';
 import {AlertTriangle, ChevronLeft, ScrollText, Settings, ShieldCheck, UserX} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {formatDistanceToNow} from 'date-fns';
-import {useState, useEffect} from 'react';
+import {useEffect, useState} from 'react';
 
 const actionIcon: Record<string, React.ReactNode> = {
     user_suspended: <UserX className="w-4 h-4 text-destructive"/>,

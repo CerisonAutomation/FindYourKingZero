@@ -51,7 +51,7 @@ import {
   Target as TargetIcon,
 } from 'lucide-react';
 
-import { UserProfile } from '@/lib/hybrid-p2p-dating';
+import type { UserProfile } from '@/lib/hybrid-p2p-dating';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -250,12 +250,12 @@ export default function AICoachingPanel({
 
   const runAIAnalysis = useCallback(async () => {
     if (!profile) return;
-    
+
     setIsAnalyzing(true);
     try {
       // Simulate AI analysis
       await new Promise(resolve => setTimeout(resolve, 3000));
-      
+
       // Generate new insights
       const newInsight: AIInsight = {
         id: Date.now().toString(),
@@ -267,7 +267,7 @@ export default function AICoachingPanel({
         category: 'profile',
         timestamp: new Date(),
       };
-      
+
       setInsights(prev => [newInsight, ...prev]);
     } finally {
       setIsAnalyzing(false);
@@ -275,7 +275,7 @@ export default function AICoachingPanel({
   }, [profile]);
 
   const implementInsight = useCallback((insightId: string) => {
-    setInsights(prev => prev.map(insight => 
+    setInsights(prev => prev.map(insight =>
       insight.id === insightId ? { ...insight, implemented: true } : insight
     ));
   }, []);
@@ -285,7 +285,7 @@ export default function AICoachingPanel({
       if (filterCategory !== 'all' && insight.category !== filterCategory) return false;
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
-        return insight.title.toLowerCase().includes(query) || 
+        return insight.title.toLowerCase().includes(query) ||
                insight.description.toLowerCase().includes(query);
       }
       return true;
@@ -318,7 +318,7 @@ export default function AICoachingPanel({
             {isAnalyzing ? 'Analyzing...' : 'Run Analysis'}
           </Button>
         </div>
-        
+
         {/* Filters */}
         <div className="flex items-center space-x-4">
           <div className="relative flex-1">
@@ -331,7 +331,7 @@ export default function AICoachingPanel({
               className="pl-10 bg-white/10 border-white/20 text-white placeholder-white/60"
             />
           </div>
-          
+
           <select
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
@@ -373,7 +373,7 @@ export default function AICoachingPanel({
                     <Info className="w-5 h-5" />
                   }
                 </div>
-                
+
                 <div className="flex-1">
                   <div className="flex items-center space-x-2 mb-1">
                     <h4 className="text-white font-semibold">{insight.title}</h4>
@@ -389,14 +389,14 @@ export default function AICoachingPanel({
                       {insight.category}
                     </Badge>
                   </div>
-                  
+
                   <p className="text-white/80 text-sm mb-2">{insight.description}</p>
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-white/60 text-xs">
                       {insight.timestamp.toLocaleDateString()} at {insight.timestamp.toLocaleTimeString()}
                     </span>
-                    
+
                     <div className="flex items-center space-x-2">
                       {insight.actionable && !insight.implemented && (
                         <Button
@@ -407,14 +407,14 @@ export default function AICoachingPanel({
                           Implement
                         </Button>
                       )}
-                      
+
                       {insight.implemented && (
                         <Badge className="bg-green-500/20 text-green-400">
                           <CheckCircle className="w-3 h-3 mr-1" />
                           Implemented
                         </Badge>
                       )}
-                      
+
                       <Button
                         variant="ghost"
                         size="sm"
@@ -461,7 +461,7 @@ export default function AICoachingPanel({
                 </div>
               </div>
             </div>
-            
+
             {/* Factor Breakdown */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {Object.entries(compatibilityAnalysis.factors).map(([key, value], index) => (
@@ -683,7 +683,7 @@ export default function AICoachingPanel({
               <h1 className="text-2xl font-bold text-white capitalize">{activeTab}</h1>
               <p className="text-white/60">AI-powered insights and recommendations</p>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <Button
                 onClick={runAIAnalysis}
@@ -693,7 +693,7 @@ export default function AICoachingPanel({
                 <RefreshCw className={`w-4 h-4 mr-2 ${isAnalyzing ? 'animate-spin' : ''}`} />
                 Refresh
               </Button>
-              
+
               <Button
                 variant="outline"
                 className="bg-white/10 text-white hover:bg-white/20"
@@ -739,7 +739,7 @@ export default function AICoachingPanel({
                   <X className="w-4 h-4" />
                 </Button>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center space-x-2">
                   <Badge className={`${
@@ -763,14 +763,14 @@ export default function AICoachingPanel({
                     {selectedInsight.type}
                   </Badge>
                 </div>
-                
+
                 <p className="text-white/80 leading-relaxed">{selectedInsight.description}</p>
-                
+
                 <div className="flex items-center justify-between pt-4 border-t border-white/10">
                   <span className="text-white/60 text-sm">
                     {selectedInsight.timestamp.toLocaleDateString()} at {selectedInsight.timestamp.toLocaleTimeString()}
                   </span>
-                  
+
                   {selectedInsight.actionable && !selectedInsight.implemented && (
                     <Button
                       onClick={() => {

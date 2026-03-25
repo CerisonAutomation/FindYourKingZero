@@ -3,20 +3,9 @@
 // =====================================================
 // Senior-level GraphQL resolvers with enterprise patterns
 
-import { AuthenticationError, ForbiddenError, ValidationError } from 'apollo-server-errors';
-import { supabase } from '@/integrations/supabase/client';
-import type { 
-  Database, 
-  MediaType, 
-  MessageType, 
-  VerificationStatus, 
-  ReportStatus, 
-  SubscriptionTier, 
-  PrivacyLevel, 
-  RelationshipType, 
-  PresenceStatus, 
-  MatchStatus 
-} from '@/integrations/supabase/types';
+import {AuthenticationError, ForbiddenError} from 'apollo-server-errors';
+import {supabase} from '@/integrations/supabase/client';
+import type {MatchStatus} from '@/integrations/supabase/types';
 
 // =====================================================
 // UTILITY FUNCTIONS

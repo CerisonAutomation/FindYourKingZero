@@ -3,14 +3,19 @@
 // All pages, routing, UI in one file — imports backend from ./unified/core
 // =============================================================================
 
-import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation, Link, useParams } from 'react-router-dom';
+import React, {lazy, Suspense, useEffect, useState} from 'react';
+import {BrowserRouter, Link, Navigate, Route, Routes, useLocation, useNavigate, useParams} from 'react-router-dom';
 import {
-  AuthProvider, useAuth, useProfile, useProfiles, useUpdateProfile,
-  useMessages, useConversations, useEvents, useCreateEvent,
-  useNotifications, useFavorites, useBookings, services,
-  supabase, auth, db, realtime,
-  type UserProfile, type Message, type Conversation, type Event, type Notification, type Booking, type UserTier,
+    auth,
+    AuthProvider,
+    useAuth,
+    useConversations,
+    useEvents,
+    useFavorites,
+    useMessages,
+    useNotifications,
+    useProfile,
+    useProfiles,
 } from './core';
 
 // ── Lazy Pages (code-split for performance) ──────────────────────────────────

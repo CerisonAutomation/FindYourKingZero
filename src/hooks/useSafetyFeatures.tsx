@@ -3,8 +3,8 @@
  * SOS alerts and safety monitoring
  */
 
-import { useState, useCallback, useEffect } from 'react'
-import { supabase } from '@/integrations/supabase/client'
+import {useCallback, useEffect, useState} from 'react'
+import {supabase} from '@/integrations/supabase/client'
 
 export type SOSAlert  = {
   id: string

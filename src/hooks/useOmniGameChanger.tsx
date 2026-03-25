@@ -4,13 +4,13 @@
  * This is the master hook that powers the next-generation dating experience
  */
 
-import { useCallback, useEffect, useState } from 'react'
-import { useOmniAudio } from './useOmniAudio'
-import { useOmniMapMarkers } from './useOmniMapMarkers'
-import { useOmniSOS } from './useOmniSOS'
-import { useRealtimeLocationTracking } from './useRealtimeLocationTracking'
-import { useP2PMatchmaking } from './useP2PMatchmaking'
-import { useMeateorPatterns } from './useMeateorPatterns'
+import {useCallback, useEffect, useState} from 'react'
+import {useAudio} from './unified/useAudio'
+import {useMap} from './unified/useMap'
+import {useOmniSOS} from './useOmniSOS'
+import {useLocation} from './useLocation'
+import {useP2PMatchmaking} from './useP2PMatchmaking'
+import {useMeateorPatterns} from './useMeateorPatterns'
 
 export type OmniGameChangerState  = {
   // Audio System
@@ -423,10 +423,10 @@ export function useOmniGameChanger() {
   const [config, setConfig] = useState<OmniGameChangerConfig>(gameChangerManager.getConfig())
 
   // Get all the individual hooks
-  const audio = useOmniAudio()
-  const markers = useOmniMapMarkers()
+  const audio = useAudio()
+  const markers = useMap()
   const sos = useOmniSOS()
-  const location = useRealtimeLocationTracking()
+  const location = useLocation()
   const p2p = useP2PMatchmaking()
   const meateor = useMeateorPatterns()
 
@@ -457,7 +457,7 @@ export function useOmniGameChanger() {
   useEffect(() => {
     const updateState = () => {
       setState({
-        audioEnabled: audio.getConfig().enabled,
+        audioEnabled: audio.state.isEnabled,
         lastPlayedSound: '', // Would track from audio system
         totalMarkers: markers.markers.length,
         activeClusters: markers.clusters.length,
@@ -468,9 +468,9 @@ export function useOmniGameChanger() {
         activeAlerts: sos.activeAlerts.length,
         resolvedAlerts: sos.alerts.filter(a => a.resolved).length,
         emergencyMode: sos.activeAlerts.length > 0,
-        trackingEnabled: location.isEnabled,
-        accuracy: location.currentLocation?.accuracy || 0,
-        batteryOptimized: location.batteryLevel !== undefined,
+        trackingEnabled: location.isTracking,
+        accuracy: location.accuracy || 0,
+        batteryOptimized: false,
         activeConnections: p2p.connectedPeers.length,
         nearbyPeers: p2p.discoveredPeers.length,
         callActive: p2p.callStatus !== 'idle',
@@ -478,7 +478,7 @@ export function useOmniGameChanger() {
         ageVerified: meateor.state.ageGate.verified,
         chatActive: !!meateor.state.chat.openPeerId,
         performanceScore: 100, // Would calculate from performance monitoring
-        batteryLevel: location.batteryLevel || 1.0,
+        batteryLevel: 1.0,
         dataUsage: 0 // Would track from network monitoring
       })
     }

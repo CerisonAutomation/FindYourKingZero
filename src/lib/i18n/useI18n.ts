@@ -1,11 +1,11 @@
 // =====================================================
 // useI18n Hook — Translations + Currency + Detection
 // =====================================================
-import { useState, useCallback, useEffect, useMemo } from 'react';
-import { LANGUAGES, DEFAULT_LANGUAGE } from './languages';
-import { CURRENCIES, formatCurrency as fc, DEFAULT_CURRENCY } from './currencies';
-import { detectLanguage, detectCurrency } from './detector';
-import { TRANSLATIONS, TranslationKey } from './translations';
+import {useCallback, useEffect, useMemo, useState} from 'react';
+import {DEFAULT_LANGUAGE, LANGUAGES} from './languages';
+import {CURRENCIES, DEFAULT_CURRENCY, formatCurrency as fc} from './currencies';
+import {detectCurrency, detectLanguage} from './detector';
+import {TranslationKey, TRANSLATIONS} from './translations';
 
 export function useI18n() {
   const [language, setLanguageState] = useState<string>(DEFAULT_LANGUAGE);

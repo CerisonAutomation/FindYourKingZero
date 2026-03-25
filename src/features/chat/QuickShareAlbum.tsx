@@ -1,12 +1,12 @@
 // =====================================================
 // QuickShare Ephemeral Album — P2P Trystero + Supabase
 // =====================================================
-import { useState, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Share2, Clock, Eye, Image, X, CheckCircle2 } from 'lucide-react';
+import {useCallback, useState} from 'react';
+import {supabase} from '@/integrations/supabase/client';
+import {Button} from '@/components/ui/button';
+import {useToast} from '@/hooks/use-toast';
+import {AnimatePresence, motion} from 'framer-motion';
+import {CheckCircle2, Clock, Eye, Image, Share2, X} from 'lucide-react';
 
 interface QuickShareAlbumProps {
   receiverId: string;

@@ -3,12 +3,12 @@
 // Fixes: ai@v3 → v4, @ai-sdk/openai v0.0.54 → v1, fake setTimeout stream removed
 // Uses: useChat from 'ai/react' (v4 API), streamText for server actions
 // =============================================================================
-import { useCallback, useRef, useState } from 'react';
-import { useChat, type Message } from 'ai/react';
-import { useQueryClient } from '@tanstack/react-query';
-import { useToast } from './use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import type { Profile, MatchingCandidate } from '@/types';
+import {useCallback, useRef, useState} from 'react';
+import {type Message, useChat} from 'ai/react';
+import {useQueryClient} from '@tanstack/react-query';
+import {useToast} from './use-toast';
+import {supabase} from '@/integrations/supabase/client';
+import type {Profile} from '@/types';
 
 // ── Types ──────────────────────────────────────────────────────────────────────────
 export type AIMode = 'chat' | 'auto_reply' | 'icebreaker' | 'bio_suggestions' | 'compatibility';

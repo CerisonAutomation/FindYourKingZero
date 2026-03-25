@@ -1,8 +1,7 @@
 // 🎯 Feature-Sliced State Management - Dating Store
-import { create } from 'zustand';
-import { subscribeWithSelector } from 'zustand/middleware';
-import { devtools, persist } from 'zustand/middleware';
-import type { Profile, FilterState, DatingActions } from '../types';
+import {create} from 'zustand';
+import {devtools, persist, subscribeWithSelector} from 'zustand/middleware';
+import type {DatingActions, FilterState, Profile} from '../types';
 
 interface DatingStore {
   // State

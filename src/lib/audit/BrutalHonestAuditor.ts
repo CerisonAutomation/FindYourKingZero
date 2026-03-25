@@ -11,9 +11,9 @@
  * @date 2026-03-20
  */
 
-import { execSync } from 'child_process'
-import { readFileSync, readdirSync } from 'fs'
-import { join } from 'path'
+import {execSync} from 'child_process'
+import {readdirSync, readFileSync} from 'fs'
+import {join} from 'path'
 
 export type AuditResult  = {
   category: string

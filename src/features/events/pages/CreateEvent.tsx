@@ -1,18 +1,18 @@
 import {useNavigate} from 'react-router-dom';
-import {useState, useEffect, useCallback} from 'react';
-import {ChevronLeft, Plus, MapPin, Calendar, Clock, Users, AlertCircle, Upload, X, Eye, EyeOff} from 'lucide-react';
+import {useCallback, useEffect, useState} from 'react';
+import {AlertCircle, Calendar, ChevronLeft, Clock, Eye, EyeOff, MapPin, Plus, Upload, Users, X} from 'lucide-react';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Label} from '@/components/ui/label';
 import {Textarea} from '@/components/ui/textarea';
 import {Switch} from '@/components/ui/switch';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
-import {Card, CardContent} from '@/components/ui/card';
+import {Card} from '@/components/ui/card';
 import {Badge} from '@/components/ui/badge';
 import {Progress} from '@/components/ui/progress';
 import {Alert, AlertDescription} from '@/components/ui/alert';
 import {EVENT_TYPES, useCreateEvent} from '@/hooks/useEvents';
-import {cn, formatDateTime, debounce, isValidUrl} from '@/lib/utils';
+import {cn, debounce, isValidUrl} from '@/lib/utils';
 import {useToast} from '@/hooks/use-toast';
 import {useAI} from '@/hooks/useAI';
 

@@ -1,14 +1,14 @@
 // =====================================================
 // Leaflet Realtime Map — PostGIS + Supabase Realtime
 // =====================================================
-import { useEffect, useState, useCallback, useRef } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from 'react-leaflet';
+import {useCallback, useEffect, useRef, useState} from 'react';
+import {Circle, MapContainer, Marker, Popup, TileLayer, useMap} from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Shield, Crown, Navigation } from 'lucide-react';
+import {supabase} from '@/integrations/supabase/client';
+import {useNavigate} from 'react-router-dom';
+import {motion} from 'framer-motion';
+import {Crown, Navigation, Shield} from 'lucide-react';
 
 // Fix default marker icon
 delete (L.Icon.Default.prototype as any)._getIconUrl;
