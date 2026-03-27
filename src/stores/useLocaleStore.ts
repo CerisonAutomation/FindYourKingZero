@@ -1,7 +1,7 @@
 import {create} from 'zustand';
 import {initLocale, type Locale, setLocale, t as translate} from '@/lib/i18n';
 
-interface LocaleStore {
+export type LocaleStore = {
     locale: Locale;
     setLocale: (locale: Locale) => void;
     t: (key: string, fallback?: string) => string;

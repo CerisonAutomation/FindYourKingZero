@@ -7,14 +7,16 @@
  * Blueprint reference: ChatAssist Agent (Icebreaker capability)
  */
 
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
 import {Copy, MessageCircle, RefreshCw, Sparkles} from 'lucide-react';
 import {AgentOrchestrator} from '@/lib/ai/agents/AgentOrchestrator';
 import {cn} from '@/lib/utils';
 
+import {type Profile} from '@/types';
+
 interface Props {
-    profile: Record<string, any>;
+    profile: Profile;
     onUseIcebreaker?: (text: string) => void;
     className?: string;
 }
@@ -24,22 +26,25 @@ export function IcebreakerPanel({profile, onUseIcebreaker, className}: Props) {
     const [loading, setLoading] = useState(true);
     const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
 
-    const load = () => {
+    const load = useCallback(() => {
         setLoading(true);
         AgentOrchestrator.chatAssist.generateIcebreakers(profile).then(r => {
             setIcebreakers(r.data);
             setLoading(false);
         });
-    };
+    }, [profile]);
 
-    useEffect(load, [profile.user_id]);
+    useEffect(load, [load]);
 
     const handleCopy = async (text: string, idx: number) => {
         try {
             await navigator.clipboard.writeText(text);
             setCopiedIdx(idx);
             setTimeout(() => setCopiedIdx(null), 1800);
-        } catch {}
+        } catch (e) {
+            // Clipboard write failed - ignore
+            console.warn('Failed to copy to clipboard:', e);
+        }
     };
 
     return (

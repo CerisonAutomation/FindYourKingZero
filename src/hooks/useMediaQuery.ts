@@ -1,12 +1,12 @@
 /**
  * useMediaQuery.ts — Responsive design hook for React
- * 
+ *
  * Features:
  * - Subscribe to CSS media query changes
  * - SSR-safe with defaultValue option
  * - Works with Tailwind CSS breakpoints
  * - Supports custom media queries
- * 
+ *
  * Based on:
  * - shadcn/ui useMediaQuery: https://www.shadcn.io/hooks/use-media-query
  * - usehooks-ts implementation: https://usehooks-ts.com/react-hook/use-media-query
@@ -26,7 +26,7 @@ interface UseMediaQueryOptions {
  * @param query - CSS media query string (e.g., '(min-width: 768px)')
  * @param options - Configuration options
  * @returns boolean indicating if media query matches
- * 
+ *
  * @example
  * const isMobile = useMediaQuery('(max-width: 768px)');
  * const isDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -40,10 +40,10 @@ export function useMediaQuery(
 
   const [matches, setMatches] = useState(() => {
     if (!initializeWithValue) return defaultValue;
-    
+
     // Check if window is available (client-side)
     if (typeof window === 'undefined') return defaultValue;
-    
+
     return window.matchMedia(query).matches;
   });
 
@@ -57,7 +57,7 @@ export function useMediaQuery(
     if (typeof window === 'undefined') return;
 
     const mediaQuery = window.matchMedia(query);
-    
+
     // Set initial value
     setMatches(mediaQuery.matches);
 
@@ -66,7 +66,7 @@ export function useMediaQuery(
       mediaQuery.addEventListener('change', handleChange);
       return () => mediaQuery.removeEventListener('change', handleChange);
     }
-    
+
     // Legacy API fallback (addListener) for older browsers
     mediaQuery.addListener(handleChange);
     return () => mediaQuery.removeListener(handleChange);
@@ -87,10 +87,10 @@ export const breakpoints = {
 /**
  * Hook for Tailwind CSS breakpoint-based responsive design
  * @returns Object with boolean flags for each breakpoint
- * 
+ *
  * @example
  * const { isSm, isMd, isLg, isXl, is2xl } = useBreakpoint();
- * 
+ *
  * return (
  *   <div className={isMd ? 'grid-cols-2' : 'grid-cols-1'}>
  *     Responsive content
@@ -121,7 +121,7 @@ export function useBreakpoint() {
  * Hook for responsive values based on breakpoints
  * @param values - Object with breakpoint keys and their values
  * @returns The value for the current breakpoint
- * 
+ *
  * @example
  * const cols = useResponsiveValue({
  *   default: 1,
@@ -145,7 +145,7 @@ export function useResponsiveValue<T>(values: {
   if (isLg && values.lg !== undefined) return values.lg;
   if (isMd && values.md !== undefined) return values.md;
   if (isSm && values.sm !== undefined) return values.sm;
-  
+
   return values.default;
 }
 
@@ -195,7 +195,7 @@ export function useContainerQuery(
     if (!ref.current) return;
 
     const element = ref.current;
-    
+
     const resizeObserver = new ResizeObserver((entries) => {
       const entry = entries[0];
       if (entry) {
@@ -216,6 +216,69 @@ export function useContainerQuery(
     width: dimensions.width,
     height: dimensions.height,
   };
+}
+
+/**
+ * Check if mobile (below md breakpoint)
+ */
+export function useIsMobile(): boolean {
+  return !useMediaQuery(breakpoints.md);
+}
+
+/**
+ * Check if tablet (md to lg breakpoint)
+ */
+export function useIsTablet(): boolean {
+  const isMd = useMediaQuery(breakpoints.md);
+  const isLg = useMediaQuery(breakpoints.lg);
+  return isMd && !isLg;
+}
+
+/**
+ * Check if desktop (lg and above)
+ */
+export function useIsDesktop(): boolean {
+  return useMediaQuery(breakpoints.lg);
+}
+
+/**
+ * Check for touch device capability
+ */
+export function useIsTouchDevice(): boolean {
+  return useMediaQuery('(hover: none) and (pointer: coarse)', { defaultValue: false });
+}
+
+/**
+ * Check for portrait orientation
+ */
+export function useIsPortrait(): boolean {
+  return useMediaQuery('(orientation: portrait)', { defaultValue: true });
+}
+
+/**
+ * Get current window dimensions
+ */
+export function useWindowSize(): { width: number; height: number } {
+  const [size, setSize] = useState(() => ({
+    width: typeof window !== 'undefined' ? window.innerWidth : 0,
+    height: typeof window !== 'undefined' ? window.innerHeight : 0,
+  }));
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleResize = () => {
+      setSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return size;
 }
 
 export default useMediaQuery;

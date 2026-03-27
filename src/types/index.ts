@@ -1,6 +1,15 @@
 // =====================================================
-// COMPREHENSIVE TYPE DEFINITIONS FOR DATING PLATFORM
+// COMPREHENSIVE TYPE DEFINITIONS FOR DATING PLATFORM v15.0
 // =====================================================
+
+// ═════════════════════════════════════════════════════════════════════════════
+// CANONICAL TYPES — Unified source of truth (NEW v15.0)
+// ═════════════════════════════════════════════════════════════════════════════
+export * from './canonical';
+
+// ═════════════════════════════════════════════════════════════════════════════
+// LEGACY TYPES — Backward compatibility maintained
+// ═════════════════════════════════════════════════════════════════════════════
 
 // Base types
 export type UUID = string;
@@ -22,12 +31,11 @@ export enum ReportStatus {
     DISMISSED = 'dismissed'
 }
 
-export enum SubscriptionTier {
-    FREE = 'free',
-    PREMIUM = 'premium',
-    VIP = 'vip',
-    ENTERPRISE = 'enterprise'
-}
+/**
+ * Subscription tier type — Canonical definition
+ * @deprecated Use SubscriptionTier from canonical types instead
+ */
+export type SubscriptionTier = 'free' | 'plus' | 'premium' | 'elite';
 
 export enum PrivacyLevel {
     PUBLIC = 'public',

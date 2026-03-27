@@ -128,10 +128,12 @@ export const DATING_CONFIG = {
 } as const;
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// Subscription Tiers
+// Subscription Tiers — Using canonical string literal type
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export type SubscriptionTier = {
+import type { SubscriptionTier } from '@/types';
+
+export type SubscriptionTierConfig = {
   name: string;
   price: number;
   features: string[];
@@ -143,32 +145,35 @@ export type SubscriptionTier = {
   };
 };
 
-export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
-  free: {
+export const SUBSCRIPTION_TIERS: Record<SubscriptionTier, SubscriptionTierConfig> = {
+  'free': {
     name: 'Free',
     price: 0,
     features: ['Basic profile', 'Limited discovery (20/day)', 'Basic messaging', 'Standard support'],
     limits: { dailySwipes: 20, dailyMessages: 10, photoUploads: 5, profileViews: 50 },
   },
-  plus: {
+  'plus': {
     name: 'Plus',
     price: 9.99,
     features: ['Unlimited discovery', 'Advanced filters', 'See who viewed you', 'Travel mode', 'Priority support'],
     limits: { dailySwipes: -1, dailyMessages: -1, photoUploads: 20, profileViews: -1 },
   },
-  pro: {
-    name: 'Pro',
+  'premium': {
+    name: 'Premium',
     price: 24.99,
     features: ['Everything in Plus', 'AI recommendations', 'Advanced analytics', 'Host tools', 'Premium support'],
     limits: { dailySwipes: -1, dailyMessages: -1, photoUploads: 50, profileViews: -1 },
   },
-  elite: {
+  'elite': {
     name: 'Elite',
     price: 59.99,
-    features: ['Everything in Pro', 'Priority placement', 'Elite circles', 'Concierge support', 'Exclusive events'],
+    features: ['Everything in Premium', 'Priority placement', 'Elite circles', 'Concierge support', 'Exclusive events'],
     limits: { dailySwipes: -1, dailyMessages: -1, photoUploads: -1, profileViews: -1 },
   },
 } as const;
+
+// Re-export the type for convenience
+export type { SubscriptionTier } from '@/types';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Security Configuration

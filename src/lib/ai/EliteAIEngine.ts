@@ -53,7 +53,7 @@ export const PERSONALITIES: Record<string, AIPersonality> = {
 // MODERN QUICK REPLIES - Natural Dating Conversations
 // ═══════════════════════════════════════════════════════════════
 
-export type MessageIntent = 
+export type MessageIntent =
   | 'greeting'
   | 'compliment'
   | 'flirt'
@@ -80,14 +80,14 @@ export const MODERN_REPLIES: Record<MessageIntent, QuickReply[]> = {
     { text: "Haven't heard this one before. Go on…", intent: 'greeting', personality: 'witty' },
     { text: "Well hello there ✨", intent: 'greeting', personality: 'playful' },
   ],
-  
+
   compliment: [
     { text: "Thanks — that's genuinely nice to hear", intent: 'gratitude', personality: 'warm' },
     { text: "Smooth. Almost too smooth.", intent: 'flirt', personality: 'witty' },
     { text: "Careful, I'll start blushing 😊", intent: 'flirt', personality: 'playful' },
     { text: "Appreciate that. You have good taste", intent: 'gratitude', personality: 'witty' },
   ],
-  
+
   flirt: [
     { text: "You're going to make me work for this, aren't you?", intent: 'flirt', personality: 'witty' },
     { text: "Okay, you've got my attention", intent: 'flirt', personality: 'warm' },
@@ -95,54 +95,54 @@ export const MODERN_REPLIES: Record<MessageIntent, QuickReply[]> = {
     { text: "Is it hot in here or is that just you?", intent: 'flirt', personality: 'playful' },
     { text: "Confidence suits you", intent: 'flirt', personality: 'witty' },
   ],
-  
+
   question: [
     { text: "Great question — let me think…", intent: 'question', personality: 'warm' },
     { text: "Honestly? Yes.", intent: 'other', personality: 'witty' },
     { text: "Ooh, I love this question", intent: 'question', personality: 'playful' },
     { text: "You really know how to make me think", intent: 'story', personality: 'witty' },
   ],
-  
+
   plan: [
     { text: "I'd love that — what did you have in mind?", intent: 'plan', personality: 'warm' },
     { text: "Sounds good. When were you thinking?", intent: 'plan', personality: 'witty' },
     { text: "Let's do it 🙌", intent: 'plan', personality: 'playful' },
     { text: "What area are you in?", intent: 'plan', personality: 'warm' },
   ],
-  
+
   meet_now: [
     { text: "I'm free right now actually", intent: 'meet_now', personality: 'warm' },
     { text: "Tonight works — what time?", intent: 'meet_now', personality: 'witty' },
     { text: "Spontaneous, I like it ⚡", intent: 'meet_now', personality: 'playful' },
     { text: "Where are you thinking?", intent: 'meet_now', personality: 'warm' },
   ],
-  
+
   rejection: [
     { text: "No worries — take care!", intent: 'rejection', personality: 'warm' },
     { text: "All good, thanks for being upfront", intent: 'gratitude', personality: 'witty' },
     { text: "Good luck out there", intent: 'rejection', personality: 'warm' },
   ],
-  
+
   story: [
     { text: "Wait, what happened?!", intent: 'question', personality: 'playful' },
     { text: "No way — tell me everything", intent: 'question', personality: 'warm' },
     { text: "Haha okay I need more details", intent: 'question', personality: 'witty' },
     { text: "That sounds wild — then what?", intent: 'question', personality: 'playful' },
   ],
-  
+
   gratitude: [
     { text: "Aww of course 💛", intent: 'gratitude', personality: 'warm' },
     { text: "Anytime", intent: 'gratitude', personality: 'witty' },
     { text: "You're welcome — it's easy when it's you", intent: 'flirt', personality: 'playful' },
   ],
-  
+
   check_in: [
     { text: "I'm great, thanks for asking — how are you?", intent: 'check_in', personality: 'warm' },
     { text: "Pretty good! Just thinking about you tbh", intent: 'flirt', personality: 'playful' },
     { text: "Getting better now that you texted", intent: 'flirt', personality: 'witty' },
     { text: "Living my best life — you?", intent: 'check_in', personality: 'witty' },
   ],
-  
+
   other: [
     { text: "Haha, I love that", intent: 'other', personality: 'warm' },
     { text: "Tell me more", intent: 'question', personality: 'witty' },
@@ -186,21 +186,21 @@ export const COACHING_MESSAGES = {
     "Group photos are fine, but make sure your first photo is just you.",
     "Show, don't tell — 'love hiking' vs a photo at the summit.",
   ],
-  
+
   icebreakers: [
     "Ask about something specific in their photos — shows you actually looked.",
     "Skip 'hey' — reference something from their bio instead.",
     "A little teasing goes a long way. 'Is that dog yours or are you just borrowing the cuteness?'",
     "Questions about food/drink are universally safe bets.",
   ],
-  
+
   conversationTips: [
     "The best conversations flow back and forth — don't send novels.",
     "If they ask a question, answer it then ask one back.",
     "Voice notes can break up text fatigue and feel more personal.",
     "Know when to move to meeting — 3-5 good exchanges is usually the sweet spot.",
   ],
-  
+
   redFlags: [
     "If they only talk about themselves — that's not confidence, it's ego.",
     "Love-bombing early on? Take it slow.",
@@ -216,15 +216,15 @@ export const SAFETY_MESSAGES = {
   block: [
     "This message can't be sent — let's keep things respectful.",
   ],
-  
+
   warn: [
     "That might come across stronger than you intended — want to rephrase?",
     "Consider how this might land — dating is about connection first.",
     "Maybe save that for after you've met in person?",
   ],
-  
+
   softenedAlternatives: {
-    'send nudes': 'I\'d love to see more when we meet 😊',
+    'send nudes': 'I\'d love to see more when we meet',
     'send pics': 'Looking forward to seeing you in person',
     'dtf': 'What are you looking for on here?',
     'hook up': 'What kind of connection are you hoping to find?',
@@ -256,7 +256,7 @@ export function useEliteAIEngine(selectedPersonality: keyof typeof PERSONALITIES
   // Classify message intent
   const classifyIntent = useCallback((text: string): MessageIntent => {
     const t = text.toLowerCase().trim();
-    
+
     // Intent patterns
     const patterns: Record<MessageIntent, RegExp[]> = {
       greeting: [
@@ -270,7 +270,7 @@ export function useEliteAIEngine(selectedPersonality: keyof typeof PERSONALITIES
       flirt: [
         /\b(babe|baby|cutie|honey|darling)\b/i,
         /\b(miss(ing)?\s*you|thinking\s+of\s*you)\b/i,
-        /[😘😍🥰🔥💋❤️]/u,
+        /[\u{1F618}\u{1F60D}\u{1F970}\u{1F525}\u{1F48B}\u{2764}\u{FE0F}]/u,
       ],
       plan: [
         /\b(are you (free|available)|when are you free|let'?s (meet|hang|grab|go out))/i,
@@ -281,7 +281,7 @@ export function useEliteAIEngine(selectedPersonality: keyof typeof PERSONALITIES
         /\b(meet\s*(right)?\s*now|come\s+over|tonight|today)\b/i,
         /\b(right\s*now|asap|immediately)\b/,
       ],
-      question: [\?$/i, /\b(what|how|why|when|where|are you|do you|can you)/i],
+      question: [/[?]$/i, /\b(what|how|why|when|where|are you|do you|can you)/i],
       rejection: [
         /\b(no\s+thanks|not\s+interested|i'?ll\s+pass|not\s+my\s+type)/i,
       ],
@@ -302,7 +302,7 @@ export function useEliteAIEngine(selectedPersonality: keyof typeof PERSONALITIES
         return intent as MessageIntent;
       }
     }
-    
+
     return 'other';
   }, []);
 
@@ -310,16 +310,16 @@ export function useEliteAIEngine(selectedPersonality: keyof typeof PERSONALITIES
   const getQuickReplies = useCallback((incomingMessage: string, count = 3): QuickReply[] => {
     const intent = classifyIntent(incomingMessage);
     const personality = personalityRef.current.tone;
-    
+
     // Get all replies for this intent
     const allReplies = MODERN_REPLIES[intent] || MODERN_REPLIES.other;
-    
+
     // Filter by personality preference, or get all if not enough
     let matching = allReplies.filter(r => r.personality === personality);
     if (matching.length < count) {
       matching = [...matching, ...allReplies.filter(r => r.personality !== personality)];
     }
-    
+
     // Shuffle and return top count
     return matching
       .sort(() => Math.random() - 0.5)
@@ -330,46 +330,46 @@ export function useEliteAIEngine(selectedPersonality: keyof typeof PERSONALITIES
   const getComposeHint = useCallback((prefix: string): ComposeHint | null => {
     if (prefix.length < 3) return null;
     const lower = prefix.toLowerCase().trim();
-    
+
     const match = SMART_COMPOSE_HINTS
       .filter(h => lower.startsWith(h.prefix) && h.prefix.length >= 3)
       .sort((a, b) => b.prefix.length - a.prefix.length)[0];
-    
+
     if (match) {
       return {
         prefix: prefix,
         completion: match.completion,
       };
     }
-    
+
     return null;
   }, []);
 
   // Check message safety
   const checkSafety = useCallback((text: string): { safe: boolean; warning?: string; softened?: string } => {
     const lower = text.toLowerCase();
-    
+
     // Block patterns (severe)
     const blockPatterns = [
       /\b(kill\s*(your)?self|go\s*die|kys)\b/i,
       /\b(f+u+c+k\s+you)\b/i,
       /\b(you('?re|\s+are)\s*(fat|ugly|disgusting|worthless))\b/i,
     ];
-    
+
     if (blockPatterns.some(p => p.test(lower))) {
-      return { 
-        safe: false, 
+      return {
+        safe: false,
         warning: SAFETY_MESSAGES.block[0]
       };
     }
-    
+
     // Warn patterns
     const warnPatterns: Array<[RegExp, string]> = [
       [/\b(send\s+(nudes?|pics?))\b/i, SAFETY_MESSAGES.softenedAlternatives['send nudes']],
       [/\b(dick\s*pic|cock\s*pic)\b/i, ''],
       [/\b(you'?re\s*(dumb|stupid))\b/i, ''],
     ];
-    
+
     for (const [pattern, softened] of warnPatterns) {
       if (pattern.test(lower)) {
         return {
@@ -379,7 +379,7 @@ export function useEliteAIEngine(selectedPersonality: keyof typeof PERSONALITIES
         };
       }
     }
-    
+
     return { safe: true };
   }, []);
 
@@ -404,12 +404,12 @@ export function useEliteAIEngine(selectedPersonality: keyof typeof PERSONALITIES
 // ═══════════════════════════════════════════════════════════════
 
 export const AI_SYSTEM_PROMPTS = {
-  default: `You're a dating coach helping users improve their dating profile and conversations. 
-Be encouraging but honest. Give specific, actionable advice. 
+  default: `You're a dating coach helping users improve their dating profile and conversations.
+Be encouraging but honest. Give specific, actionable advice.
 Keep responses concise (2-3 sentences max unless asked for detail).
 Avoid generic platitudes like "just be yourself."`,
 
-  witty: `You're a witty dating wing-person with dry humor. 
+  witty: `You're a witty dating wing-person with dry humor.
 You give advice that's sharp, honest, and occasionally sarcastic but never mean.
 Keep it brief — one-liners when possible. Make users laugh while helping them.`,
 

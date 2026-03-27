@@ -3,9 +3,14 @@
 // Built on Trystero 0.22 Nostr strategy
 // =====================================================
 import {joinRoom} from 'trystero/nostr';
-import type {Room} from 'trystero';
+import type {Room, ActionSender, ActionReceiver, ActionProgress, JsonValue} from 'trystero';
 
 const APP_ID = import.meta.env.VITE_P2P_APP_ID ?? 'fyking-v4';
+
+// Generate a unique local peer ID
+function generatePeerId(): string {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+}
 
 // ── Types ────────────────────────────────────────────
 export interface ChatMessage {
@@ -17,7 +22,7 @@ export interface ChatMessage {
   edited?: boolean;
   replyTo?: string;
   selfDestruct?: number;
-  metadata?: Record<string, unknown>;
+  metadata?: Record<string, JsonValue>;
 }
 
 export interface FileTransfer {
@@ -75,35 +80,49 @@ export interface CallSignal {
   timestamp: number;
 }
 
+// Helper to safely cast makeAction result
+function makeTypedAction<T>(room: Room, namespace: string): [ActionSender<T>, ActionReceiver<T>] {
+  const [send, receive] = room.makeAction(namespace) as unknown as [ActionSender<T>, ActionReceiver<T>];
+  return [send, receive];
+}
+
 // ── P2P Chat Engine ──────────────────────────────────
 export class P2PChatEngine {
   private room: Room;
-  private sendMsg: (data: ChatMessage, peerId?: string) => Promise<void>;
-  private sendEdit: (data: { messageId: string; content: string }, peerId?: string) => Promise<void>;
-  private sendUnsend: (data: { messageId: string }, peerId?: string) => Promise<void>;
-  private sendReaction: (data: ReactionPayload, peerId?: string) => Promise<void>;
-  private sendTyping: (data: TypingPayload, peerId?: string) => Promise<void>;
-  private sendReceipt: (data: ReadReceipt, peerId?: string) => Promise<void>;
+  private selfId: string;
+  private sendMsg: ActionSender<ChatMessage>;
+  private sendEdit: ActionSender<{ messageId: string; content: string }>;
+  private sendUnsend: ActionSender<{ messageId: string }>;
+  private sendReaction: ActionSender<ReactionPayload>;
+  private sendTyping: ActionSender<TypingPayload>;
+  private sendReceipt: ActionSender<ReadReceipt>;
   private messageQueue: ChatMessage[] = [];
   private listeners: Map<string, Set<Function>> = new Map();
 
   constructor(roomId: string, password?: string) {
     this.room = joinRoom({ appId: APP_ID, password }, roomId);
-    const [sm, om] = this.room.makeAction<ChatMessage>('msg');
-    const [se, oe] = this.room.makeAction<{ messageId: string; content: string }>('edit');
-    const [su, ou] = this.room.makeAction<{ messageId: string }>('unsend');
-    const [sr, or_] = this.room.makeAction<ReactionPayload>('react');
-    const [st, ot] = this.room.makeAction<TypingPayload>('typing');
-    const [sR, oR] = this.room.makeAction<ReadReceipt>('receipt');
-    this.sendMsg = sm; this.sendEdit = se; this.sendUnsend = su;
-    this.sendReaction = sr; this.sendTyping = st; this.sendReceipt = sR;
+    this.selfId = generatePeerId();
+    
+    [this.sendMsg] = makeTypedAction<ChatMessage>(this.room, 'msg');
+    [this.sendEdit] = makeTypedAction<{ messageId: string; content: string }>(this.room, 'edit');
+    [this.sendUnsend] = makeTypedAction<{ messageId: string }>(this.room, 'unsend');
+    [this.sendReaction] = makeTypedAction<ReactionPayload>(this.room, 'react');
+    [this.sendTyping] = makeTypedAction<TypingPayload>(this.room, 'typing');
+    [this.sendReceipt] = makeTypedAction<ReadReceipt>(this.room, 'receipt');
 
-    om((msg, peerId) => this.emit('message', msg, peerId));
-    oe((data, peerId) => this.emit('edit', data, peerId));
-    ou((data, peerId) => this.emit('unsend', data, peerId));
-    or_((data, peerId) => this.emit('reaction', data, peerId));
-    ot((data, peerId) => this.emit('typing', data, peerId));
-    oR((data, peerId) => this.emit('receipt', data, peerId));
+    const [, onMsg] = makeTypedAction<ChatMessage>(this.room, 'msg');
+    const [, onEdit] = makeTypedAction<{ messageId: string; content: string }>(this.room, 'edit');
+    const [, onUnsend] = makeTypedAction<{ messageId: string }>(this.room, 'unsend');
+    const [, onReact] = makeTypedAction<ReactionPayload>(this.room, 'react');
+    const [, onTyping] = makeTypedAction<TypingPayload>(this.room, 'typing');
+    const [, onReceipt] = makeTypedAction<ReadReceipt>(this.room, 'receipt');
+
+    onMsg((msg, peerId) => this.emit('message', msg, peerId));
+    onEdit((data, peerId) => this.emit('edit', data, peerId));
+    onUnsend((data, peerId) => this.emit('unsend', data, peerId));
+    onReact((data, peerId) => this.emit('reaction', data, peerId));
+    onTyping((data, peerId) => this.emit('typing', data, peerId));
+    onReceipt((data, peerId) => this.emit('receipt', data, peerId));
 
     this.room.onPeerJoin((peerId) => this.emit('peerJoin', peerId));
     this.room.onPeerLeave((peerId) => this.emit('peerLeave', peerId));
@@ -118,20 +137,20 @@ export class P2PChatEngine {
     return () => this.listeners.get(event)?.delete(cb);
   }
 
-  private emit(event: string, ...args: any[]) {
+  private emit(event: string, ...args: unknown[]) {
     this.listeners.get(event)?.forEach(cb => cb(...args));
   }
 
-  async send(content: string, replyTo?: string) {
+  async send(content: string, replyTo?: string): Promise<ChatMessage> {
     const msg: ChatMessage = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-      senderId: this.room.selfId,
+      senderId: this.selfId,
       content: content.trim().slice(0, 5000),
       timestamp: Date.now(),
       type: replyTo ? 'reply' : 'text',
       replyTo,
     };
-    const peers = this.room.getPeers();
+    const peers = Object.keys(this.room.getPeers());
     if (peers.length === 0) {
       this.messageQueue.push(msg);
       return msg;
@@ -140,59 +159,64 @@ export class P2PChatEngine {
     return msg;
   }
 
-  async edit(messageId: string, content: string) {
+  async edit(messageId: string, content: string): Promise<void> {
     await this.sendEdit({ messageId, content: content.trim().slice(0, 5000) });
   }
 
-  async unsend(messageId: string) {
+  async unsend(messageId: string): Promise<void> {
     await this.sendUnsend({ messageId });
   }
 
-  async react(messageId: string, emoji: string) {
-    await this.sendReaction({ messageId, emoji, userId: this.room.selfId });
+  async react(messageId: string, emoji: string): Promise<void> {
+    await this.sendReaction({ messageId, emoji, userId: this.selfId });
   }
 
   private typingTimer: ReturnType<typeof setTimeout> | null = null;
-  async setTyping(roomId: string, isTyping: boolean) {
+  async setTyping(roomId: string, isTyping: boolean): Promise<void> {
     if (this.typingTimer) clearTimeout(this.typingTimer);
-    await this.sendTyping({ userId: this.room.selfId, roomId, isTyping });
+    await this.sendTyping({ userId: this.selfId, roomId, isTyping });
     if (isTyping) {
-      this.typingTimer = setTimeout(() => this.sendTyping({ userId: this.room.selfId, roomId, isTyping: false }), 3000);
+      this.typingTimer = setTimeout(() => this.sendTyping({ userId: this.selfId, roomId, isTyping: false }), 3000);
     }
   }
 
-  async markRead(messageId: string) {
-    await this.sendReceipt({ messageId, readBy: this.room.selfId, timestamp: Date.now() });
+  async markRead(messageId: string): Promise<void> {
+    await this.sendReceipt({ messageId, readBy: this.selfId, timestamp: Date.now() });
   }
 
-  private async flushQueue() {
-    while (this.messageQueue.length > 0 && this.room.getPeers().length > 0) {
+  private async flushQueue(): Promise<void> {
+    while (this.messageQueue.length > 0 && Object.keys(this.room.getPeers()).length > 0) {
       const msg = this.messageQueue.shift()!;
       await this.sendMsg(msg);
     }
   }
 
-  getSelfId() { return this.room.selfId; }
-  getPeers() { return this.room.getPeers(); }
-  leave() { this.room.leave(); this.listeners.clear(); }
+  getSelfId(): string { return this.selfId; }
+  getPeers(): string[] { return Object.keys(this.room.getPeers()); }
+  leave(): void { this.room.leave(); this.listeners.clear(); }
 }
 
 // ── P2P File Transfer ────────────────────────────────
 export class P2PFileTransfer {
   private room: Room;
+  private selfId: string;
   private CHUNK_SIZE = 64 * 1024; // 64KB
-  private sendChunk: (data: ArrayBuffer, peerId?: string) => Promise<void>;
-  private sendMeta: (data: FileTransfer, peerId?: string) => Promise<void>;
+  private sendChunk: ActionSender<ArrayBuffer>;
+  private sendMeta: ActionSender<FileTransfer>;
   private incomingTransfers: Map<string, { meta: FileTransfer; chunks: ArrayBuffer[] }> = new Map();
 
   constructor(roomId: string, password?: string) {
     this.room = joinRoom({ appId: APP_ID, password }, `${roomId}-files`);
-    const [sc, oc] = this.room.makeAction<ArrayBuffer>('chunk');
-    const [sm, om] = this.room.makeAction<FileTransfer>('meta');
-    this.sendChunk = sc; this.sendMeta = sm;
+    this.selfId = generatePeerId();
+    
+    [this.sendChunk] = makeTypedAction<ArrayBuffer>(this.room, 'chunk');
+    [this.sendMeta] = makeTypedAction<FileTransfer>(this.room, 'meta');
 
-    oc((data, peerId) => this.handleChunk(data, peerId));
-    om((meta, peerId) => this.handleMeta(meta, peerId));
+    const [, onChunk] = makeTypedAction<ArrayBuffer>(this.room, 'chunk');
+    const [, onMeta] = makeTypedAction<FileTransfer>(this.room, 'meta');
+
+    onChunk((data, peerId) => this.handleChunk(data, peerId));
+    onMeta((meta, peerId) => this.handleMeta(meta, peerId));
   }
 
   private listeners: Map<string, Set<Function>> = new Map();
@@ -201,15 +225,15 @@ export class P2PFileTransfer {
     this.listeners.get(event)!.add(cb);
     return () => this.listeners.get(event)?.delete(cb);
   }
-  private emit(event: string, ...args: any[]) {
+  private emit(event: string, ...args: unknown[]) {
     this.listeners.get(event)?.forEach(cb => cb(...args));
   }
 
-  async sendFile(file: File, expiresIn?: number) {
+  async sendFile(file: File, expiresIn?: number): Promise<void> {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
     const chunks = Math.ceil(file.size / this.CHUNK_SIZE);
     const meta: FileTransfer = {
-      id, senderId: this.room.selfId,
+      id, senderId: this.selfId,
       fileName: file.name, fileType: file.type, fileSize: file.size, chunks,
       expiresAt: expiresIn ? Date.now() + expiresIn : undefined,
     };
@@ -230,7 +254,7 @@ export class P2PFileTransfer {
     }
   }
 
-  private handleChunk(data: ArrayBuffer, peerId: string) {
+  private handleChunk(data: ArrayBuffer, peerId: string): void {
     const view = new Uint8Array(data);
     const headerLen = view[0];
     const header = JSON.parse(new TextDecoder().decode(view.slice(1, 1 + headerLen)));
@@ -250,26 +274,30 @@ export class P2PFileTransfer {
     }
   }
 
-  private handleMeta(meta: FileTransfer, peerId: string) {
+  private handleMeta(meta: FileTransfer, peerId: string): void {
     this.incomingTransfers.set(meta.id, { meta, chunks: new Array(meta.chunks) });
     this.emit('incoming', meta);
   }
 
-  leave() { this.room.leave(); this.listeners.clear(); }
+  leave(): void { this.room.leave(); this.listeners.clear(); }
 }
 
 // ── P2P Location Sharing ─────────────────────────────
 export class P2PLocation {
   private room: Room;
-  private sendLoc: (data: LocationPayload, peerId?: string) => Promise<void>;
+  private selfId: string;
+  private sendLoc: ActionSender<LocationPayload>;
   private watchId: number | null = null;
   private trail: LocationPayload[] = [];
 
   constructor(roomId: string, password?: string) {
     this.room = joinRoom({ appId: APP_ID, password }, `${roomId}-loc`);
-    const [sl, ol] = this.room.makeAction<LocationPayload>('loc');
-    this.sendLoc = sl;
-    ol((data, peerId) => {
+    this.selfId = generatePeerId();
+    
+    [this.sendLoc] = makeTypedAction<LocationPayload>(this.room, 'loc');
+    const [, onLoc] = makeTypedAction<LocationPayload>(this.room, 'loc');
+
+    onLoc((data, peerId) => {
       this.trail.push(data);
       if (this.trail.length > 50) this.trail.shift();
       this.emit('location', data, peerId);
@@ -282,16 +310,16 @@ export class P2PLocation {
     this.listeners.get(event)!.add(cb);
     return () => this.listeners.get(event)?.delete(cb);
   }
-  private emit(event: string, ...args: any[]) {
+  private emit(event: string, ...args: unknown[]) {
     this.listeners.get(event)?.forEach(cb => cb(...args));
   }
 
-  startSharing(coarse = false) {
+  startSharing(coarse = false): void {
     if (!navigator.geolocation) return;
     this.watchId = navigator.geolocation.watchPosition(
       (pos) => {
         const payload: LocationPayload = {
-          userId: this.room.selfId,
+          userId: this.selfId,
           lat: coarse ? Math.round(pos.coords.latitude * 100) / 100 : pos.coords.latitude,
           lng: coarse ? Math.round(pos.coords.longitude * 100) / 100 : pos.coords.longitude,
           accuracy: pos.coords.accuracy,
@@ -305,28 +333,32 @@ export class P2PLocation {
     );
   }
 
-  stopSharing() {
+  stopSharing(): void {
     if (this.watchId !== null) {
       navigator.geolocation.clearWatch(this.watchId);
       this.watchId = null;
     }
   }
 
-  getTrail() { return [...this.trail]; }
-  leave() { this.stopSharing(); this.room.leave(); this.listeners.clear(); }
+  getTrail(): LocationPayload[] { return [...this.trail]; }
+  leave(): void { this.stopSharing(); this.room.leave(); this.listeners.clear(); }
 }
 
 // ── P2P Call Signaling ───────────────────────────────
 export class P2PCallSignaling {
   private room: Room;
-  private sendSignal: (data: CallSignal, peerId?: string) => Promise<void>;
+  private selfId: string;
+  private sendSignal: ActionSender<CallSignal>;
   private peerConnection: RTCPeerConnection | null = null;
 
   constructor(roomId: string, password?: string) {
     this.room = joinRoom({ appId: APP_ID, password }, `${roomId}-call`);
-    const [ss, os] = this.room.makeAction<CallSignal>('signal');
-    this.sendSignal = ss;
-    os((data, peerId) => this.emit('signal', data, peerId));
+    this.selfId = generatePeerId();
+    
+    [this.sendSignal] = makeTypedAction<CallSignal>(this.room, 'signal');
+    const [, onSignal] = makeTypedAction<CallSignal>(this.room, 'signal');
+
+    onSignal((data, peerId) => this.emit('signal', data, peerId));
   }
 
   private listeners: Map<string, Set<Function>> = new Map();
@@ -335,42 +367,47 @@ export class P2PCallSignaling {
     this.listeners.get(event)!.add(cb);
     return () => this.listeners.get(event)?.delete(cb);
   }
-  private emit(event: string, ...args: any[]) {
+  private emit(event: string, ...args: unknown[]) {
     this.listeners.get(event)?.forEach(cb => cb(...args));
   }
 
-  async call(targetPeerId: string, callType: 'audio' | 'video' = 'audio') {
+  async call(targetPeerId: string, callType: 'audio' | 'video' = 'audio'): Promise<CallSignal> {
     const signal: CallSignal = {
-      type: 'offer', from: this.room.selfId, to: targetPeerId, callType, timestamp: Date.now(),
+      type: 'offer', from: this.selfId, to: targetPeerId, callType, timestamp: Date.now(),
     };
-    await this.sendSignal(signal, targetPeerId);
+    await this.sendSignal(signal);
     return signal;
   }
 
-  async accept(targetPeerId: string) {
+  async accept(targetPeerId: string): Promise<void> {
     await this.sendSignal({
-      type: 'accept', from: this.room.selfId, to: targetPeerId, timestamp: Date.now(),
-    }, targetPeerId);
+      type: 'accept', from: this.selfId, to: targetPeerId, timestamp: Date.now(),
+    });
   }
 
-  async reject(targetPeerId: string) {
+  async reject(targetPeerId: string): Promise<void> {
     await this.sendSignal({
-      type: 'reject', from: this.room.selfId, to: targetPeerId, timestamp: Date.now(),
-    }, targetPeerId);
+      type: 'reject', from: this.selfId, to: targetPeerId, timestamp: Date.now(),
+    });
   }
 
-  async hangup(targetPeerId: string) {
+  async hangup(targetPeerId: string): Promise<void> {
     await this.sendSignal({
-      type: 'hangup', from: this.room.selfId, to: targetPeerId, timestamp: Date.now(),
-    }, targetPeerId);
+      type: 'hangup', from: this.selfId, to: targetPeerId, timestamp: Date.now(),
+    });
     this.peerConnection?.close();
     this.peerConnection = null;
   }
 
-  addStream(stream: MediaStream) { this.room.addStream(stream); }
-  onPeerStream(cb: (stream: MediaStream, peerId: string) => void) { this.room.onPeerStream(cb); }
+  addStream(stream: MediaStream): Promise<void>[] { 
+    return this.room.addStream(stream); 
+  }
+  
+  onPeerStream(cb: (stream: MediaStream, peerId: string, metadata: JsonValue) => void): void { 
+    this.room.onPeerStream(cb); 
+  }
 
-  leave() { this.peerConnection?.close(); this.room.leave(); this.listeners.clear(); }
+  leave(): void { this.peerConnection?.close(); this.room.leave(); this.listeners.clear(); }
 }
 
 // ── Unified P2P Room ─────────────────────────────────
@@ -380,19 +417,21 @@ export class UnifiedP2PRoom {
   location: P2PLocation;
   calls: P2PCallSignaling;
   private room: Room;
+  private selfId: string;
 
   constructor(roomId: string, password?: string) {
     this.room = joinRoom({ appId: APP_ID, password }, `${roomId}-presence`);
+    this.selfId = generatePeerId();
     this.chat = new P2PChatEngine(roomId, password);
     this.files = new P2PFileTransfer(roomId, password);
     this.location = new P2PLocation(roomId, password);
     this.calls = new P2PCallSignaling(roomId, password);
   }
 
-  getSelfId() { return this.room.selfId; }
-  getPeers() { return this.room.getPeers(); }
+  getSelfId(): string { return this.selfId; }
+  getPeers(): string[] { return Object.keys(this.room.getPeers()); }
 
-  leave() {
+  leave(): void {
     this.chat.leave();
     this.files.leave();
     this.location.leave();

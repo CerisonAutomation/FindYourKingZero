@@ -1,0 +1,247 @@
+# TensorFlow.js Documentation
+
+## Overview
+
+TensorFlow.js is an open-source web ML library that can run anywhere JavaScript can. It's based on the original TensorFlow library written in Python and aims to recreate this developer experience and set of APIs for the JavaScript ecosystem.
+
+## Installation
+
+```bash
+npm install @tensorflow/tfjs
+```
+
+For Node.js:
+```bash
+npm install @tensorflow/tfjs-node
+```
+
+For GPU support in Node.js:
+```bash
+npm install @tensorflow/tfjs-node-gpu
+```
+
+CDN:
+```html
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+```
+
+## Key Concepts
+
+### Tensors and Operations
+- Tensors are the building blocks of TensorFlow.js
+- Multi-dimensional arrays with uniform data types
+- Operations (ops) perform computations on tensors
+
+### Platform and Environment
+- Browser: Runs in the browser using WebGL for GPU acceleration
+- Node.js: Runs on server with native C++ bindings
+- React Native: Mobile applications support
+
+## Models and Layers
+
+### Building Models
+
+#### Sequential Model
+```javascript
+const model = tf.sequential();
+model.add(tf.layers.dense({units: 1, inputShape: [1]}));
+model.compile({loss: 'meanSquaredError', optimizer: 'sgd'});
+```
+
+#### Functional API
+```javascript
+const input = tf.input({shape: [4]});
+const dense1 = tf.layers.dense({units: 10, activation: 'relu'}).apply(input);
+const output = tf.layers.dense({units: 1}).apply(dense1);
+const model = tf.model({inputs: input, outputs: output});
+```
+
+## Training Models
+
+### Basic Training Loop
+```javascript
+const xs = tf.tensor2d([1, 2, 3, 4], [4, 1]);
+const ys = tf.tensor2d([1, 3, 5, 7], [4, 1]);
+
+await model.fit(xs, ys, {
+  epochs: 10,
+  callbacks: {
+    onEpochEnd: (epoch, log) => console.log(`Epoch ${epoch}: loss = ${log.loss}`)
+  }
+});
+```
+
+### Optimizers
+- sgd: Stochastic Gradient Descent
+- adam: Adaptive Moment Estimation
+- rmsprop: RMSProp
+- adagrad: Adagrad
+
+### Loss Functions
+- meanSquaredError
+- categoricalCrossentropy
+- binaryCrossentropy
+- sparseCategoricalCrossentropy
+
+## Save and Load Models
+
+### Save Model
+```javascript
+await model.save('localstorage://my-model');
+await model.save('indexeddb://my-model');
+await model.save('downloads://my-model');
+```
+
+### Load Model
+```javascript
+const model = await tf.loadLayersModel('localstorage://my-model');
+const model = await tf.loadLayersModel('indexeddb://my-model');
+const model = await tf.loadLayersModel('https://example.com/model.json');
+```
+
+## Pre-made Models
+
+TensorFlow.js provides pre-trained models for common tasks:
+
+### Vision
+- Image classification (MobileNet)
+- Object detection (Coco SSD)
+- Pose detection (PoseNet)
+- Face detection (FaceMesh)
+
+### NLP
+- Universal Sentence Encoder
+- Toxicity classifier
+- Q&A model
+
+### Audio
+- Speech commands recognition
+
+### General
+- KNN Classifier for transfer learning
+
+## Model Conversion
+
+### Convert Keras Model
+```bash
+tensorflowjs_converter --input_format=keras model.h5 output/
+```
+
+### Convert SavedModel
+```bash
+tensorflowjs_converter --input_format=tf_saved_model model/ output/
+```
+
+## Using TensorFlow.js in Node.js
+
+Three bindings available:
+1. **@tensorflow/tfjs-node**: CPU with native C++ ops
+2. **@tensorflow/tfjs-node-gpu**: GPU with CUDA support
+3. **@tensorflow/tfjs**: Pure JavaScript (slowest)
+
+### Example
+```javascript
+const tf = require('@tensorflow/tfjs-node');
+
+const model = tf.sequential();
+model.add(tf.layers.dense({units: 10, inputShape: [5]}));
+model.compile({optimizer: 'sgd', loss: 'meanSquaredError'});
+```
+
+## Data API
+
+### tf.data
+```javascript
+const dataset = tf.data.array([1, 2, 3, 4, 5])
+  .map(x => x * 2)
+  .filter(x => x > 4)
+  .batch(2);
+```
+
+### tf.data.generator
+```javascript
+function* dataGenerator() {
+  for (let i = 0; i < 100; i++) {
+    yield {xs: tf.tensor1d([i]), ys: tf.tensor1d([i * 2])};
+  }
+}
+const dataset = tf.data.generator(dataGenerator);
+```
+
+## Visualization
+
+Using tfjs-vis:
+```javascript
+import * as tfvis from '@tensorflow/tfjs-vis';
+
+tfvis.show.history(surface, history, ['loss', 'acc']);
+tfvis.show.modelSummary(surface, model);
+```
+
+## Memory Management
+
+```javascript
+const x = tf.tensor([1, 2, 3]);
+x.dispose(); // Release memory
+
+// Or use tidy for automatic cleanup
+const y = tf.tidy(() => {
+  const a = tf.tensor([1, 2, 3]);
+  const b = tf.tensor([4, 5, 6]);
+  return a.add(b);
+});
+```
+
+## Performance Best Practices
+
+1. Use WebGL backend in browser for GPU acceleration
+2. Batch operations when possible
+3. Use tf.tidy() for automatic memory management
+4. Pre-allocate tensors and reuse them
+5. Use Web Workers for model training to avoid blocking UI
+
+## Tutorials
+
+1. **Getting Started**: Minimal example training a model in browser
+2. **Setup**: Different ways to install TensorFlow.js
+3. **Transfer Learning**: Customize pre-trained models
+4. **Import Keras Model**: Convert Python models to TF.js
+5. **Import SavedModel**: Use TensorFlow SavedModel format
+
+## API Reference
+
+- tf.tensor(): Create tensors
+- tf.tensor2d(): Create 2D tensors
+- tf.layers: Layer constructors
+- tf.model(): Create functional models
+- tf.sequential(): Create sequential models
+- tf.losses: Loss functions
+- tf.optimizers: Optimizer constructors
+- tf.data: Data API
+- tf.browser: Browser-specific utilities
+- tf.util: Utility functions
+
+## Resources
+
+- GitHub: https://github.com/tensorflow/tfjs
+- Documentation: https://www.tensorflow.org/js
+- API Reference: https://js.tensorflow.org/api/latest
+- Examples: https://github.com/tensorflow/tfjs-examples
+- Demos: https://www.tensorflow.org/js/demos
+
+## Community
+
+- TensorFlow Forum: https://discuss.tensorflow.org
+- Stack Overflow: [tensorflow.js tag](https://stackoverflow.com/questions/tagged/tensorflow.js)
+- GitHub Issues: https://github.com/tensorflow/tfjs/issues
+
+## Browser Support
+
+- Chrome/Edge 76+
+- Firefox 68+
+- Safari 12+
+- WebGL 2.0 required for GPU acceleration
+
+## License
+
+Apache License 2.0

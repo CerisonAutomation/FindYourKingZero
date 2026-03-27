@@ -1,6 +1,6 @@
 /**
  * AIChat.tsx — Next-Gen AI Chat Interface (ChatGPT/Claude/Cursor Style)
- * 
+ *
  * Features:
  * - Markdown rendering with syntax highlighting
  * - Streaming text animation with typewriter effect
@@ -9,25 +9,25 @@
  * - Image generation display
  * - Voice message support
  * - File attachment preview
- * 
+ *
  * Dependencies to install:
  * npm install react-markdown remark-gfm rehype-highlight rehype-sanitize
  */
 
 import type { ReactNode } from 'react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSanitize from 'rehype-sanitize';
-import { 
-  Send, 
-  X, 
-  Copy, 
-  Check, 
-  Image as ImageIcon, 
-  Mic, 
+import {
+  Send,
+  X,
+  Copy,
+  Check,
+  Image as ImageIcon,
+  Mic,
   MicOff,
   Paperclip,
   Sparkles,
@@ -47,7 +47,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { useAI } from '@/hooks/useAI';
+import { useChatAI } from '@/hooks/useChatAI';
 import { useToast } from '@/hooks/use-toast';
 
 // Types
@@ -109,21 +109,21 @@ const CodeBlock = ({ code, language }: { code: string; language?: string }) => {
   );
 };
 
-// Markdown Renderer with Custom Components
-const MarkdownRenderer = ({ content }: { content: string }) => {
+// Markdown Renderer with Custom Components - Memoized for performance
+const MarkdownRenderer = memo(({ content }: { content: string }) => {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       rehypePlugins={[rehypeHighlight, rehypeSanitize]}
       components={{
-        code: ({ node, inline, className, children, ...props }: any) => {
+  code: ({ node, inline, className, children, ...props }: { node?: unknown; inline?: boolean; className?: string; children?: React.ReactNode }) => {
           const match = /language-(\w+)/.exec(className || '');
           const language = match ? match[1] : undefined;
-          
+
           if (!inline && language) {
             return <CodeBlock code={String(children).replace(/\n$/, '')} language={language} />;
           }
-          
+
           return (
             <code
               className="px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 text-sm font-mono"
@@ -133,29 +133,29 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
             </code>
           );
         },
-        p: ({ children }: any) => <p className="mb-4 leading-relaxed">{children}</p>,
-        h1: ({ children }: any) => <h1 className="text-2xl font-bold mb-4">{children}</h1>,
-        h2: ({ children }: any) => <h2 className="text-xl font-bold mb-3">{children}</h2>,
-        h3: ({ children }: any) => <h3 className="text-lg font-bold mb-2">{children}</h3>,
-        ul: ({ children }: any) => <ul className="list-disc pl-5 mb-4 space-y-1">{children}</ul>,
-        ol: ({ children }: any) => <ol className="list-decimal pl-5 mb-4 space-y-1">{children}</ol>,
-        li: ({ children }: any) => <li className="text-sm">{children}</li>,
-        blockquote: ({ children }: any) => (
+        p: ({ children }: { children?: React.ReactNode }) => <p className="mb-4 leading-relaxed">{children}</p>,
+        h1: ({ children }: { children?: React.ReactNode }) => <h1 className="text-2xl font-bold mb-4">{children}</h1>,
+        h2: ({ children }: { children?: React.ReactNode }) => <h2 className="text-xl font-bold mb-3">{children}</h2>,
+        h3: ({ children }: { children?: React.ReactNode }) => <h3 className="text-lg font-bold mb-2">{children}</h3>,
+        ul: ({ children }: { children?: React.ReactNode }) => <ul className="list-disc pl-5 mb-4 space-y-1">{children}</ul>,
+        ol: ({ children }: { children?: React.ReactNode }) => <ol className="list-decimal pl-5 mb-4 space-y-1">{children}</ol>,
+        li: ({ children }: { children?: React.ReactNode }) => <li className="text-sm">{children}</li>,
+        blockquote: ({ children }: { children?: React.ReactNode }) => (
           <blockquote className="border-l-4 border-primary pl-4 italic my-4 text-muted-foreground">
             {children}
           </blockquote>
         ),
-        table: ({ children }: any) => (
+        table: ({ children }: { children?: React.ReactNode }) => (
           <div className="overflow-x-auto my-4">
             <table className="min-w-full border-collapse border border-zinc-700">
               {children}
             </table>
           </div>
         ),
-        thead: ({ children }: any) => <thead className="bg-zinc-800">{children}</thead>,
-        th: ({ children }: any) => <th className="border border-zinc-700 px-4 py-2 text-left text-sm font-semibold">{children}</th>,
-        td: ({ children }: any) => <td className="border border-zinc-700 px-4 py-2 text-sm">{children}</td>,
-        a: ({ href, children }: any) => (
+        thead: ({ children }: { children?: React.ReactNode }) => <thead className="bg-zinc-800">{children}</thead>,
+        th: ({ children }: { children?: React.ReactNode }) => <th className="border border-zinc-700 px-4 py-2 text-left text-sm font-semibold">{children}</th>,
+        td: ({ children }: { children?: React.ReactNode }) => <td className="border border-zinc-700 px-4 py-2 text-sm">{children}</td>,
+        a: ({ href, children }: { href?: string; children?: React.ReactNode }) => (
           <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
             {children}
           </a>
@@ -165,7 +165,7 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
       {content}
     </ReactMarkdown>
   );
-};
+});
 
 // Tool Call Visualization
 const ToolCallVisualizer = ({ tool }: { tool: ToolCall }) => {
@@ -235,7 +235,7 @@ const QuickActions = ({ onAction }: { onAction: (prompt: string) => void }) => {
         <button
           key={action.label}
           onClick={() => onAction(action.prompt)}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-800/50 hover:bg-zinc-800 
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-800/50 hover:bg-zinc-800
                      border border-zinc-700/50 hover:border-zinc-600 transition-all text-xs"
         >
           <action.icon className="w-3.5 h-3.5 text-primary" />
@@ -260,8 +260,8 @@ export const AIChat = ({ isOpen, onClose, className }: AIChatProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
-  const { messages, isStreaming, sendMessage, setInput: setAiInput, clearMessages } = useAI();
+
+  const { messages, isStreaming, sendMessage, setInput: setAiInput, clearMessages } = useChatAI();
   const { toast } = useToast();
 
   // Auto-scroll to bottom
@@ -332,14 +332,14 @@ export const AIChat = ({ isOpen, onClose, className }: AIChatProps) => {
             className
           )}
         >
-          <div className="bg-zinc-950/95 backdrop-blur-xl border border-zinc-800 rounded-2xl shadow-2xl 
+          <div className="bg-zinc-950/95 backdrop-blur-xl border border-zinc-800 rounded-2xl shadow-2xl
                           shadow-black/50 overflow-hidden flex flex-col max-h-[80vh]">
-            
+
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-zinc-800 bg-zinc-900/50">
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 via-fuchsia-500 to-amber-500 
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 via-fuchsia-500 to-amber-500
                                   flex items-center justify-center animate-pulse">
                     <Sparkles className="w-5 h-5 text-white" />
                   </div>
@@ -383,7 +383,7 @@ export const AIChat = ({ isOpen, onClose, className }: AIChatProps) => {
                   animate={{ opacity: 1, y: 0 }}
                   className="text-center py-8"
                 >
-                  <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 
+                  <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20
                                   flex items-center justify-center border border-violet-500/30">
                     <Bot className="w-10 h-10 text-violet-400" />
                   </div>
@@ -395,12 +395,12 @@ export const AIChat = ({ isOpen, onClose, className }: AIChatProps) => {
                 </motion.div>
               )}
 
-              {messages.map((message, index) => (
+              {messages.map((message) => (
                 <motion.div
-                  key={index}
+                  key={message.id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
+                  transition={{ delay: 0 }}
                   className={cn(
                     "flex gap-3",
                     message.role === 'user' ? "justify-end" : "justify-start"
@@ -413,7 +413,7 @@ export const AIChat = ({ isOpen, onClose, className }: AIChatProps) => {
                       </AvatarFallback>
                     </Avatar>
                   )}
-                  
+
                   <div
                     className={cn(
                       "max-w-[85%] rounded-2xl px-4 py-3",
@@ -524,7 +524,7 @@ export const AIChat = ({ isOpen, onClose, className }: AIChatProps) => {
                     </Button>
                   </div>
                 </div>
-                
+
                 <Button
                   type="button"
                   variant="outline"
@@ -538,7 +538,7 @@ export const AIChat = ({ isOpen, onClose, className }: AIChatProps) => {
                 >
                   {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                 </Button>
-                
+
                 <Button
                   type="submit"
                   size="icon"
@@ -552,7 +552,7 @@ export const AIChat = ({ isOpen, onClose, className }: AIChatProps) => {
                   )}
                 </Button>
               </form>
-              
+
               <p className="text-[10px] text-zinc-500 mt-2 text-center">
                 King AI is powered by GPT-4. Responses are for entertainment purposes.
               </p>

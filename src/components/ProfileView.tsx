@@ -32,7 +32,7 @@ import {
   X,
 } from 'lucide-react';
 
-import type {UserProfile} from '@/lib/hybrid-p2p-dating';
+import type {UserProfile} from '@/lib/p2p/canonical';
 import {Button} from '@/components/ui/button';
 import {Card} from '@/components/ui/card';
 import {Badge} from '@/components/ui/badge';

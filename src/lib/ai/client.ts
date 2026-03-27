@@ -152,8 +152,8 @@ async function analyzeProfileCompatibility(profile: Profile): Promise<any> {
             temperature: 0.3,
         });
 
-        // Store analysis in database
-        await supabase.from('ai_profiles').upsert({
+        // Store analysis in database (using type assertion for ai_profiles table)
+        await (supabase as any).from('ai_profiles').upsert({
             user_id: profile.id,
             personality_traits: result.object.personalityTraits,
             compatibility_scores: { overall: result.object.overallScore },

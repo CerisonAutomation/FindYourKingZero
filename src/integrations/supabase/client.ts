@@ -37,8 +37,10 @@ export const supabase = createClient<Database>(
         },
         setItem: (key: string, value: string) => {
           // Store in both cookie (for SSR) and localStorage (for speed)
+          // Use SameSite=None; Secure for OAuth redirects to work correctly
           const maxAge = 60 * 60 * 24 * 365; // 1 year
-          document.cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}; SameSite=Lax; Secure`;
+          const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+          document.cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}; SameSite=None${secure}`;
           localStorage.setItem(key, value);
         },
         removeItem: (key: string) => {
@@ -600,43 +602,8 @@ export const supabaseGeo = {
   },
 };
 
-// ── Auth error classification ─────────────────────────────────────────────────
-export enum AuthErrorCode {
-  INVALID_CREDENTIALS = 'invalid_credentials',
-  EMAIL_NOT_CONFIRMED = 'email_not_confirmed',
-  USER_NOT_FOUND = 'user_not_found',
-  WEAK_PASSWORD = 'weak_password',
-  EMAIL_ALREADY_EXISTS = 'email_already_exists',
-  RATE_LIMITED = 'rate_limited',
-  NETWORK_ERROR = 'network_error',
-  UNKNOWN = 'unknown',
-}
-
-export function classifyAuthError(error: AuthError | Error | null): {
-  code: AuthErrorCode;
-  message: string;
-  retryable: boolean;
-} {
-  if (!error) return { code: AuthErrorCode.UNKNOWN, message: 'No error', retryable: false };
-
-  const msg = error.message?.toLowerCase() || '';
-
-  if (msg.includes('invalid login credentials') || msg.includes('invalid credentials'))
-    return { code: AuthErrorCode.INVALID_CREDENTIALS, message: 'Invalid email or password', retryable: false };
-  if (msg.includes('email not confirmed') || msg.includes('not confirmed'))
-    return { code: AuthErrorCode.EMAIL_NOT_CONFIRMED, message: 'Please confirm your email', retryable: false };
-  if (msg.includes('user not found'))
-    return { code: AuthErrorCode.USER_NOT_FOUND, message: 'No account found with this email', retryable: false };
-  if (msg.includes('password') && (msg.includes('weak') || msg.includes('short') || msg.includes('6 characters')))
-    return { code: AuthErrorCode.WEAK_PASSWORD, message: 'Password is too weak', retryable: false };
-  if (msg.includes('already registered') || msg.includes('already exists'))
-    return { code: AuthErrorCode.EMAIL_ALREADY_EXISTS, message: 'An account with this email already exists', retryable: false };
-  if (msg.includes('rate limit') || msg.includes('too many'))
-    return { code: AuthErrorCode.RATE_LIMITED, message: 'Too many attempts. Please wait and try again', retryable: true };
-  if (msg.includes('network') || msg.includes('fetch'))
-    return { code: AuthErrorCode.NETWORK_ERROR, message: 'Network error. Check your connection', retryable: true };
-
-  return { code: AuthErrorCode.UNKNOWN, message: error.message || 'An unexpected error occurred', retryable: false };
-}
+// ── Auth error classification — Re-export from canonical auth ─────────────────
+// Canonical source: src/lib/auth/index.tsx
+export { AuthErrorCode, classifyAuthError } from '@/lib/auth';
 
 export default supabase;

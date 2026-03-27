@@ -214,8 +214,13 @@ export const viewportConfig = {
 };
 
 /**
- * Container queries for responsive animations
+ * Reveal component variant for scroll-triggered reveals
  */
+export const Reveal = {
+  initial: { opacity: 0, y: 30 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+};
 export const containerQueries = {
     small: "(max-width: 640px)",
     medium: "(max-width: 1024px)",

@@ -13,6 +13,22 @@
 
 import {chatAI, type SafetyResult} from '@/lib/ai/ChatAI';
 
+// ── Profile Interface ─────────────────────────────────────────────────────
+
+interface Profile {
+    user_id?: string;
+    display_name?: string;
+    bio?: string;
+    tribes?: string[];
+    looking_for?: string[];
+    is_online?: boolean;
+    is_verified?: boolean;
+    avatar_url?: string;
+    distance?: number;
+    age?: number;
+    interests?: string[];
+}
+
 // ── Types ──────────────────────────────────────────────────────────────────
 
 export interface AgentMemory {
@@ -41,7 +57,7 @@ export interface MatchScore {
     compatibilityFactors: string[];
 }
 
-export interface AgentResult<T = any> {
+export interface AgentResult<T = unknown> {
     success: boolean;
     data: T;
     agentName: string;
@@ -57,14 +73,18 @@ function loadMemory(): AgentMemory {
     try {
         const raw = sessionStorage.getItem(MEMORY_KEY);
         if (raw) return JSON.parse(raw);
-    } catch {}
+    } catch {
+        // Session storage access failed - ignore
+    }
     return {};
 }
 
 function saveMemory(mem: AgentMemory): void {
     try {
         sessionStorage.setItem(MEMORY_KEY, JSON.stringify({...mem, timestamp: Date.now()}));
-    } catch {}
+    } catch (error) {
+        console.error('Session storage write failed:', error);
+    }
 }
 
 // ── MatchMakerAgent ────────────────────────────────────────────────────────
@@ -77,8 +97,8 @@ export const MatchMakerAgent = {
      * Uses semantic heuristics + shared interest analysis.
      */
     async scoreCompatibility(
-        userProfile: Record<string, any>,
-        targetProfile: Record<string, any>
+        userProfile: Profile,
+        targetProfile: Profile
     ): Promise<AgentResult<MatchScore>> {
         const start = performance.now();
 
@@ -92,7 +112,7 @@ export const MatchMakerAgent = {
                 processingMs: 0,
                 fromCache: true,
                 data: {
-                    userId: targetProfile.user_id,
+                    userId: targetProfile.user_id ?? 'unknown',
                     score: mem.matchScores[cacheKey],
                     explanation: 'Cached match',
                     sharedInterests: [],
@@ -175,7 +195,7 @@ export const MatchMakerAgent = {
             processingMs: Math.round(performance.now() - start),
             fromCache: false,
             data: {
-                userId: targetProfile.user_id,
+                userId: targetProfile.user_id ?? 'unknown',
                 score,
                 explanation,
                 sharedInterests,
@@ -193,7 +213,7 @@ export const ChatAssistAgent = {
     /**
      * Generate contextual icebreaker openers for a profile.
      */
-    async generateIcebreakers(targetProfile: Record<string, any>): Promise<AgentResult<string[]>> {
+    async generateIcebreakers(targetProfile: Profile): Promise<AgentResult<string[]>> {
         const start = performance.now();
 
         const name = targetProfile.display_name || 'him';
@@ -260,7 +280,7 @@ export const ChatAssistAgent = {
         const quickReplies = await chatAI.getContextualQuickReplies(
             messages.map(m => ({
                 content: m.content,
-                sender_id: m.is_mine ? 'me' : 'other',
+                isOwn: m.is_mine,
             })),
             3
         );
@@ -311,7 +331,7 @@ export const ProfileOptimizerAgent = {
     /**
      * Analyze a profile and return actionable improvement suggestions.
      */
-    async analyzeProfile(profile: Record<string, any>): Promise<AgentResult<{
+    async analyzeProfile(profile: Profile): Promise<AgentResult<{
         score: number;
         suggestions: ProfileSuggestion[];
         summary: string;
@@ -433,7 +453,9 @@ export const AgentOrchestrator = {
     profileOptimizer: ProfileOptimizerAgent,
 
     clearMemory() {
-        try { sessionStorage.removeItem(MEMORY_KEY); } catch {}
+        try { sessionStorage.removeItem(MEMORY_KEY); } catch {
+            // Storage access failed - ignore
+        }
     },
 
     getMemory(): AgentMemory {

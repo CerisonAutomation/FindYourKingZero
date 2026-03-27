@@ -44,7 +44,8 @@ import {
   Zap,
 } from 'lucide-react';
 
-import {SignalingStrategy} from '@/lib/hybrid-p2p-dating';
+import type {UserProfile} from '@/lib/p2p/canonical';
+import {SignalingStrategy} from '@/lib/p2p/canonical';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Card} from '@/components/ui/card';
@@ -389,9 +390,9 @@ export default function SettingsPanel({
                 className={`w-12 h-6 rounded-full transition-colors ${
                   notificationSettings[key as keyof NotificationSettings] ? 'bg-blue-500' : 'bg-white/20'
                 }`}
-                onClick={() => setNotificationSettings(prev => ({ 
-                  ...prev, 
-                  [key]: !prev[key as keyof NotificationSettings] 
+                onClick={() => setNotificationSettings(prev => ({
+                  ...prev,
+                  [key]: !prev[key as keyof NotificationSettings]
                 }))}
               >
                 <div className={`w-5 h-5 bg-white rounded-full transition-transform ${
@@ -424,9 +425,9 @@ export default function SettingsPanel({
                 className={`w-12 h-6 rounded-full transition-colors ${
                   notificationSettings[key as keyof NotificationSettings] ? 'bg-blue-500' : 'bg-white/20'
                 }`}
-                onClick={() => setNotificationSettings(prev => ({ 
-                  ...prev, 
-                  [key]: !prev[key as keyof NotificationSettings] 
+                onClick={() => setNotificationSettings(prev => ({
+                  ...prev,
+                  [key]: !prev[key as keyof NotificationSettings]
                 }))}
               >
                 <div className={`w-5 h-5 bg-white rounded-full transition-transform ${
@@ -457,7 +458,7 @@ export default function SettingsPanel({
               }`} />
             </button>
           </div>
-          
+
           {notificationSettings.quietHours && (
             <div className="flex items-center space-x-4">
               <div>
@@ -509,9 +510,9 @@ export default function SettingsPanel({
                 className={`w-12 h-6 rounded-full transition-colors ${
                   privacySettings[key as keyof PrivacySettings] ? 'bg-blue-500' : 'bg-white/20'
                 }`}
-                onClick={() => setPrivacySettings(prev => ({ 
-                  ...prev, 
-                  [key]: !prev[key as keyof PrivacySettings] 
+                onClick={() => setPrivacySettings(prev => ({
+                  ...prev,
+                  [key]: !prev[key as keyof PrivacySettings]
                 }))}
               >
                 <div className={`w-5 h-5 bg-white rounded-full transition-transform ${
@@ -543,9 +544,9 @@ export default function SettingsPanel({
                 className={`w-12 h-6 rounded-full transition-colors ${
                   privacySettings[key as keyof PrivacySettings] ? 'bg-blue-500' : 'bg-white/20'
                 }`}
-                onClick={() => setPrivacySettings(prev => ({ 
-                  ...prev, 
-                  [key]: !prev[key as keyof PrivacySettings] 
+                onClick={() => setPrivacySettings(prev => ({
+                  ...prev,
+                  [key]: !prev[key as keyof PrivacySettings]
                 }))}
               >
                 <div className={`w-5 h-5 bg-white rounded-full transition-transform ${
@@ -606,9 +607,9 @@ export default function SettingsPanel({
                 className={`w-12 h-6 rounded-full transition-colors ${
                   securitySettings[key as keyof SecuritySettings] ? 'bg-blue-500' : 'bg-white/20'
                 }`}
-                onClick={() => setSecuritySettings(prev => ({ 
-                  ...prev, 
-                  [key]: !prev[key as keyof SecuritySettings] 
+                onClick={() => setSecuritySettings(prev => ({
+                  ...prev,
+                  [key]: !prev[key as keyof SecuritySettings]
                 }))}
               >
                 <div className={`w-5 h-5 bg-white rounded-full transition-transform ${
@@ -638,7 +639,7 @@ export default function SettingsPanel({
               <option value={720}>1 month</option>
             </select>
           </div>
-          
+
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <PhoneIcon className="w-5 h-5 text-white/60" />
@@ -673,7 +674,7 @@ export default function SettingsPanel({
               <option value="maximum">Maximum (AES-512)</option>
             </select>
           </div>
-          
+
           {[
             { key: 'dataBackup', label: 'Automatic Data Backup', icon: Upload },
             { key: 'secureDelete', label: 'Secure Delete', icon: Trash2 },
@@ -690,9 +691,9 @@ export default function SettingsPanel({
                 className={`w-12 h-6 rounded-full transition-colors ${
                   securitySettings[key as keyof SecuritySettings] ? 'bg-blue-500' : 'bg-white/20'
                 }`}
-                onClick={() => setSecuritySettings(prev => ({ 
-                  ...prev, 
-                  [key]: !prev[key as keyof SecuritySettings] 
+                onClick={() => setSecuritySettings(prev => ({
+                  ...prev,
+                  [key]: !prev[key as keyof SecuritySettings]
                 }))}
               >
                 <div className={`w-5 h-5 bg-white rounded-full transition-transform ${
@@ -734,7 +735,7 @@ export default function SettingsPanel({
               ))}
             </div>
           </div>
-          
+
           <div>
             <label className="text-white/60 text-sm">Font Size</label>
             <select
@@ -771,9 +772,9 @@ export default function SettingsPanel({
                 className={`w-12 h-6 rounded-full transition-colors ${
                   appearanceSettings[key as keyof AppearanceSettings] ? 'bg-blue-500' : 'bg-white/20'
                 }`}
-                onClick={() => setAppearanceSettings(prev => ({ 
-                  ...prev, 
-                  [key]: !prev[key as keyof AppearanceSettings] 
+                onClick={() => setAppearanceSettings(prev => ({
+                  ...prev,
+                  [key]: !prev[key as keyof AppearanceSettings]
                 }))}
               >
                 <div className={`w-5 h-5 bg-white rounded-full transition-transform ${
@@ -811,7 +812,7 @@ export default function SettingsPanel({
               }`} />
             </button>
           </div>
-          
+
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Compass className="w-5 h-5 text-green-400" />
@@ -831,7 +832,7 @@ export default function SettingsPanel({
               }`} />
             </button>
           </div>
-          
+
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Activity className="w-5 h-5 text-purple-400" />
@@ -872,7 +873,7 @@ export default function SettingsPanel({
               <option value="webrtc">WebRTC Direct</option>
             </select>
           </div>
-          
+
           <div className="p-3 bg-white/5 rounded-lg">
             <div className="flex items-center space-x-2 mb-2">
               <Wifi className="w-4 h-4 text-blue-400" />
@@ -906,7 +907,7 @@ export default function SettingsPanel({
             <Download className="w-4 h-4 mr-2" />
             Export My Data
           </Button>
-          
+
           <Button
             variant="outline"
             className="w-full bg-white/10 text-white hover:bg-white/20"
@@ -914,7 +915,7 @@ export default function SettingsPanel({
             <Copy className="w-4 h-4 mr-2" />
             Copy Profile Link
           </Button>
-          
+
           <Button
             variant="outline"
             className="w-full bg-red-500/20 text-red-400 hover:bg-red-500/30"
@@ -978,14 +979,14 @@ export default function SettingsPanel({
               <h1 className="text-2xl font-bold text-white capitalize">{activeSection} Settings</h1>
               <p className="text-white/60">Manage your {activeSection} preferences</p>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               {hasChanges && (
                 <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/50">
                   Unsaved changes
                 </Badge>
               )}
-              
+
               <Button
                 onClick={handleSave}
                 disabled={!hasChanges || isSaving}
@@ -994,7 +995,7 @@ export default function SettingsPanel({
                 <Save className="w-4 h-4 mr-2" />
                 {isSaving ? 'Saving...' : 'Save Changes'}
               </Button>
-              
+
               <Button
                 onClick={handleReset}
                 variant="outline"
@@ -1034,11 +1035,11 @@ export default function SettingsPanel({
                 <AlertTriangle className="w-5 h-5 text-yellow-400" />
                 <h3 className="text-lg font-semibold text-white">Reset Settings?</h3>
               </div>
-              
+
               <p className="text-white/60 mb-6">
                 Are you sure you want to reset all settings to their default values? This action cannot be undone.
               </p>
-              
+
               <div className="flex space-x-3">
                 <Button
                   onClick={() => setShowResetConfirm(false)}

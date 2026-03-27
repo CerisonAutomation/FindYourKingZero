@@ -2,7 +2,7 @@ import {Toaster} from "@/components/ui/toaster";
 import {Toaster as Sonner} from "@/components/ui/sonner";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {BrowserRouter, Navigate, Route, Routes, useLocation} from "react-router-dom";
-import {AuthProvider, useAuth} from "./hooks/useAuth";
+import {AuthProvider, useAuth} from "@/auth";
 import {ErrorBoundary} from "./components/ui/ErrorBoundary";
 import {OfflineBanner} from "@/components/ui/OfflineBanner";
 import {lazy, Suspense, useEffect} from "react";
@@ -10,7 +10,7 @@ import {log} from '@/lib/logger';
 import {AIAvatarOrb} from "@/components/ai";
 import {registerDeepLinkListener} from "@/lib/deeplinks";
 import {AnimatePresence, motion} from "framer-motion";
-import {PublicRoute} from "@/components/auth";
+import {PublicRoute} from "@/auth";
 // Eager loaded critical components
 import HomePage from "./pages/HomePage";
 import ConnectPage from "./pages/ConnectPage";
@@ -112,6 +112,9 @@ const LazyComponents = {
   AdminModeration: lazy(() => import("@/features/admin/pages/AdminModeration")),
   AdminAudit: lazy(() => import("@/features/admin/pages/AdminAudit")),
   AdminMetrics: lazy(() => import("@/features/admin/pages/AdminMetrics")),
+
+  // Enterprise
+  EnterprisePage: lazy(() => import("@/features/enterprise/pages/EnterprisePage")),
 
   // Additional features
   FavoritesPage: lazy(() => import("@/features/favorites/pages/FavoritesPage")),
@@ -389,6 +392,7 @@ const AppRoutes = () => {
                     <Route path="analytics" element={<SceneRouteWrapper><LazyComponents.AnalyticsPage/></SceneRouteWrapper>}/>
                     <Route path="voice" element={<SceneRouteWrapper><LazyComponents.VoicePage/></SceneRouteWrapper>}/>
                     <Route path="ai" element={<SceneRouteWrapper><LazyComponents.AIPage/></SceneRouteWrapper>}/>
+                    <Route path="enterprise" element={<SceneRouteWrapper><LazyComponents.EnterprisePage/></SceneRouteWrapper>}/>
                 </Route>
 
                 {/* Legacy redirects */}

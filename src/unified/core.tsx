@@ -1,83 +1,28 @@
-// =============================================================================
-// FINDYOURKINGZERO — UNIFIED BACKEND + HOOKS + SERVICES
-// Single source of truth for all data, auth, and business logic
-// =============================================================================
+/**
+ * =============================================================================
+ * UNIFIED CORE v15.0 — Single Source of Truth for All Data & Business Logic
+ * =============================================================================
+ * 
+ * Uses canonical auth system from @/auth.
+ * All backend operations consolidated here.
+ * 
+ * @module unified/core
+ * @version 15.0.0
+ */
 
-import {createContext, useCallback, useContext, useEffect, useState} from 'react';
-import {createClient, type Session, type User} from '@supabase/supabase-js';
+import { useCallback, useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth, type AuthContextValue } from '@/auth';
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// SECTION 1: BACKEND — Supabase Client + Auth + DB + Realtime + Geo
-// ═══════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// RE-EXPORT CANONICAL AUTH
+// ═══════════════════════════════════════════════════════════════
+export { AuthProvider, useAuth } from '@/auth';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://placeholder.supabase.co';
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'placeholder-key';
+// ═══════════════════════════════════════════════════════════════
+// TYPES
+// ═══════════════════════════════════════════════════════════════
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: { flowType: 'pkce', persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
-  realtime: { params: { eventsPerSecond: 10 } },
-  global: { headers: { 'X-Client-Info': 'findyourking-unified@4.0' } },
-});
-
-// ── Auth Service ──────────────────────────────────────────────────────────────
-export const auth = {
-  getSession: () => supabase.auth.getSession(),
-  signIn: (email: string, password: string) => supabase.auth.signInWithPassword({ email, password }),
-  signUp: (email: string, password: string, meta?: Record<string, unknown>) =>
-    supabase.auth.signUp({ email, password, options: { data: meta, emailRedirectTo: `${window.location.origin}/auth/callback` } }),
-  signInWithMagicLink: (email: string) =>
-    supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: `${window.location.origin}/auth/callback` } }),
-  signInWithOAuth: (provider: 'google' | 'apple' | 'github') =>
-    supabase.auth.signInWithOAuth({ provider, options: { redirectTo: `${window.location.origin}/auth/callback` } }),
-  signOut: () => supabase.auth.signOut(),
-  resetPassword: (email: string) =>
-    supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/auth/reset-password` }),
-  onAuthChange: (cb: (event: string, session: Session | null) => void) =>
-    supabase.auth.onAuthStateChange(cb),
-};
-
-// ── DB Service (type-safe, no SQL injection) ──────────────────────────────────
-export const db = {
-  from: (table: string) => ({
-    select: (cols = '*') => supabase.from(table).select(cols),
-    insert: (row: Record<string, unknown>) => supabase.from(table).insert(row).select().single(),
-    update: (row: Record<string, unknown>) => supabase.from(table).update(row),
-    delete: () => supabase.from(table).delete(),
-    eq: (col: string, val: unknown) => supabase.from(table).select().eq(col, val),
-    single: () => supabase.from(table).select().single(),
-  }),
-  rpc: (fn: string, params?: Record<string, unknown>) => supabase.rpc(fn, params),
-};
-
-// ── Realtime Service (stable channels, no leaks) ─────────────────────────────
-const channels = new Map<string, ReturnType<typeof supabase.channel>>();
-export const realtime = {
-  subscribe: (key: string, setup: (ch: ReturnType<typeof supabase.channel>) => void) => {
-    if (channels.has(key)) return channels.get(key)!;
-    const ch = supabase.channel(key);
-    setup(ch);
-    ch.subscribe();
-    channels.set(key, ch);
-    return ch;
-  },
-  unsubscribe: async (key: string) => {
-    const ch = channels.get(key);
-    if (ch) { await supabase.removeChannel(ch); channels.delete(key); }
-  },
-  unsubscribeAll: async () => { await supabase.removeAllChannels(); channels.clear(); },
-};
-
-// ── Geo Service (PostGIS proximity) ──────────────────────────────────────────
-export const geo = {
-  findNearby: (lat: number, lng: number, radiusMeters: number) =>
-    supabase.rpc('find_nearby_users', { lat, lng, radius_meters: radiusMeters }),
-};
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// SECTION 2: TYPES — All shared interfaces
-// ═══════════════════════════════════════════════════════════════════════════════
-
-export type UserTier = 'free' | 'plus' | 'pro' | 'elite' | 'host';
 export type MessageType = 'text' | 'image' | 'voice' | 'video' | 'file' | 'system';
 
 export interface UserProfile {
@@ -92,7 +37,6 @@ export interface UserProfile {
   lng: number | null;
   interests: string[];
   looking_for: string[];
-  tier: UserTier;
   is_verified: boolean;
   is_online: boolean;
   last_seen: string | null;
@@ -158,53 +102,11 @@ export interface Booking {
   created_at: string;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// SECTION 3: HOOKS — All data fetching + state management
-// ═══════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// HOOKS
+// ═══════════════════════════════════════════════════════════════
 
-// ── Auth Context ──────────────────────────────────────────────────────────────
-interface AuthCtx {
-  user: User | null;
-  session: Session | null;
-  loading: boolean;
-  signIn: typeof auth.signIn;
-  signUp: typeof auth.signUp;
-  signOut: typeof auth.signOut;
-}
-
-const AuthContext = createContext<AuthCtx>({
-  user: null, session: null, loading: true,
-  signIn: auth.signIn, signUp: auth.signUp, signOut: auth.signOut,
-});
-
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
-      setLoading(false);
-    });
-    const { data: { subscription } } = auth.onAuthChange((_event, sess) => {
-      setSession(sess);
-      setUser(sess?.user ?? null);
-    });
-    return () => subscription.unsubscribe();
-  }, []);
-
-  return (
-    <AuthContext.Provider value={{ user, session, loading, signIn: auth.signIn, signUp: auth.signUp, signOut: auth.signOut }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-export const useAuth = () => useContext(AuthContext);
-
-// ── Profile Hook ──────────────────────────────────────────────────────────────
+// ── Profile Hook ─────────────────────────────────────────────
 export const useProfile = (userId?: string) => {
   const { user } = useAuth();
   const id = userId || user?.id;
@@ -213,10 +115,11 @@ export const useProfile = (userId?: string) => {
 
   useEffect(() => {
     if (!id) { setLoading(false); return; }
-    db.from('profiles').eq('id', id).then(({ data }) => {
-      setProfile(data?.[0] as UserProfile ?? null);
-      setLoading(false);
-    });
+    supabase.from('profiles').select('*').eq('id', id).single()
+      .then(({ data }) => {
+        setProfile(data as UserProfile ?? null);
+        setLoading(false);
+      });
   }, [id]);
 
   return { profile, loading };
@@ -246,8 +149,9 @@ export const useUpdateProfile = () => {
   return { update };
 };
 
-// ── Messages Hook ─────────────────────────────────────────────────────────────
+// ── Messages Hook ────────────────────────────────────────────
 export const useMessages = (conversationId?: string) => {
+  const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -256,18 +160,18 @@ export const useMessages = (conversationId?: string) => {
     supabase.from('messages').select('*').eq('room_id', conversationId).order('created_at', { ascending: true }).limit(100)
       .then(({ data }) => { setMessages((data as Message[]) || []); setLoading(false); });
 
-    const ch = realtime.subscribe(`messages:${conversationId}`, (c) => {
-      c.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `room_id=eq.${conversationId}` },
-        (payload) => setMessages(prev => [...prev, payload.new as Message]));
-    });
-    return () => { realtime.unsubscribe(`messages:${conversationId}`); };
+    const channel = supabase.channel(`messages:${conversationId}`);
+    channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `room_id=eq.${conversationId}` },
+      (payload) => setMessages(prev => [...prev, payload.new as Message]));
+    channel.subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, [conversationId]);
 
   const send = useCallback(async (content: string, type: MessageType = 'text') => {
-    const { user } = (await auth.getSession()).data;
     if (!user || !conversationId) return;
     await supabase.from('messages').insert({ room_id: conversationId, sender_id: user.id, content, type });
-  }, [conversationId]);
+  }, [conversationId, user]);
 
   return { messages, loading, send };
 };
@@ -286,7 +190,7 @@ export const useConversations = () => {
   return { conversations, loading };
 };
 
-// ── Events Hook ───────────────────────────────────────────────────────────────
+// ── Events Hook ──────────────────────────────────────────────
 export const useEvents = (filter?: 'upcoming' | 'my_events') => {
   const { user } = useAuth();
   const [events, setEvents] = useState<Event[]>([]);
@@ -311,7 +215,7 @@ export const useCreateEvent = () => {
   return { create };
 };
 
-// ── Notifications Hook ────────────────────────────────────────────────────────
+// ── Notifications Hook ───────────────────────────────────────
 export const useNotifications = () => {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -343,7 +247,7 @@ export const useNotifications = () => {
   return { notifications, unreadCount, markAsRead, markAllAsRead };
 };
 
-// ── Favorites Hook ────────────────────────────────────────────────────────────
+// ── Favorites Hook ───────────────────────────────────────────
 export const useFavorites = () => {
   const { user } = useAuth();
   const [favorites, setFavorites] = useState<string[]>([]);
@@ -369,7 +273,7 @@ export const useFavorites = () => {
   return { favorites, toggle };
 };
 
-// ── Bookings Hook ─────────────────────────────────────────────────────────────
+// ── Bookings Hook ────────────────────────────────────────────
 export const useBookings = () => {
   const { user } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -384,39 +288,34 @@ export const useBookings = () => {
   return { bookings, loading };
 };
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// SECTION 4: SERVICES — Business logic + integrations
-// ═══════════════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// SERVICES
+// ═══════════════════════════════════════════════════════════════
 
 export const services = {
-  // Matching algorithm
   getMatches: async (userId: string) => {
     const { data } = await supabase.rpc('get_compatible_profiles', { user_id: userId, limit_count: 20 });
     return data || [];
   },
 
-  // Location tracking
   updateLocation: async (lat: number, lng: number) => {
-    const { user } = (await auth.getSession()).data;
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     await supabase.from('profiles').update({ lat, lng, last_seen: new Date().toISOString() }).eq('id', user.id);
   },
 
-  // Report user
   reportUser: async (reportedId: string, reason: string, details?: string) => {
-    const { user } = (await auth.getSession()).data;
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     await supabase.from('reports').insert({ reporter_id: user.id, reported_id: reportedId, reason, details });
   },
 
-  // Block user
   blockUser: async (blockedId: string) => {
-    const { user } = (await auth.getSession()).data;
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     await supabase.from('blocks').insert({ blocker_id: user.id, blocked_id: blockedId });
   },
 
-  // Upload photo
   uploadPhoto: async (file: File, path: string) => {
     const { data, error } = await supabase.storage.from('photos').upload(path, file, { upsert: true });
     if (error) return { url: null, error };
@@ -425,30 +324,36 @@ export const services = {
   },
 };
 
-// GAP FIXES - Top 10 Priority Features
-// SECTION 5: GAP FIXES - Top 10 Priority Features
+// ═══════════════════════════════════════════════════════════════
+// GAP FIXES — Top 10 Priority Features
+// ═══════════════════════════════════════════════════════════════
 
 // 1. TYPING INDICATORS
 export const useTypingIndicator = (conversationId?: string) => {
   const { user } = useAuth();
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
+
   useEffect(() => {
     if (!conversationId) return;
-    const ch = realtime.subscribe(`typing:${conversationId}`, (c) => {
-      c.on("presence", { event: "sync" }, () => {
-        const state = c.presenceState();
-        const typers = Object.values(state).flat()
-          .filter((p: any) => p.user_id !== user?.id && p.is_typing)
-          .map((p: any) => p.user_id);
-        setTypingUsers(typers);
-      });
+    const channel = supabase.channel(`typing:${conversationId}`);
+    channel.on('presence', { event: 'sync' }, () => {
+      const state = channel.presenceState();
+      const typers = Object.values(state).flat()
+        .filter((p: Record<string, unknown>) => p.user_id !== user?.id && p.is_typing)
+        .map((p: Record<string, unknown>) => p.user_id as string);
+      setTypingUsers(typers);
     });
-    return () => { realtime.unsubscribe(`typing:${conversationId}`); };
+    channel.subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, [conversationId, user?.id]);
+
   const setTyping = useCallback(async (isTyping: boolean) => {
     if (!conversationId || !user) return;
-    await supabase.channel(`typing:${conversationId}`).track({ user_id: user.id, is_typing: isTyping, updated_at: Date.now() });
+    const channel = supabase.channel(`typing:${conversationId}`);
+    await channel.track({ user_id: user.id, is_typing: isTyping, updated_at: Date.now() });
   }, [conversationId, user]);
+
   return { typingUsers, setTyping };
 };
 
@@ -464,6 +369,7 @@ const haversine = (lat1: number, lon1: number, lat2: number, lon2: number) => {
 export const useDistanceFilter = () => {
   const [maxDistance, setMaxDistance] = useState(50);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+
   useEffect(() => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -472,6 +378,7 @@ export const useDistanceFilter = () => {
       );
     }
   }, []);
+
   const filterByDistance = useCallback((profiles: UserProfile[]) => {
     if (!userLocation) return profiles;
     return profiles.filter((p) => {
@@ -479,6 +386,7 @@ export const useDistanceFilter = () => {
       return haversine(userLocation.lat, userLocation.lng, p.lat, p.lng) <= maxDistance;
     });
   }, [userLocation, maxDistance]);
+
   return { maxDistance, setMaxDistance, userLocation, filterByDistance };
 };
 
@@ -488,22 +396,26 @@ export const useSwipeMode = (profiles: UserProfile[]) => {
   const [swipedRight, setSwipedRight] = useState<string[]>([]);
   const [swipedLeft, setSwipedLeft] = useState<string[]>([]);
   const current = profiles[currentIndex] || null;
+
   const swipeRight = useCallback(() => {
     if (!current) return;
     setSwipedRight((prev) => [...prev, current.id]);
     setCurrentIndex((i) => i + 1);
   }, [current]);
+
   const swipeLeft = useCallback(() => {
     if (!current) return;
     setSwipedLeft((prev) => [...prev, current.id]);
     setCurrentIndex((i) => i + 1);
   }, [current]);
+
   const undo = useCallback(() => {
     if (currentIndex === 0) return;
     setCurrentIndex((i) => i - 1);
     setSwipedRight((prev) => prev.slice(0, -1));
     setSwipedLeft((prev) => prev.slice(0, -1));
   }, [currentIndex]);
+
   return { current, currentIndex, swipeRight, swipeLeft, undo, swipedRight, swipedLeft, total: profiles.length };
 };
 
@@ -518,12 +430,15 @@ export const useProfileCompleteness = (profile: UserProfile | null) => {
     { key: "interests", label: "Interests", weight: 10 },
     { key: "looking_for", label: "Looking For", weight: 10 },
   ];
+
   const completed = fields.filter((f) => {
-    const val = (profile as any)?.[f.key];
+    const val = (profile as Record<string, unknown>)?.[f.key];
     return val !== null && val !== undefined && val !== "" && (!Array.isArray(val) || val.length > 0);
   });
+
   const percentage = completed.reduce((sum, f) => sum + f.weight, 0);
   const missing = fields.filter((f) => !completed.includes(f));
+
   return { percentage, completed, missing, isComplete: percentage >= 90 };
 };
 
@@ -532,6 +447,7 @@ export const useMessageSearch = (conversationId?: string) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Message[]>([]);
   const [searching, setSearching] = useState(false);
+
   const search = useCallback(async (q: string) => {
     if (!conversationId || !q.trim()) { setResults([]); return; }
     setSearching(true);
@@ -542,6 +458,7 @@ export const useMessageSearch = (conversationId?: string) => {
     setResults((data as Message[]) || []);
     setSearching(false);
   }, [conversationId]);
+
   return { query, results, searching, search };
 };
 
@@ -554,11 +471,14 @@ const urlBase64ToUint8Array = (base64String: string) => {
 };
 
 export const usePushNotifications = () => {
+  const { user } = useAuth();
   const [permission, setPermission] = useState<NotificationPermission>("default");
   const [subscription, setSubscription] = useState<PushSubscription | null>(null);
+
   useEffect(() => {
     if ("Notification" in window) setPermission(Notification.permission);
   }, []);
+
   const requestPermission = useCallback(async () => {
     if (!("Notification" in window)) return false;
     const result = await Notification.requestPermission();
@@ -570,14 +490,15 @@ export const usePushNotifications = () => {
         applicationServerKey: urlBase64ToUint8Array(import.meta.env.VITE_VAPID_KEY || ""),
       });
       setSubscription(sub);
-      const { user } = (await auth.getSession()).data;
       if (user) await supabase.from("push_subscriptions").upsert({ user_id: user.id, subscription: JSON.stringify(sub) });
     }
     return result === "granted";
-  }, []);
+  }, [user]);
+
   const sendLocal = useCallback((title: string, body: string, icon?: string) => {
     if (permission === "granted") new Notification(title, { body, icon });
   }, [permission]);
+
   return { permission, requestPermission, sendLocal, subscription };
 };
 
@@ -586,28 +507,35 @@ export const useEmailVerification = () => {
   const { user } = useAuth();
   const [verified, setVerified] = useState(false);
   const [sending, setSending] = useState(false);
+
   useEffect(() => { setVerified(!!user?.email_confirmed_at); }, [user]);
+
   const resend = useCallback(async () => {
     if (!user?.email) return;
     setSending(true);
     await supabase.auth.resend({ type: "signup", email: user.email });
     setSending(false);
   }, [user]);
+
   return { verified, sending, resend };
 };
 
 // 8. EVENT CALENDAR VIEW
 export const useEventCalendar = (events: Event[]) => {
   const [viewDate, setViewDate] = useState(new Date());
+
   const monthEvents = events.filter((e) => {
     const d = new Date(e.starts_at);
     return d.getMonth() === viewDate.getMonth() && d.getFullYear() === viewDate.getFullYear();
   });
+
   const dayEvents = useCallback((date: Date) => {
     return events.filter((e) => new Date(e.starts_at).toDateString() === date.toDateString());
   }, [events]);
+
   const nextMonth = useCallback(() => setViewDate((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1)), []);
   const prevMonth = useCallback(() => setViewDate((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1)), []);
+
   return { viewDate, monthEvents, dayEvents, nextMonth, prevMonth };
 };
 
@@ -615,16 +543,19 @@ export const useEventCalendar = (events: Event[]) => {
 export const use2FA = () => {
   const [enabled, setEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
+
   const checkStatus = useCallback(async () => {
     const { data } = await supabase.auth.mfa.listFactors();
     setEnabled((data?.totp?.length || 0) > 0);
   }, []);
+
   const enroll = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase.auth.mfa.enroll({ factorType: "totp" });
     setLoading(false);
     return { qrCode: data?.totp?.qr_code, uri: data?.totp?.uri, secret: data?.totp?.secret, error };
   }, []);
+
   const verify = useCallback(async (factorId: string, code: string) => {
     const { data: challenge } = await supabase.auth.mfa.challenge({ factorId });
     if (!challenge) return { error: new Error("Challenge failed") };
@@ -632,10 +563,12 @@ export const use2FA = () => {
     if (!error) setEnabled(true);
     return { error };
   }, []);
+
   const unenroll = useCallback(async (factorId: string) => {
     await supabase.auth.mfa.unenroll({ factorId });
     setEnabled(false);
   }, []);
+
   return { enabled, loading, checkStatus, enroll, verify, unenroll };
 };
 
@@ -661,11 +594,13 @@ export const PURCHASE_ITEMS: PurchaseItem[] = [
 export const useInAppPurchases = () => {
   const { user } = useAuth();
   const [coins, setCoins] = useState(0);
+
   useEffect(() => {
     if (!user) return;
     supabase.from("user_coins").select("balance").eq("user_id", user.id).single()
-      .then(({ data }) => setCoins((data as any)?.balance || 0));
+      .then(({ data }) => setCoins((data as { balance: number })?.balance || 0));
   }, [user]);
+
   const purchase = useCallback(async (item: PurchaseItem, targetUserId?: string) => {
     if (!user || coins < item.price_coins) return { error: new Error("Insufficient coins") };
     const { error } = await supabase.from("purchases").insert({
@@ -674,5 +609,30 @@ export const useInAppPurchases = () => {
     if (!error) setCoins((c) => c - item.price_coins);
     return { error };
   }, [user, coins]);
+
   return { coins, purchase, items: PURCHASE_ITEMS };
+};
+
+export default {
+  useProfile,
+  useProfiles,
+  useUpdateProfile,
+  useMessages,
+  useConversations,
+  useEvents,
+  useCreateEvent,
+  useNotifications,
+  useFavorites,
+  useBookings,
+  useTypingIndicator,
+  useDistanceFilter,
+  useSwipeMode,
+  useProfileCompleteness,
+  useMessageSearch,
+  usePushNotifications,
+  useEmailVerification,
+  useEventCalendar,
+  use2FA,
+  useInAppPurchases,
+  services,
 };

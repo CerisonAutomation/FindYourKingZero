@@ -1,7 +1,7 @@
 // Application constants
 export const APP = {
   NAME: 'FindYourKingZero',
-  VERSION: '2.0.0',
+  VERSION: '4.0.0',
   DESCRIPTION: 'Enterprise Dating Platform',
   AUTHOR: 'Enterprise Team',
 } as const;
@@ -385,6 +385,17 @@ export const REGEX = {
   ZIP_CODE_US: /^\d{5}(-\d{4})?$/,
   CREDIT_CARD: /^\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}$/,
 } as const;
+
+// Report reasons for safety
+export const REPORT_REASONS = [
+  'inappropriate_content',
+  'harassment',
+  'spam',
+  'fake_profile',
+  'scam',
+  'underage',
+  'other',
+] as const;
 
 // Default values
 export const DEFAULTS = {
