@@ -536,3 +536,4 @@ vite.config.optimized.ts
 # Dead code directories
 src/graphql/
 audit-zero.mjs
+.vercel

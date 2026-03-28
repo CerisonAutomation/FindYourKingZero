@@ -11,7 +11,9 @@
  * @version 4.0.0
  */
 
-import {LocationData, UserProfile} from '../types'
+import {UserProfile} from '../../types/canonical'
+
+type LocationData = { latitude: number; longitude: number }
 
 export type MatchScore  = {
   score: number // 0-100

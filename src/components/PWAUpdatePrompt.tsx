@@ -1,45 +1,38 @@
-import {useEffect} from 'react';
-import {useRegisterSW} from 'virtual:pwa-register/react';
-import {useToast} from '@/hooks/use-toast';
+import { useEffect, useState } from 'react';
 
-/**
- * PWAUpdatePrompt — registers the service worker and shows a toast
- * when a new version is available.
- */
 export function PWAUpdatePrompt() {
-    const {toast} = useToast();
-    const {
-        needRefresh: [needRefresh, setNeedRefresh],
-        updateServiceWorker,
-    } = useRegisterSW({
-        onRegistered(registration) {
-            // Poll for updates every 60 minutes
-            if (registration) {
-                setInterval(() => registration.update(), 60 * 60 * 1000);
-            }
-        },
-        onRegisterError(error) {
-            console.warn('SW registration error:', error);
-        },
-    });
+  const [showReload, setShowReload] = useState(false);
+  const [registration, setRegistration] = useState<ServiceWorkerRegistration | null>(null);
 
-    useEffect(() => {
-        if (needRefresh) {
-            toast({
-                title: 'Update available',
-                description: 'A new version of FIND YOUR KING is ready.',
-                duration: 10000,
-                action: (
-                    <button
-                        onClick={() => updateServiceWorker(true)}
-                        className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-bold"
-                    >
-                        Reload
-                    </button>
-                ) as any,
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then((reg) => {
+        setRegistration(reg);
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          if (newWorker) {
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                setShowReload(true);
+              }
             });
-        }
-    }, [needRefresh, updateServiceWorker, toast]);
+          }
+        });
+      });
+    }
+  }, []);
 
-    return null;
+  if (!showReload) return null;
+
+  return (
+    <div className="fixed bottom-4 right-4 bg-slate-900 border border-slate-700 rounded-xl p-4 shadow-xl z-50">
+      <p className="text-sm text-white mb-2">New version available!</p>
+      <button
+        onClick={() => registration?.waiting?.postMessage({ type: 'SKIP_WAITING' })}
+        className="bg-amber-400 text-black text-sm font-semibold px-4 py-2 rounded-lg"
+      >
+        Update
+      </button>
+    </div>
+  );
 }

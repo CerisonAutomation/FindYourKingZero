@@ -34,7 +34,7 @@ export function ProfileCard({
             onClick={() => onClick?.(id)}
             className={cn(
                 'relative overflow-hidden cursor-pointer group',
-                'transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]',
+                'transition-all duration-300 ease-out',
                 'hover:scale-[1.03]',
                 className,
             )}
