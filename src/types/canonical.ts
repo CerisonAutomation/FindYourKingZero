@@ -27,9 +27,11 @@ export interface UserProfile {
   id: string;
   userId: string;
   displayName: string;
+  /** @deprecated Use displayName */ name?: string;
   age: number;
   bio: string;
   avatarUrl: string | null;
+  /** @deprecated Use avatarUrl */ avatar?: string;
   photos: string[];
   location: {
     latitude: number;
@@ -43,16 +45,36 @@ export interface UserProfile {
   membershipTier: SubscriptionTier;
   interests: string[];
   tribes: string[];
+  /** @deprecated Use tribes */ tribe?: string;
   relationshipGoals: string[];
-  position: 'top' | 'vers' | 'bottom' | 'flexible' | null;
+  /** @deprecated Use relationshipGoals */ lookingFor?: string[];
+  position: 'top' | 'vers' | 'bottom' | 'flexible' | 'versatile' | null;
   relationshipStatus: 'single' | 'dating' | 'relationship' | 'open' | null;
   hivStatus: 'negative' | 'positive' | 'on-prep' | 'undetectable' | null;
   pronouns: string;
   lastSeen: string;
+  /** @deprecated Use lastSeen */ lastActive?: string;
   distance?: number;
   compatibility?: number;
+  // Extended profile fields
+  username?: string;
+  ethnicity?: string;
+  height?: number;
+  weight?: number;
+  bodyType?: string;
+  role?: string;
+  rating?: number;
+  reviewCount?: number;
+  hourlyRate?: number;
+  isIncognito?: boolean;
+  preferences?: Record<string, unknown>;
   // Legacy compatibility
-  verification?: boolean;
+  verification?: boolean | {
+    emailVerified?: boolean;
+    photoVerified?: boolean;
+    idVerified?: boolean;
+  };
+  blockchainVerified?: boolean;
   stats?: {
     profileViews: number;
     matches: number;
@@ -176,6 +198,26 @@ export interface ChatRoom {
   unreadCount?: number;
 }
 
+/** Direct conversation between two users */
+export interface Conversation {
+  id: string;
+  participantOne?: string;
+  participantTwo?: string;
+  /** Supabase snake_case aliases */
+  participant_a?: string;
+  participant_b?: string;
+  participants?: string[];
+  lastMessage?: Message;
+  /** @deprecated Use lastMessage */ last_message?: Message;
+  lastMessageAt?: string;
+  unreadCount: number;
+  /** @deprecated Use unreadCount */ unread_count?: number;
+  otherUser?: UserProfile;
+  /** @deprecated Use otherUser */ other_user?: UserProfile;
+  createdAt: string;
+  updatedAt?: string;
+}
+
 // ═════════════════════════════════════════════════════════════════════════════
 // EVENT TYPES
 // ═════════════════════════════════════════════════════════════════════════════
@@ -275,3 +317,18 @@ export type ChatMessage = Message;
 
 /** @deprecated Use Event instead */
 export type Party = Event;
+
+// ═════════════════════════════════════════════════════════════════════════════
+// BOOKING TYPES
+// ═════════════════════════════════════════════════════════════════════════════
+
+export interface Booking {
+  id: string;
+  host_id: string;
+  guest_id: string;
+  status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+  starts_at: string;
+  ends_at: string;
+  message: string | null;
+  created_at: string;
+}

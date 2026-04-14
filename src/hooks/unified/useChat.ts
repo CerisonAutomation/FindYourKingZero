@@ -25,7 +25,7 @@
 
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useCallback, useEffect, useRef, useState} from 'react';
-import {joinRoom, selfId} from 'trystero/supabase';
+import {joinRoom, selfId} from '@trystero-p2p/supabase';
 import {supabase} from '@/integrations/supabase/client';
 import {useAuth} from '../useAuth';
 import {useToast} from '../use-toast';

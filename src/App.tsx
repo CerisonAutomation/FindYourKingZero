@@ -423,7 +423,7 @@ const App = () => {
                 <Toaster/>
                 <Sonner/>
                 <OfflineBanner/>
-                <BrowserRouter future={{v7_startTransition: true, v7_relativeSplatPath: true}}>
+                <BrowserRouter>
                     <AuthProvider>
                         <AppRoutes/>
                         {/* Global AI Avatar Orb - Premium Power Orb with Crown */}

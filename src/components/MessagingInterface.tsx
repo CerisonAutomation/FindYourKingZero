@@ -28,7 +28,7 @@ import {
 } from 'lucide-react';
 
 import type {Message} from '@/lib/p2p/canonical';
-import {SignalingStrategy} from '@/lib/p2p/canonical';
+import type {SignalingStrategy} from '@/lib/p2p/canonical';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Badge} from '@/components/ui/badge';

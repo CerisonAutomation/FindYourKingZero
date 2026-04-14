@@ -19,9 +19,12 @@
  */
 
 import EventEmitter from 'events'
-import {createClient, Session, SupabaseClient, User} from '@supabase/supabase-js'
-import {EncryptionKeyPair, ZeroKnowledgeEncryption} from './encryption/ZeroKnowledgeEncryption'
-import {AIMatchingEngine, MatchScore} from './ai/AIMatchingEngine'
+import {createClient, SupabaseClient} from '@supabase/supabase-js'
+import type {Session, User} from '@supabase/auth-js'
+import type {EncryptionKeyPair} from './encryption/ZeroKnowledgeEncryption'
+import {ZeroKnowledgeEncryption} from './encryption/ZeroKnowledgeEncryption'
+import type {MatchScore} from './ai/AIMatchingEngine'
+import {AIMatchingEngine} from './ai/AIMatchingEngine'
 import {PerformanceMonitor} from './performance/PerformanceMonitor'
 import {AccessibilityManager} from './accessibility/AccessibilityManager'
 import {
@@ -33,7 +36,7 @@ import {
   SupabaseRealtimeStrategy,
   WebRTCStrategy
 } from './p2p/SignalingStrategy'
-import {LocationData, P2PCall, P2PConfig, P2PMessage, UserProfile} from '../types'
+import type {LocationData, P2PCall, P2PConfig, P2PMessage, UserProfile} from '../types'
 import ngeohash from 'ngeohash'
 
 export type HybridEngineConfig  = {

@@ -45,7 +45,7 @@ import {
 } from 'lucide-react';
 
 import type {UserProfile} from '@/lib/p2p/canonical';
-import {SignalingStrategy} from '@/lib/p2p/canonical';
+import type {SignalingStrategy} from '@/lib/p2p/canonical';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Card} from '@/components/ui/card';
