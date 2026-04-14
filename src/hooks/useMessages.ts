@@ -60,12 +60,12 @@ export function useMessages(options: UseMessagesOptions = {}) {
         id: msg.id,
         conversationId: msg.conversation_id,
         senderId: msg.sender_id,
-        content: msg.content,
-        type: msg.type as Message['type'],
-        mediaUrl: msg.media_url,
-        createdAt: msg.created_at,
-        readAt: msg.read_at,
-        reactions: msg.reactions as Record<string, string[]> | undefined,
+        content: (msg as Record<string, unknown>).content as string ?? msg.content_encrypted ?? '',
+        type: ((msg as Record<string, unknown>).type ?? msg.message_type ?? 'text') as Message['type'],
+        mediaUrl: (msg as Record<string, unknown>).media_url as string ?? null,
+        createdAt: msg.created_at ?? new Date().toISOString(),
+        readAt: msg.read_at ?? null,
+        reactions: (msg as Record<string, unknown>).reactions as Record<string, string[]> | undefined,
       }));
 
       if (offset === 0) {
@@ -92,16 +92,18 @@ export function useMessages(options: UseMessagesOptions = {}) {
       const { data, error: fetchError } = await supabase
         .from('conversations')
         .select('*')
-        .order('updated_at', { ascending: false });
+        .order('last_message_at', { ascending: false });
 
       if (fetchError) throw fetchError;
 
       const formattedConversations: Conversation[] = (data || []).map(conv => ({
         id: conv.id,
-        participants: conv.participants || [],
-        unreadCount: conv.unread_count || 0,
-        createdAt: conv.created_at,
-        updatedAt: conv.updated_at,
+        participant_a: conv.participant_a,
+        participant_b: conv.participant_b,
+        participants: [conv.participant_a, conv.participant_b],
+        unreadCount: (conv.unread_a ?? 0) + (conv.unread_b ?? 0),
+        createdAt: conv.created_at ?? new Date().toISOString(),
+        updatedAt: conv.last_message_at ?? conv.created_at ?? undefined,
       }));
 
       setConversations(formattedConversations);
@@ -138,10 +140,10 @@ export function useMessages(options: UseMessagesOptions = {}) {
         id: data.id,
         conversationId: data.conversation_id,
         senderId: data.sender_id,
-        content: data.content,
-        type: data.type as Message['type'],
-        mediaUrl: data.media_url,
-        createdAt: data.created_at,
+        content: (data as Record<string, unknown>).content as string ?? data.content_encrypted ?? content,
+        type: ((data as Record<string, unknown>).type ?? data.message_type ?? type) as Message['type'],
+        mediaUrl: (data as Record<string, unknown>).media_url as string ?? mediaUrl ?? null,
+        createdAt: data.created_at ?? new Date().toISOString(),
       };
 
       setMessages(prev => [...prev, newMessage]);
