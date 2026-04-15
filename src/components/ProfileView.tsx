@@ -146,9 +146,12 @@ export default function ProfileView({ profile, onUpdate, advancedMode }: Profile
     }
   }, [profile]);
 
-  const formatTime = useCallback((date: Date) => {
+  const formatTime = useCallback((date: Date | string | null | undefined) => {
+    if (!date) return 'Unknown';
+    const d = date instanceof Date ? date : new Date(date);
+    if (isNaN(d.getTime())) return 'Unknown';
     const now = new Date();
-    const diff = now.getTime() - date.getTime();
+    const diff = now.getTime() - d.getTime();
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
     if (days === 0) return 'Today';
@@ -160,16 +163,18 @@ export default function ProfileView({ profile, onUpdate, advancedMode }: Profile
 
   const PhotoGallery = () => (
     <div className="relative h-80 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg overflow-hidden">
-      {profile?.photos.length > 0 ? (
+      {profile?.photos && profile.photos.length > 0 ? (
         <>
           <img
-            src={profile.photos[selectedPhotoIndex].url}
-            alt={`${profile.displayName} - Photo ${selectedPhotoIndex + 1}`}
+            src={typeof profile.photos[selectedPhotoIndex] === 'string'
+              ? profile.photos[selectedPhotoIndex] as string
+              : (profile.photos[selectedPhotoIndex] as unknown as { url: string }).url}
+            alt={`${profile?.displayName ?? ''} - Photo ${selectedPhotoIndex + 1}`}
             className="w-full h-full object-cover"
           />
 
           {/* Photo Navigation */}
-          {profile.photos.length > 1 && (
+          {profile && profile.photos.length > 1 && (
             <>
               <button
                 onClick={() => setSelectedPhotoIndex((prev) => (prev - 1 + profile.photos.length) % profile.photos.length)}
@@ -187,7 +192,7 @@ export default function ProfileView({ profile, onUpdate, advancedMode }: Profile
           )}
 
           {/* Photo Indicators */}
-          {profile.photos.length > 1 && (
+          {profile && profile.photos.length > 1 && (
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
               {profile.photos.map((_, index) => (
                 <button
@@ -246,11 +251,11 @@ export default function ProfileView({ profile, onUpdate, advancedMode }: Profile
               </div>
               <div className="flex items-center space-x-1">
                 <MapPin className="w-4 h-4" />
-                <span>{profile?.location.city || 'Location not set'}</span>
+                <span>{profile?.location?.city || 'Location not set'}</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Clock className="w-4 h-4" />
-                <span>{profile?.lastActive ? formatTime(profile.lastActive) : 'Unknown'}</span>
+                <span>{profile?.lastActive ? formatTime(profile.lastActive) : profile?.lastSeen ? formatTime(profile.lastSeen) : 'Unknown'}</span>
               </div>
             </div>
           </div>
@@ -284,19 +289,19 @@ export default function ProfileView({ profile, onUpdate, advancedMode }: Profile
 
         {/* Verification Badges */}
         <div className="flex items-center space-x-2">
-          {profile?.verification.emailVerified && (
+          {typeof profile?.verification === 'object' && profile.verification?.emailVerified && (
             <Badge className="bg-green-500/20 text-green-400 border-green-500/50">
               <Check className="w-3 h-3 mr-1" />
               Email Verified
             </Badge>
           )}
-          {profile?.verification.photoVerified && (
+          {typeof profile?.verification === 'object' && profile.verification?.photoVerified && (
             <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/50">
               <Camera className="w-3 h-3 mr-1" />
               Photo Verified
             </Badge>
           )}
-          {profile?.verification.idVerified && (
+          {typeof profile?.verification === 'object' && profile.verification?.idVerified && (
             <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/50">
               <Shield className="w-3 h-3 mr-1" />
               ID Verified
@@ -347,10 +352,10 @@ export default function ProfileView({ profile, onUpdate, advancedMode }: Profile
           <h3 className="text-xl font-semibold text-white mb-3">Profile Stats</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label: 'Profile Views', value: profile?.stats.profileViews || 0, icon: Eye },
-              { label: 'Likes', value: profile?.stats.profileLikes || 0, icon: Heart },
-              { label: 'Matches', value: profile?.stats.matches || 0, icon: Users },
-              { label: 'Messages', value: profile?.stats.messages || 0, icon: MessageCircle },
+              { label: 'Profile Views', value: profile?.stats?.profileViews || 0, icon: Eye },
+              { label: 'Likes', value: (profile?.stats as Record<string, number> | undefined)?.profileLikes || 0, icon: Heart },
+              { label: 'Matches', value: profile?.stats?.matches || 0, icon: Users },
+              { label: 'Messages', value: profile?.stats?.messages || 0, icon: MessageCircle },
             ].map((stat, index) => (
               <Card key={index} className="bg-white/10 border-white/20 p-4">
                 <div className="flex items-center space-x-2 mb-2">

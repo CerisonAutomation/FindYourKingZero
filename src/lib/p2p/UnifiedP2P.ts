@@ -2,8 +2,8 @@
 // Unified P2P Services — Chat, Files, Location, Presence, Signaling
 // Built on Trystero 0.22 Nostr strategy
 // =====================================================
-import {joinRoom} from 'trystero/nostr';
-import type {Room, ActionSender, ActionReceiver, ActionProgress, JsonValue} from 'trystero';
+import {joinRoom} from '@trystero-p2p/nostr';
+import type {Room, ActionSender, ActionReceiver, ActionProgress, JsonValue} from '@trystero-p2p/core';
 
 const APP_ID = import.meta.env.VITE_P2P_APP_ID ?? 'fyking-v4';
 

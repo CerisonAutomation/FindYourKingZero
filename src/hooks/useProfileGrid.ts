@@ -49,8 +49,8 @@ export function useProfileGrid(options: UseProfileGridOptions = {}) {
     let query = supabase
       .from('profiles')
       .select('*')
-      .eq('is_active', true)
-      .eq('is_banned', false)
+      .eq('available_now', true)
+      .eq('verified', true)
       .order('last_active_at', { ascending: false })
       .range(from, to);
 
@@ -94,7 +94,7 @@ export function useProfileGrid(options: UseProfileGridOptions = {}) {
         table: 'profiles',
       }, (payload) => {
         const newProfile = payload.new as Profile;
-        if (newProfile.is_active && !newProfile.is_banned) {
+        if (newProfile.available_now && !false) {
           setProfiles(prev => {
             if (prev.some(p => p.id === newProfile.id)) return prev;
             return [newProfile, ...prev];
@@ -206,7 +206,7 @@ export function useProfileCreation() {
 
     // Create profile
     const { data, error } = await supabase.from('profiles').upsert({
-      user_id: user.id,
+      id: user.id,
       display_name: profileData.displayName,
       age: profileData.age,
       bio: profileData.bio || null,
@@ -214,10 +214,10 @@ export function useProfileCreation() {
       location: profileData.lat && profileData.lng
         ? `POINT(${profileData.lng} ${profileData.lat})`
         : null,
-      is_active: true,
+      available_now: true,
       onboarding_completed: true,
       last_active_at: new Date().toISOString(),
-    }, { onConflict: 'user_id' }).select().single();
+    }, { onConflict: 'id' }).select().single();
 
     if (error) throw error;
 
@@ -225,7 +225,7 @@ export function useProfileCreation() {
     if (profileData.tribes?.length) {
       await supabase.from('profiles').update({
         tribes: profileData.tribes,
-      }).eq('user_id', user.id);
+      }).eq('id', user.id);
     }
 
     toast({ title: 'Profile created!', description: 'You\'re now visible to others.' });

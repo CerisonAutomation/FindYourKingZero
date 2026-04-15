@@ -38,7 +38,7 @@ export const useConversations = () => {
             const {data: conversations, error} = await supabase
                 .from('conversations')
                 .select('*')
-                .or(`participant_one.eq.${user.id},participant_two.eq.${user.id}`)
+                .or(`participant_a.eq.${user.id},participant_b.eq.${user.id}`)
                 .order('last_message_at', {ascending: false, nullsFirst: false});
 
             if (error) throw error;
@@ -46,19 +46,19 @@ export const useConversations = () => {
             // Enrich with other user info and last message
             const enrichedConversations = await Promise.all(
                 (conversations || []).map(async (conv) => {
-                    const otherUserId = conv.participant_one === user.id
-                        ? conv.participant_two
-                        : conv.participant_one;
+                    const otherUserId = conv.participant_a === user.id
+                        ? conv.participant_b
+                        : conv.participant_a;
 
                     const [profileResult, lastMessageResult, unreadResult] = await Promise.all([
                         supabase
                             .from('profiles')
-                            .select('user_id, display_name, avatar_url, is_online, last_seen')
-                            .eq('user_id', otherUserId)
+                            .select('id, display_name, photo_url, online_status, last_seen_at')
+                            .eq('id', otherUserId)
                             .single(),
                         supabase
                             .from('messages')
-                            .select('content, sender_id, created_at, is_read')
+                            .select('content_encrypted, sender_id, created_at, read_at')
                             .eq('conversation_id', conv.id)
                             .order('created_at', {ascending: false})
                             .limit(1)
@@ -68,7 +68,7 @@ export const useConversations = () => {
                             .select('id', {count: 'exact'})
                             .eq('conversation_id', conv.id)
                             .neq('sender_id', user.id)
-                            .eq('is_read', false),
+                            .is('read_at', null),
                     ]);
 
                     return {
@@ -76,7 +76,7 @@ export const useConversations = () => {
                         other_user: profileResult.data,
                         last_message: lastMessageResult.data,
                         unread_count: unreadResult.count || 0,
-                    } as ConversationWithDetails;
+                    } as unknown as ConversationWithDetails;
                 })
             );
 
@@ -139,7 +139,7 @@ export const useCreateConversation = () => {
                 .from('conversations')
                 .select('id')
                 .or(
-                    `and(participant_one.eq.${user.id},participant_two.eq.${otherUserId}),and(participant_one.eq.${otherUserId},participant_two.eq.${user.id})`
+                    `and(participant_a.eq.${user.id},participant_b.eq.${otherUserId}),and(participant_a.eq.${otherUserId},participant_b.eq.${user.id})`
                 )
                 .single();
 
@@ -149,9 +149,9 @@ export const useCreateConversation = () => {
             const {data, error} = await supabase
                 .from('conversations')
                 .insert({
-                    participant_one: user.id,
-                    participant_two: otherUserId,
-                })
+                    participant_a: user.id,
+                    participant_b: otherUserId,
+                } as Record<string, unknown>)
                 .select('id')
                 .single();
 
@@ -185,10 +185,10 @@ export const useConversationMessages = (conversationId: string | null) => {
             if (user) {
                 await supabase
                     .from('messages')
-                    .update({is_read: true, read_at: new Date().toISOString()})
+                    .update({read_at: new Date().toISOString()} as Record<string, unknown>)
                     .eq('conversation_id', conversationId)
                     .neq('sender_id', user.id)
-                    .eq('is_read', false);
+                    .is('read_at', null);
             }
 
             return data;
@@ -254,10 +254,9 @@ export const useSendMessage = () => {
                 .insert({
                     conversation_id: conversationId,
                     sender_id: user.id,
-                    content,
-                    media_url: mediaUrl,
+                    content_encrypted: content,
                     message_type: mediaUrl ? 'media' : 'text',
-                })
+                } as Record<string, unknown>)
                 .select()
                 .single();
 

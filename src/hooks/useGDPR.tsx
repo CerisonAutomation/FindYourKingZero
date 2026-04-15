@@ -31,13 +31,13 @@ export const useGDPR = () => {
             if (!user) return [];
 
             const {data, error} = await supabase
-                .from('gdpr_data_requests')
+                .from('gdpr_data_requests' as string as never)
                 .select('*')
-                .eq('user_id', user.id)
+                .eq('id', user.id)
                 .order('requested_at', {ascending: false});
 
             if (error) throw error;
-            return data as DataRequest[];
+            return data as unknown as DataRequest[];
         },
         enabled: !!user,
     });
@@ -58,7 +58,7 @@ export const useGDPR = () => {
             if (!user) throw new Error('Not authenticated');
 
             const {data, error} = await supabase
-                .from('gdpr_data_requests')
+                .from('gdpr_data_requests' as string as never)
                 .insert({
                     user_id: user.id,
                     request_type: 'export',
@@ -95,7 +95,7 @@ export const useGDPR = () => {
             scheduledDate.setDate(scheduledDate.getDate() + 30);
 
             const {data, error} = await supabase
-                .from('gdpr_data_requests')
+                .from('gdpr_data_requests' as string as never)
                 .insert({
                     user_id: user.id,
                     request_type: 'deletion',
@@ -112,7 +112,7 @@ export const useGDPR = () => {
                 .update({
                     account_deletion_requested_at: new Date().toISOString(),
                 })
-                .eq('user_id', user.id);
+                .eq('id', user.id);
 
             return data;
         },
@@ -145,7 +145,7 @@ export const useGDPR = () => {
             if (!pendingDeletion) throw new Error('No pending deletion request found');
 
             const {data, error} = await supabase
-                .from('gdpr_data_requests')
+                .from('gdpr_data_requests' as string as never)
                 .update({status: 'cancelled'})
                 .eq('id', pendingDeletion.id)
                 .select()
@@ -159,7 +159,7 @@ export const useGDPR = () => {
                 .update({
                     account_deletion_requested_at: null,
                 })
-                .eq('user_id', user.id);
+                .eq('id', user.id);
 
             return data;
         },

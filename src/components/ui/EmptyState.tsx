@@ -4,8 +4,10 @@
 
 import React from 'react';
 import {motion} from 'framer-motion';
-import {LucideIcon} from 'lucide-react';
+import type {LucideProps} from 'lucide-react';
 import {cn} from '@/lib/utils';
+
+type LucideIcon = React.ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & React.RefAttributes<SVGSVGElement>>;
 
 interface EmptyStateProps {
   icon?: LucideIcon;

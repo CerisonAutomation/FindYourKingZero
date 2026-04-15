@@ -131,11 +131,11 @@ export const useProfile = () => {
             const {data, error} = await supabase
                 .from('profiles')
                 .select('*')
-                .eq('user_id', user.id)
+                .eq('id', user.id)
                 .single();
 
             if (error) throw error;
-            return data as Profile;
+            return data as unknown as Profile;
         },
         enabled: !!user,
     });
@@ -154,8 +154,8 @@ export const useUpdateProfile = () => {
 
             const {data, error} = await supabase
                 .from('profiles')
-                .update(updates)
-                .eq('user_id', user.id)
+                .update(updates as Record<string, unknown>)
+                .eq('id', user.id)
                 .select()
                 .single();
 
@@ -216,14 +216,14 @@ export const useProfiles = (filters?: {
             let query = supabase
                 .from('profiles')
                 .select('*')
-                .neq('user_id', user?.id || '')
-                .order('is_online', {ascending: false})
-                .order('last_seen', {ascending: false});
+                .neq('id', user?.id || '')
+                .order('online_status', {ascending: false})
+                .order('last_seen_at', {ascending: false});
 
             if (filters?.minAge) query = query.gte('age', filters.minAge);
             if (filters?.maxAge) query = query.lte('age', filters.maxAge);
-            if (filters?.isOnline) query = query.eq('is_online', true);
-            if (filters?.isVerified) query = query.eq('is_verified', true);
+            if (filters?.isOnline) query = query.eq('available_now', true);
+            if (filters?.isVerified) query = query.eq('verified', true);
             if (filters?.city) query = query.ilike('city', `%${filters.city}%`);
             if (filters?.tribes && filters.tribes.length > 0) {
                 query = query.overlaps('tribes', filters.tribes);
@@ -231,7 +231,7 @@ export const useProfiles = (filters?: {
 
             const {data, error} = await query.limit(50);
             if (error) throw error;
-            return data as Profile[];
+            return data as unknown as Profile[];
         },
         enabled: !!user,
     });
@@ -268,15 +268,15 @@ export const useProfilesGrid = (filters?: ProfileFilters) => {
             let query = supabase
                 .from('profiles')
                 .select('*')
-                .neq('user_id', user?.id || '')
-                .order('is_online', {ascending: false})
-                .order('last_seen', {ascending: false, nullsFirst: false})
+                .neq('id', user?.id || '')
+                .order('online_status', {ascending: false})
+                .order('last_seen_at', {ascending: false, nullsFirst: false})
                 .limit(100);
 
             if (filters?.minAge) query = query.gte('age', filters.minAge);
             if (filters?.maxAge) query = query.lte('age', filters.maxAge);
-            if (filters?.isOnline) query = query.eq('is_online', true);
-            if (filters?.isVerified) query = query.eq('is_verified', true);
+            if (filters?.isOnline) query = query.eq('available_now', true);
+            if (filters?.isVerified) query = query.eq('verified', true);
             if (filters?.search) {
                 query = query.or(
                     `display_name.ilike.%${filters.search}%,bio.ilike.%${filters.search}%,city.ilike.%${filters.search}%`
@@ -286,7 +286,7 @@ export const useProfilesGrid = (filters?: ProfileFilters) => {
             const {data, error} = await query;
             if (error) throw error;
 
-            let profiles = (data || []) as ProfileWithDetails[];
+            let profiles = (data || []) as unknown as ProfileWithDetails[];
 
             // Client-side array filters
             if (filters?.tribes && filters.tribes.length > 0) {
@@ -360,11 +360,11 @@ export const useProfileById = (userId: string | undefined) => {
             const {data, error} = await supabase
                 .from('profiles')
                 .select('*')
-                .eq('user_id', userId)
+                .eq('id', userId)
                 .single();
 
             if (error) throw error;
-            return data as Profile;
+            return data as unknown as Profile;
         },
         enabled: !!userId,
     });
